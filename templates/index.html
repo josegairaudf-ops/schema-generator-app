@@ -1,4 +1,3 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,19 +26,19 @@
     <div class="container mt-5">
         <h1 class="mb-4 text-center">Schema.org Generator</h1>
 
-        <!-- Schema Type Selection -->
-        <div class="mb-3">
-            <label for="schemaType" class="form-label">Select Schema Type:</label>
-            <select class="form-select" id="schemaType" name="schemaType">
-                <option value="">-- Please Select --</option>
-                <option value="FAQPage">FAQPage</option>
-                <option value="BlogPosting">BlogPosting</option>
-                <option value="Review">Review (Betting Picks)</option>
-            </select>
-        </div>
-
-        <!-- The form itself -->
+        <!-- Start of the form - All fields that need to be submitted must be inside this form -->
         <form id="schemaGeneratorForm" method="POST" action="/generate_schema">
+
+            <!-- Schema Type Selection - MOVED INSIDE THE FORM -->
+            <div class="mb-3">
+                <label for="schemaType" class="form-label">Select Schema Type:</label>
+                <select class="form-select" id="schemaType" name="schemaType">
+                    <option value="">-- Please Select --</option>
+                    <option value="FAQPage">FAQPage</option>
+                    <option value="BlogPosting">BlogPosting</option>
+                    <option value="Review">Review (Betting Picks)</option>
+                </select>
+            </div>
 
             <!-- FAQPage Fields -->
             <div id="faqPageFields" class="schema-fields hidden-fields">
@@ -231,6 +230,7 @@
                 <button type="submit" class="btn btn-primary btn-lg" id="generateSchemaBtn">Generate Schema</button>
             </div>
         </form>
+        <!-- End of the form -->
 
         <!-- Output for generated Schema -->
         <div class="mt-5">
@@ -299,12 +299,6 @@
                 if (response.ok) {
                     const schema = await response.json();
                     generatedSchemaOutput.textContent = JSON.stringify(schema, null, 2); // Pretty print JSON
-                    // You can also add a script tag here if you want to test it live:
-                    // const scriptTag = document.createElement('script');
-                    // scriptTag.type = 'application/ld+json';
-                    // scriptTag.textContent = JSON.stringify(schema);
-                    // document.head.appendChild(scriptTag);
-                    // alert('Schema generated and added to head (for testing)! Check console/source.');
                 } else {
                     const error = await response.json();
                     generatedSchemaOutput.textContent = `Error: ${error.error || 'Something went wrong'}`;
