@@ -235,7 +235,11 @@
         <!-- Output for generated Schema -->
         <div class="mt-5">
             <h3>Generated Schema.org JSON-LD:</h3>
-            <pre id="generatedSchemaOutput"></pre>
+            <div class="mb-2">
+    <button id="copyBtn" class="btn btn-success mb-2">Copiar al portapapeles</button>
+    <span id="copyFeedback" style="display:none; color:green; margin-left:10px;">¡Copiado!</span>
+</div>
+<pre id="generatedSchemaOutput"></pre>
         </div>
 
     </div>
@@ -306,5 +310,19 @@
             });
         });
     </script>
+    <script>
+document.getElementById("copyBtn").addEventListener("click", function() {
+    const jsonText = document.getElementById("generatedSchemaOutput").innerText;
+
+    navigator.clipboard.writeText(jsonText).then(() => {
+        document.getElementById('copyFeedback').style.display = 'inline';
+        setTimeout(function() {
+            document.getElementById('copyFeedback').style.display = 'none';
+        }, 1500);
+    }).catch(err => {
+        alert("Could not copy (your browser may restrict clipboard access).");
+    });
+});
+</script>
 </body>
 </html>
