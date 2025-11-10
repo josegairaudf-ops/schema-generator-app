@@ -20,7 +20,12 @@
 <body class="bg-light">
 <div class="container py-5">
     <h1 class="mb-4 text-center">Generated Schema JSON</h1>
-    <pre id="schemaJson">{{ schema | tojson(indent=2) }}</pre>
+    <div class="mb-2">
+    <button id="copyBtn" class="btn btn-success mb-2">Copy to Clipboard</button>
+    <span id="copyFeedback" style="display:none; color:green; margin-left:10px;">Copy!</span>
+</div>
+<pre id="generatedSchemaOutput"></pre>
+
     <div class="text-center mt-3">
         <button id="copyBtn" class="btn btn-success mb-2">Copy to Clipboard</button>
     </div>
@@ -39,6 +44,19 @@ document.getElementById("copyBtn").addEventListener("click", function() {
     });
 });
 </script>
+<script>
+document.getElementById("copyBtn").addEventListener("click", function() {
+    const jsonText = document.getElementById("generatedSchemaOutput").innerText;
 
+    navigator.clipboard.writeText(jsonText).then(() => {
+        document.getElementById('copyFeedback').style.display = 'inline';
+        setTimeout(function() {
+            document.getElementById('copyFeedback').style.display = 'none';
+        }, 1500);
+    }).catch(err => {
+        alert("Could not copy (your browser may restrict clipboard access).");
+    });
+});
+</script>
 </body>
 </html>
