@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.pytest_cache/
+.coverage
+.ipynb_checkpoints
+.mypy_cache
+.ruff_cache
+
+# Database (optional, but if you re-create it often, you might not want it tracked)
+# schemas_templates.db # <--- Consider if you want to track the DB directly or generate on deploy
