@@ -373,5 +373,54 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+<script>
+// Wait for DOM loaded
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('schemaForm');
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    form.addEventListener('submit', function(e) {
+        let tipo = document.getElementById('tipo').value;
+        let valid = true;
+        let missingFields = [];
+
+        // Example validation per type
+        if (tipo === 'FAQPage') {
+            if (!document.getElementById('question1').value.trim()) {
+                valid = false;
+                missingFields.push('Question 1');
+            }
+            if (!document.getElementById('answer1').value.trim()) {
+                valid = false;
+                missingFields.push('Answer 1');
+            }
+        } else if (tipo === 'BlogPosting') {
+            if (!document.getElementById('headline').value.trim()) {
+                valid = false;
+                missingFields.push('Blog post title');
+            }
+            if (!document.getElementById('datePublished').value.trim()) {
+                valid = false;
+                missingFields.push('Publication date');
+            }
+        } else if (tipo === 'Review') {
+            if (!document.getElementById('authorName').value.trim()) {
+                valid = false;
+                missingFields.push('Author name');
+            }
+            if (!document.getElementById('reviewBody').value.trim()) {
+                valid = false;
+                missingFields.push('Review analysis');
+            }
+        }
+
+        if (!valid) {
+            e.preventDefault();
+            alert('Please fill in the following required fields:\n' + missingFields.join('\n'));
+            submitBtn.disabled = false;
+        }
+    });
+});
+</script>    
 </body>
 </html>
