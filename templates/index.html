@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -10,7 +9,6 @@
     .hidden-fields {
       display: none;
     }
-
     #generatedSchemaOutput {
       white-space: pre-wrap;
       word-wrap: break-word;
@@ -39,6 +37,7 @@
         </select>
       </div>
 
+      <!-- FAQ Schema Block -->
       <div id="faq-fields" class="schema-fields hidden-fields">
         <h2 class="mt-4 mb-3">FAQPage Schema Fields</h2>
         <div class="mb-3">
@@ -53,62 +52,66 @@
           <label for="faqModifiedAt" class="form-label">Modification Date & Time:</label>
           <input type="datetime-local" class="form-control" id="faqModifiedAt" name="faqModifiedAt" required />
         </div>
+
         <div id="faqQuestionsBlock">
-        <div class="mb-3">
-          <label for="faqQ1" class="form-label">Question 1:</label>
-          <input type="text" class="form-control" id="faqQ1" name="faqQ1" placeholder="What is Schema.org?" required />
+          <div class="mb-3">
+            <label for="faqQ1" class="form-label">Question 1:</label>
+            <input type="text" class="form-control" id="faqQ1" name="faqQ1" placeholder="What is Schema.org?" required />
+          </div>
+          <div class="mb-3">
+            <label for="faqA1" class="form-label">Answer 1:</label>
+            <textarea class="form-control" id="faqA1" name="faqA1" rows="3" placeholder="Answer here..." required></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="faqQ2" class="form-label">Question 2:</label>
+            <input type="text" class="form-control" id="faqQ2" name="faqQ2" placeholder="What is Schema.org?" required />
+          </div>
+          <div class="mb-3">
+            <label for="faqA2" class="form-label">Answer 2:</label>
+            <textarea class="form-control" id="faqA2" name="faqA2" rows="3" placeholder="Answer here..." required></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="faqQ3" class="form-label">Question 3:</label>
+            <input type="text" class="form-control" id="faqQ3" name="faqQ3" placeholder="What is Schema.org?" required />
+          </div>
+          <div class="mb-3">
+            <label for="faqA3" class="form-label">Answer 3:</label>
+            <textarea class="form-control" id="faqA3" name="faqA3" rows="3" placeholder="Answer here..." required></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="faqQ4" class="form-label">Question 4:</label>
+            <input type="text" class="form-control" id="faqQ4" name="faqQ4" placeholder="What is Schema.org?" />
+          </div>
+          <div class="mb-3">
+            <label for="faqA4" class="form-label">Answer 4:</label>
+            <textarea class="form-control" id="faqA4" name="faqA4" rows="3" placeholder="Answer here..."></textarea>
+          </div>
         </div>
-        <div class="mb-3">
-          <label for="faqA1" class="form-label">Answer 1:</label>
-          <textarea class="form-control" id="faqA1" name="faqA1" rows="3" placeholder="Answer here..." required></textarea>
+        <!-- Template block for FAQ suggestion -->
+        <div id="faqTemplateFields" class="hidden-fields">
+          <div class="mb-3">
+            <label for="faqTitle" class="form-label">Title:</label>
+            <input type="text" class="form-control" id="faqTitle" name="faqTitle" placeholder="Enter article title" />
+          </div>
+          <div class="mb-3">
+            <label for="faqSummary" class="form-label">Summary:</label>
+            <textarea class="form-control" id="faqSummary" name="faqSummary" rows="3" placeholder="Enter article summary"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="faqKeywords" class="form-label">Keywords:</label>
+            <input type="text" class="form-control" id="faqKeywords" name="faqKeywords" placeholder="Enter keywords to target" />
+          </div>
         </div>
-        <div class="mb-3">
-        <label for="faqQ2" class="form-label">Question 2:</label>
-          <input type="text" class="form-control" id="faqQ2" name="faqQ2" placeholder="What is Schema.org?" required />
-        </div>
-        <div class="mb-3">
-          <label for="faqA2" class="form-label">Answer 2:</label>
-          <textarea class="form-control" id="faqA2" name="faqA2" rows="3" placeholder="Answer here..." required></textarea>
-        </div>
-      <div class="mb-3">
-      <label for="faqQ3" class="form-label">Question 3:</label>
-          <input type="text" class="form-control" id="faqQ3" name="faqQ3" placeholder="What is Schema.org?" required />
-        </div>
-        <div class="mb-3">
-          <label for="faqA3" class="form-label">Answer 3:</label>
-          <textarea class="form-control" id="faqA3" name="faqA3" rows="3" placeholder="Answer here..." required></textarea>
-        </div>
-        <div class="mb-3">
-  <label for="faqQ4" class="form-label">Question 4:</label>
-          <input type="text" class="form-control" id="faqQ4" name="faqQ4" placeholder="What is Schema.org?"/>
-        </div>
-        <div class="mb-3">
-          <label for="faqA4" class="form-label">Answer 4:</label>
-          <textarea class="form-control" id="faqA4" name="faqA4" rows="3" placeholder="Answer here..."></textarea>
-        </div>
-          <!-- Can add more FAQ items similarly -->
-  </div>
-<div id="faqTemplateFields" class="hidden-fields">
-  <div class="mb-3">
-    <label for="faqTitle" class="form-label">Title:</label>
-    <input type="text" class="form-control" id="faqTitle" name="faqTitle" placeholder="Enter article title" />
-  </div>
-  <button type="button" id="toggleFaqViewBtn" class="btn btn-secondary mb-3">
-  Use Title, Summary & Keywords Template
-</button>
-      <button type="button" id="generateFaqBtn" class="btn btn-info mb-3">
-  Generate FAQ Suggestions
-</button>
-  
-  <div class="mb-3">
-    <label for="faqSummary" class="form-label">Summary:</label>
-    <textarea class="form-control" id="faqSummary" name="faqSummary" rows="3" placeholder="Enter article summary"></textarea>
-  </div>
-  <div class="mb-3">
-    <label for="faqKeywords" class="form-label">Keywords:</label>
-    <input type="text" class="form-control" id="faqKeywords" name="faqKeywords" placeholder="Enter keywords to target" />
-  </div>
-</div>
+        <!-- Toggle and Generate FAQ buttons (MUST be inside faq-fields) -->
+        <button type="button" id="toggleFaqViewBtn" class="btn btn-secondary mb-3">
+          Use Title, Summary & Keywords Template
+        </button>
+        <button type="button" id="generateFaqBtn" class="btn btn-info mb-3">
+          Generate FAQ Suggestions
+        </button>
+      </div>
+
+      <!-- BlogPosting Schema Block -->
       <div id="blogposting-fields" class="schema-fields hidden-fields">
         <h2 class="mt-4 mb-3">BlogPosting Schema Fields</h2>
         <div class="mb-3">
@@ -131,7 +134,6 @@
           <label for="blogContent" class="form-label">Content:</label>
           <textarea class="form-control" id="blogContent" name="blogContent" rows="5" placeholder="Blog content here..."></textarea>
         </div>
-        <!-- Optional Sports Event fields -->
         <h3 class="mt-4 mb-3">Sport Event Details (Optional)</h3>
         <input type="text" class="form-control mb-2" id="eventName" name="eventName" placeholder="Event Name" />
         <input type="datetime-local" class="form-control mb-2" id="eventStartDate" name="eventStartDate" />
@@ -152,6 +154,8 @@
         <input type="text" class="form-control mb-2" id="eventTeam1" name="eventTeam1" placeholder="Team 1" />
         <input type="text" class="form-control mb-2" id="eventTeam2" name="eventTeam2" placeholder="Team 2" />
       </div>
+
+      <!-- Review Schema Block -->
       <div id="review-fields" class="schema-fields hidden-fields">
         <h2 class="mt-4 mb-3">Review Schema Fields (Betting Picks)</h2>
         <div class="mb-3">
@@ -204,12 +208,12 @@
         </div>
       </div>
       <div class="d-grid gap-2 mt-4">
-       <div class="form-check mb-3">
-  <input class="form-check-input" type="checkbox" value="yes" id="wrapScriptTag" name="wrapScriptTag" />
-  <label class="form-check-label" for="wrapScriptTag">
-    Wrap output in &lt;script type="application/ld+json"&gt; tags
-  </label>
-</div> 
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" value="yes" id="wrapScriptTag" name="wrapScriptTag" />
+          <label class="form-check-label" for="wrapScriptTag">
+            Wrap output in &lt;script type="application/ld+json"&gt; tags
+          </label>
+        </div>
         <button type="submit" class="btn btn-primary btn-lg" id="generateSchemaBtn">Generate Schema</button>
       </div>
     </form>
@@ -233,12 +237,10 @@
       const generatedSchemaOutput = document.getElementById('generatedSchemaOutput');
 
       function toggleSchemaFields() {
-        const selectedType = schemaTypeSelect.value;
-
         faqPageFields.classList.add('hidden-fields');
         blogPostingFields.classList.add('hidden-fields');
         reviewFields.classList.add('hidden-fields');
-
+        const selectedType = schemaTypeSelect.value;
         if (selectedType === 'FAQPage') {
           faqPageFields.classList.remove('hidden-fields');
         } else if (selectedType === 'BlogPosting') {
@@ -246,7 +248,6 @@
         } else if (selectedType === 'Review') {
           reviewFields.classList.remove('hidden-fields');
         }
-
         localStorage.setItem('selectedSchemaType', selectedType);
       }
 
@@ -261,7 +262,6 @@
 
       schemaGeneratorForm.addEventListener('submit', async function (e) {
         e.preventDefault();
-
         const formData = new FormData(schemaGeneratorForm);
         const response = await fetch('/generate_schema', {
           method: 'POST',
@@ -280,7 +280,6 @@
 
     document.getElementById("copyBtn").addEventListener("click", function () {
       const jsonText = document.getElementById("generatedSchemaOutput").innerText;
-
       navigator.clipboard.writeText(jsonText).then(() => {
         document.getElementById('copyFeedback').style.display = 'inline';
         setTimeout(function () {
@@ -293,134 +292,94 @@
 
     document.addEventListener('DOMContentLoaded', function () {
       const form = document.getElementById('schemaForm');
-
       form.addEventListener('submit', function (e) {
         const tipo = document.getElementById('tipo').value;
         let valid = true;
         let missingFields = [];
-
         if (tipo === 'FAQPage') {
-          if (!document.getElementById('faqQ1').value.trim()) {
-            valid = false;
-            missingFields.push('Question 1');
-          }
-          if (!document.getElementById('faqA1').value.trim()) {
-            valid = false;
-            missingFields.push('Answer 1');
-          }
-          if (!document.getElementById('faqAuthor').value.trim()) {
-            valid = false;
-            missingFields.push('Author');
-          }
-          if (!document.getElementById('faqCreatedAt').value.trim()) {
-            valid = false;
-            missingFields.push('Creation Date & Time');
-          }
-          if (!document.getElementById('faqModifiedAt').value.trim()) {
-            valid = false;
-            missingFields.push('Modification Date & Time');
-          }
+          if (!document.getElementById('faqQ1').value.trim()) valid = false, missingFields.push('Question 1');
+          if (!document.getElementById('faqA1').value.trim()) valid = false, missingFields.push('Answer 1');
+          if (!document.getElementById('faqAuthor').value.trim()) valid = false, missingFields.push('Author');
+          if (!document.getElementById('faqCreatedAt').value.trim()) valid = false, missingFields.push('Creation Date & Time');
+          if (!document.getElementById('faqModifiedAt').value.trim()) valid = false, missingFields.push('Modification Date & Time');
         } else if (tipo === 'BlogPosting') {
-          if (!document.getElementById('blogTitle').value.trim()) {
-            valid = false;
-            missingFields.push('Blog Title');
-          }
-          if (!document.getElementById('blogAuthor').value.trim()) {
-            valid = false;
-            missingFields.push('Author');
-          }
-          if (!document.getElementById('blogPublicationDate').value.trim()) {
-            valid = false;
-            missingFields.push('Publication Date');
-          }
+          if (!document.getElementById('blogTitle').value.trim()) valid = false, missingFields.push('Blog Title');
+          if (!document.getElementById('blogAuthor').value.trim()) valid = false, missingFields.push('Author');
+          if (!document.getElementById('blogPublicationDate').value.trim()) valid = false, missingFields.push('Publication Date');
         } else if (tipo === 'Review') {
-          if (!document.getElementById('reviewAuthor').value.trim()) {
-            valid = false;
-            missingFields.push('Author');
-          }
-          if (!document.getElementById('reviewReasoning').value.trim()) {
-            valid = false;
-            missingFields.push('Analysis / Reasoning');
-          }
-          if (!document.getElementById('reviewPublicationDate').value.trim()) {
-            valid = false;
-            missingFields.push('Publication Date');
-          }
+          if (!document.getElementById('reviewAuthor').value.trim()) valid = false, missingFields.push('Author');
+          if (!document.getElementById('reviewReasoning').value.trim()) valid = false, missingFields.push('Analysis / Reasoning');
+          if (!document.getElementById('reviewPublicationDate').value.trim()) valid = false, missingFields.push('Publication Date');
         }
-
         if (!valid) {
           e.preventDefault();
           alert('Please fill in the following required fields:\n' + missingFields.join('\n'));
         }
       });
     });
-document.addEventListener('DOMContentLoaded', function() {
-  const toggleFaqBtn = document.getElementById('toggleFaqViewBtn');
-  const faqQuestionsBlock = document.getElementById('faqQuestionsBlock');
-  const faqTemplateBlock = document.getElementById('faqTemplateFields');
 
-  toggleFaqBtn.addEventListener('click', () => {
-    if (faqTemplateBlock.classList.contains('hidden-fields')) {
-      faqTemplateBlock.classList.remove('hidden-fields');
-      faqQuestionsBlock.classList.add('hidden-fields');
-      toggleFaqBtn.textContent = 'Use Individual Questions';
-    } else {
-      faqTemplateBlock.classList.add('hidden-fields');
-      faqQuestionsBlock.classList.remove('hidden-fields');
-      toggleFaqBtn.textContent = 'Use Title, Summary & Keywords Template';
-    }
-  });
-});
+    document.addEventListener('DOMContentLoaded', function() {
+      const toggleFaqBtn = document.getElementById('toggleFaqViewBtn');
+      const faqQuestionsBlock = document.getElementById('faqQuestionsBlock');
+      const faqTemplateBlock = document.getElementById('faqTemplateFields');
+      toggleFaqBtn.addEventListener('click', () => {
+        if (faqTemplateBlock.classList.contains('hidden-fields')) {
+          faqTemplateBlock.classList.remove('hidden-fields');
+          faqQuestionsBlock.classList.add('hidden-fields');
+          toggleFaqBtn.textContent = 'Use Individual Questions';
+        } else {
+          faqTemplateBlock.classList.add('hidden-fields');
+          faqQuestionsBlock.classList.remove('hidden-fields');
+          toggleFaqBtn.textContent = 'Use Title, Summary & Keywords Template';
+        }
+      });
+    });
+
     document.getElementById('generateFaqBtn').addEventListener('click', async () => {
-  const title = document.getElementById('faqTitle').value.trim();
-  const summary = document.getElementById('faqSummary').value.trim();
-  const keywords = document.getElementById('faqKeywords').value.trim();
+      const title = document.getElementById('faqTitle').value.trim();
+      const summary = document.getElementById('faqSummary').value.trim();
+      const keywords = document.getElementById('faqKeywords').value.trim();
+      if (!title || !summary) {
+        alert('Please enter both title and summary');
+        return;
+      }
+      const response = await fetch('/api/generate-faq', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, summary, keywords })
+      });
+      if (!response.ok) {
+        alert('Error generating suggestions');
+        return;
+      }
+      const data = await response.json();
+      if (Array.isArray(data.faqs)) {
+        for (let i = 0; i < 3; i++) {
+          const questionInput = document.getElementById(`faqQ${i + 1}`);
+          if (questionInput) questionInput.value = data.faqs[i] || '';
+        }
+        alert('FAQ suggestions added to Question fields. Switch to individual mode to review/edit them.');
+      }
+    });
 
-  if (!title || !summary) {
-    alert('Please enter both title and summary');
-    return;
-  }
-
-  const response = await fetch('/api/generate-faq', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ title, summary, keywords })
-  });
-
-  if (!response.ok) {
-    alert('Error generating suggestions');
-    return;
-  }
-
-  const data = await response.json();
-  // Rellena las preguntas FAQ solo si el bloque de preguntas está oculto ahora
-  if (Array.isArray(data.faqs)) {
-    for (let i = 0; i < 3; i++) {
-      const questionInput = document.getElementById(`faqQ${i + 1}`);
-      if (questionInput) questionInput.value = data.faqs[i] || '';
-    }
-    alert('FAQ suggestions added to Question fields. Switch to individual mode to review/edit them.');
-  }
-});
+    // Show/hide buttons only for FAQPage schema type
     document.addEventListener('DOMContentLoaded', function () {
-  const schemaTypeSelect = document.getElementById('tipo');
-  const faqFields = document.getElementById('faq-fields');
-  const toggleFaqBtn = document.getElementById('toggleFaqViewBtn');
-  const generateFaqBtn = document.getElementById('generateFaqBtn');
-
-  function updateFaqButtonsVisibility() {
-    if (!faqFields.classList.contains('hidden-fields')) {
-      toggleFaqBtn.style.display = 'inline-block';
-      generateFaqBtn.style.display = 'inline-block';
-    } else {
-      toggleFaqBtn.style.display = 'none';
-      generateFaqBtn.style.display = 'none';
-    }
-  }
-
-  schemaTypeSelect.addEventListener('change', updateFaqButtonsVisibility);
-  updateFaqButtonsVisibility();
-});
+      const schemaTypeSelect = document.getElementById('tipo');
+      const faqFields = document.getElementById('faq-fields');
+      const toggleFaqBtn = document.getElementById('toggleFaqViewBtn');
+      const generateFaqBtn = document.getElementById('generateFaqBtn');
+      function updateFaqButtonsVisibility() {
+        if (!faqFields.classList.contains('hidden-fields')) {
+          toggleFaqBtn.style.display = 'inline-block';
+          generateFaqBtn.style.display = 'inline-block';
+        } else {
+          toggleFaqBtn.style.display = 'none';
+          generateFaqBtn.style.display = 'none';
+        }
+      }
+      schemaTypeSelect.addEventListener('change', updateFaqButtonsVisibility);
+      updateFaqButtonsVisibility();
+    });
   </script>
 </body>
 </html>
