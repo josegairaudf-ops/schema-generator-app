@@ -107,6 +107,10 @@
   <button type="button" id="toggleFaqViewBtn" class="btn btn-secondary mb-3">
   Use Title, Summary & Keywords Template
 </button>
+      <button type="button" id="generateFaqBtn" class="btn btn-info mb-3">
+  Generate FAQ Suggestions
+</button>
+</div>
       <div id="blogposting-fields" class="schema-fields hidden-fields">
         <h2 class="mt-4 mb-3">BlogPosting Schema Fields</h2>
         <div class="mb-3">
@@ -373,6 +377,37 @@ document.addEventListener('DOMContentLoaded', function() {
       toggleFaqBtn.textContent = 'Use Title, Summary & Keywords Template';
     }
   });
+});
+    document.getElementById('generateFaqBtn').addEventListener('click', async () => {
+  const title = document.getElementById('faqTitle').value.trim();
+  const summary = document.getElementById('faqSummary').value.trim();
+  const keywords = document.getElementById('faqKeywords').value.trim();
+
+  if (!title || !summary) {
+    alert('Please enter both title and summary');
+    return;
+  }
+
+  const response = await fetch('/api/generate-faq', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title, summary, keywords })
+  });
+
+  if (!response.ok) {
+    alert('Error generating suggestions');
+    return;
+  }
+
+  const data = await response.json();
+  // Rellena las preguntas FAQ solo si el bloque de preguntas está oculto ahora
+  if (Array.isArray(data.faqs)) {
+    for (let i = 0; i < 3; i++) {
+      const questionInput = document.getElementById(`faqQ${i + 1}`);
+      if (questionInput) questionInput.value = data.faqs[i] || '';
+    }
+    alert('FAQ suggestions added to Question fields. Switch to individual mode to review/edit them.');
+  }
 });
   </script>
 </body>
