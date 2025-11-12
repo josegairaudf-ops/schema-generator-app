@@ -54,6 +54,7 @@
           <label for="faqModifiedAt" class="form-label">Modification Date & Time:</label>
           <input type="datetime-local" class="form-control" id="faqModifiedAt" name="faqModifiedAt" required />
         </div>
+        <div id="faqQuestionsBlock">
         <div class="mb-3">
           <label for="faqQ1" class="form-label">Question 1:</label>
           <input type="text" class="form-control" id="faqQ1" name="faqQ1" placeholder="What is Schema.org?" required />
@@ -69,7 +70,7 @@
           <label for="faqA2" class="form-label">Answer 2:</label>
           <textarea class="form-control" id="faqA2" name="faqA2" rows="3" placeholder="Answer here..." required></textarea>
         </div>
-      <label for="faqQ3" class="form-label">Question 1:</label>
+      <label for="faqQ3" class="form-label">Question 3:</label>
           <input type="text" class="form-control" id="faqQ3" name="faqQ3" placeholder="What is Schema.org?" required />
         </div>
         <div class="mb-3">
@@ -83,12 +84,29 @@
           <label for="faqA4" class="form-label">Answer 4:</label>
           <textarea class="form-control" id="faqA4" name="faqA4" rows="3" placeholder="Answer here..." required></textarea>
         </div>
+  </div>
         <!-- Can add more FAQ items similarly -->
   <button type="button" id="fillFaqTemplate" class="btn btn-secondary mb-3">
   Fill FAQ with Template (Title, Summary, Keywords)
 </button>
       </div>
-
+<div id="faqTemplateFields" class="hidden-fields">
+  <div class="mb-3">
+    <label for="faqTitle" class="form-label">Title:</label>
+    <input type="text" class="form-control" id="faqTitle" name="faqTitle" placeholder="Enter article title" />
+  </div>
+  <div class="mb-3">
+    <label for="faqSummary" class="form-label">Summary:</label>
+    <textarea class="form-control" id="faqSummary" name="faqSummary" rows="3" placeholder="Enter article summary"></textarea>
+  </div>
+  <div class="mb-3">
+    <label for="faqKeywords" class="form-label">Keywords:</label>
+    <input type="text" class="form-control" id="faqKeywords" name="faqKeywords" placeholder="Enter keywords to target" />
+  </div>
+</div>
+  <button type="button" id="toggleFaqViewBtn" class="btn btn-secondary mb-3">
+  Use Title, Summary & Keywords Template
+</button>
       <div id="blogposting-fields" class="schema-fields hidden-fields">
         <h2 class="mt-4 mb-3">BlogPosting Schema Fields</h2>
         <div class="mb-3">
@@ -339,23 +357,25 @@
         }
       });
     });
-    document.addEventListener('DOMContentLoaded', function() {
-    const fillFaqBtn = document.getElementById('fillFaqTemplate');
-
-    // Escucha el click en el botón
-    fillFaqBtn.addEventListener('click', function() {
-        // Cambia los valores de los campos pregunta
-        document.getElementById('faqQ1').value = 'Título del artículo';
-        document.getElementById('faqQ2').value = 'Resumen del artículo';
-        document.getElementById('faqQ3').value = 'Keywords a targetear e incluir';
-
-        // Limpia las respuestas para que el usuario las complete después
-        document.getElementById('faqA1').value = '';
-        document.getElementById('faqA2').value = '';
-        document.getElementById('faqA3').value = '';
-    });
-});
+ 
   </script>
 </body>
+document.addEventListener('DOMContentLoaded', function() {
+  const toggleFaqBtn = document.getElementById('toggleFaqViewBtn');
+  const faqQuestionsBlock = document.getElementById('faqQuestionsBlock');
+  const faqTemplateBlock = document.getElementById('faqTemplateFields');
+
+  toggleFaqBtn.addEventListener('click', () => {
+    if (faqTemplateBlock.classList.contains('hidden-fields')) {
+      faqTemplateBlock.classList.remove('hidden-fields');
+      faqQuestionsBlock.classList.add('hidden-fields');
+      toggleFaqBtn.textContent = 'Use Individual Questions';
+    } else {
+      faqTemplateBlock.classList.add('hidden-fields');
+      faqQuestionsBlock.classList.remove('hidden-fields');
+      toggleFaqBtn.textContent = 'Use Title, Summary & Keywords Template';
+    }
+  });
+});
 
 </html>
