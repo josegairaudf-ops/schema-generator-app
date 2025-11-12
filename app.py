@@ -194,41 +194,36 @@ def generate_faq():
     title = data.get('title')
     summary = data.get('summary')
     keywords = data.get('keywords', '')
+    count = int(data.get('count', 4))  # Default 4 if not provided
 
     if not title or not summary:
         return jsonify({'error': 'Missing title or summary'}), 400
 
     prompt = (
-        f"Given the article information below, suggest 3 relevant, precise FAQ questions that target user intent for SEO. "
-        f"Use the title, summary and focus keywords if possible. Don't write answers, just the 3 questions.\n\n"
-        f"Title: {title}\n"
-        f"Summary: {summary}\n"
-        f"Keywords: {keywords}\n\n"
-        "Example Output:\n"
-        "1. [Question about topic...]\n"
-        "2. [Another question...]\n"
-        "3. [Third question...]"
+        f"Given the article info below, suggest {count} unique, concise FAQ questions for SEO. "
+        f"Just questions, no answers.\n\n"
+        f"Title: {title}\nSummary: {summary}\nKeywords: {keywords}\n"
+        + "\n".join([f"{i+1}." for i in range(count)])
     )
 
     try:
         response = openai.Completion.create(
             model="text-davinci-003",
             prompt=prompt,
-            max_tokens=150,
+            max_tokens=100 + count * 35,
             temperature=0.7
         )
         text = response.choices[0].text.strip()
         faqs = []
         for line in text.split('\n'):
             line = line.strip()
-            if line and not line.startswith('Example Output:'):
-                faqs.append(line.lstrip('1234. ').strip())
+            if line and line[0].isdigit():
+                faqs.append(line.lstrip('1234567890. ').strip())
         faqs = [q for q in faqs if q]
-        return jsonify({'faqs': faqs[:3]})
+        return jsonify({'faqs': faqs[:count]})
     except Exception as e:
         print('[OpenAI Error]', e)
         return jsonify({'error': 'Error generating FAQs'}), 500
-
 if __name__ == '__main__':
     if not os.path.exists(DB_FILE):
         print(f"Database '{DB_FILE}' not found. Please run 'python create_db.py' first.")
