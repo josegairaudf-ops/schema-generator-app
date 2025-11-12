@@ -101,6 +101,7 @@
             <label for="faqKeywords" class="form-label">Keywords:</label>
             <input type="text" class="form-control" id="faqKeywords" name="faqKeywords" placeholder="Enter keywords to target" />
           </div>
+          <input type="number" id="faqCount" name="faqCount" min="1" max="10" value="4" class="form-control" />
         </div>
         <!-- Toggle and Generate FAQ buttons (MUST be inside faq-fields) -->
         <button type="button" id="toggleFaqViewBtn" class="btn btn-secondary mb-3">
@@ -343,11 +344,13 @@
         alert('Please enter both title and summary');
         return;
       }
+      const count = document.getElementById('faqCount').value || 4;
       const response = await fetch('/api/generate-faq', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, summary, keywords })
-      });
+        body: JSON.stringify({ title, summary, keywords, count })
+});
+
       if (!response.ok) {
         alert('Error generating suggestions');
         return;
