@@ -1,10 +1,11 @@
-# app.py
 from flask import Flask, render_template, request, jsonify
 import sqlite3
 import json
-import os #
+import os
 from datetime import datetime
-from rich import print as rprint # For pretty printing JSON in console
+from rich import print as rprint
+
+import openai
 
 app = Flask(__name__)
 DB_FILE = 'schemas_templates.db'
@@ -12,13 +13,11 @@ DB_FILE = 'schemas_templates.db'
 # --- Helper functions for database interaction ---
 
 def get_db_connection():
-    """Establishes a connection to the SQLite database."""
     conn = sqlite3.connect(DB_FILE)
-    conn.row_factory = sqlite3.Row  # Return rows as dict-like objects
+    conn.row_factory = sqlite3.Row
     return conn
 
 def get_template(table_name, template_name):
-    """Fetches a specific template by name from a given table."""
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute(f"SELECT * FROM {table_name} WHERE name = ?", (template_name,))
@@ -29,9 +28,8 @@ def get_template(table_name, template_name):
 # --- Schema Generation Functions ---
 
 def generate_faq_schema(data):
-    """Generates JSON-LD for FAQPage based on form data."""
     questions_answers = []
-    for i in range(1, 5): # Assuming 4 FAQ pairs
+    for i in range(1, 5):
         q = data.get(f'faqQ{i}')
         a = data.get(f'faqA{i}')
         if q and a:
@@ -43,9 +41,8 @@ def generate_faq_schema(data):
                     "text": a
                 }
             })
-
     if not questions_answers:
-        return {} # Return empty if no valid Q&A
+        return {}
 
     schema = {
         "@context": "https://schema.org",
@@ -61,7 +58,6 @@ def generate_faq_schema(data):
     return schema
 
 def generate_blog_schema(data):
-    """Generates JSON-LD for BlogPosting based on form data."""
     schema = {
         "@context": "https://schema.org",
         "@type": "BlogPosting",
@@ -74,8 +70,6 @@ def generate_blog_schema(data):
         "image": data.get('blogImage'),
         "articleBody": data.get('blogContent')
     }
-
-    # Add SportEvent details if provided
     if data.get('eventName'):
         event_details = {
             "@type": "SportingEvent",
@@ -103,14 +97,11 @@ def generate_blog_schema(data):
             event_details["performer"].append({"@type": "SportsTeam", "name": data.get('eventTeam1')})
         if data.get('eventTeam2'):
             event_details["performer"].append({"@type": "SportsTeam", "name": data.get('eventTeam2')})
-
-        schema["about"] = event_details # "about" is a good property for related entities
+        schema["about"] = event_details
     return schema
 
 def generate_review_schema(data):
-    """Generates JSON-LD for Review based on form data (betting pick)."""
     rating = int(data['reviewRating']) if data.get('reviewRating') else None
-    
     schema = {
         "@context": "https://schema.org",
         "@type": "Review",
@@ -127,7 +118,7 @@ def generate_review_schema(data):
             "worstRating": 1
         },
         "itemReviewed": {
-            "@type": "Event", # Or SportingEvent depending on detail
+            "@type": "Event",
             "name": data.get('reviewEventName'),
             "startDate": data.get('reviewEventDate'),
             "location": {
@@ -135,20 +126,19 @@ def generate_review_schema(data):
                 "name": data.get('reviewEventLocation')
             }
         },
-        # Custom properties for betting picks
         "keywords": f"Betting Pick, {data.get('reviewMarketType')}, {data.get('reviewSelection')}",
-        "offers": { # Using offers to represent the betting opportunity
+        "offers": {
             "@type": "Offer",
             "category": data.get('reviewMarketType'),
             "itemOffered": data.get('reviewSelection'),
             "price": data.get('reviewOdds'),
-            "priceCurrency": "USD", # Assuming currency, could be dynamic
+            "priceCurrency": "USD",
             "seller": {
                 "@type": "Organization",
                 "name": data.get('reviewBookmaker')
             }
         },
-        "valueAdded": { # To represent units/risk
+        "valueAdded": {
             "@type": "PropertyValue",
             "name": "Units/Risk",
             "value": data.get('reviewUnits')
@@ -156,22 +146,16 @@ def generate_review_schema(data):
     }
     return schema
 
-
 # --- Flask Routes ---
 
 @app.route('/', methods=['GET'])
 def index():
-    """Serves the main HTML form."""
-    # You could fetch templates here and pass them to the template
-    # For now, we'll keep it simple and load the form
     return render_template('index.html')
 
 @app.route('/generate_schema', methods=['POST'])
 def generate_schema():
-    """Handles schema generation based on form submission."""
     schema_type = request.form.get('schemaType')
-    form_data = request.form.to_dict() # Get all form data as a dictionary
-
+    form_data = request.form.to_dict()
     generated_schema = {}
     if schema_type == 'FAQPage':
         generated_schema = generate_faq_schema(form_data)
@@ -183,36 +167,71 @@ def generate_schema():
         return jsonify({"error": "Invalid schema type selected"}), 400
 
     rprint("[bold blue]Generated Schema:[/bold blue]")
-    rprint(generated_schema) # Print to console for debugging
-
-    # Return the generated schema as JSON
+    rprint(generated_schema)
     return jsonify(generated_schema)
 
 @app.route('/get_template/<template_type>/<template_name>', methods=['GET'])
 def get_schema_template(template_type, template_name):
-    """
-    API endpoint to fetch a specific template by type and name.
-    Example: /get_template/faq/MyBasicFAQ
-    """
     table_map = {
         'faq': 'faq_templates',
         'blog': 'blog_templates',
         'review': 'review_templates'
     }
     table_name = table_map.get(template_type)
-
     if not table_name:
         return jsonify({"error": "Invalid template type"}), 400
-
     template_data = get_template(table_name, template_name)
     if template_data:
-        # Convert sqlite3.Row to dict for JSON serialization
         return jsonify(dict(template_data))
     else:
         return jsonify({"error": "Template not found"}), 404
 
+# ----------- FAQ Generator OpenAI Endpoint ------------
+
+openai.api_key = os.environ.get("OPENAI_API_KEY")
+
+@app.route('/api/generate-faq', methods=['POST'])
+def generate_faq():
+    data = request.get_json()
+    title = data.get('title')
+    summary = data.get('summary')
+    keywords = data.get('keywords', '')
+
+    if not title or not summary:
+        return jsonify({'error': 'Missing title or summary'}), 400
+
+    prompt = (
+        f"Given the article information below, suggest 3 relevant, precise FAQ questions that target user intent for SEO. "
+        f"Use the title, summary and focus keywords if possible. Don't write answers, just the 3 questions.\n\n"
+        f"Title: {title}\n"
+        f"Summary: {summary}\n"
+        f"Keywords: {keywords}\n\n"
+        "Example Output:\n"
+        "1. [Question about topic...]\n"
+        "2. [Another question...]\n"
+        "3. [Third question...]"
+    )
+
+    try:
+        response = openai.Completion.create(
+            model="text-davinci-003",
+            prompt=prompt,
+            max_tokens=150,
+            temperature=0.7
+        )
+        text = response.choices[0].text.strip()
+        faqs = []
+        for line in text.split('\n'):
+            line = line.strip()
+            if line and not line.startswith('Example Output:'):
+                faqs.append(line.lstrip('1234. ').strip())
+        faqs = [q for q in faqs if q]
+        return jsonify({'faqs': faqs[:3]})
+    except Exception as e:
+        print('[OpenAI Error]', e)
+        return jsonify({'error': 'Error generating FAQs'}), 500
+
 if __name__ == '__main__':
-    # Ensure the database exists before running the app
     if not os.path.exists(DB_FILE):
         print(f"Database '{DB_FILE}' not found. Please run 'python create_db.py' first.")
     app.run(debug=True)
