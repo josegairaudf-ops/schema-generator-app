@@ -6,7 +6,7 @@ from datetime import datetime
 from rich import print as rprint
 
 import openai
-
+openai.api_key = os.environ.get("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")
 app = Flask(__name__)
 DB_FILE = 'schemas_templates.db'
 
@@ -187,8 +187,6 @@ def get_schema_template(template_type, template_name):
         return jsonify({"error": "Template not found"}), 404
 
 # ----------- FAQ Generator OpenAI Endpoint ------------
-
-openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 @app.route('/api/generate-faq', methods=['POST'])
 def generate_faq():
