@@ -62,7 +62,31 @@
           <label for="faqA1" class="form-label">Answer 1:</label>
           <textarea class="form-control" id="faqA1" name="faqA1" rows="3" placeholder="Answer here..." required></textarea>
         </div>
+        <label for="faqQ2" class="form-label">Question 2:</label>
+          <input type="text" class="form-control" id="faqQ2" name="faqQ2" placeholder="What is Schema.org?" required />
+        </div>
+        <div class="mb-3">
+          <label for="faqA2" class="form-label">Answer 2:</label>
+          <textarea class="form-control" id="faqA2" name="faqA2" rows="3" placeholder="Answer here..." required></textarea>
+        </div>
+      <label for="faqQ3" class="form-label">Question 1:</label>
+          <input type="text" class="form-control" id="faqQ3" name="faqQ3" placeholder="What is Schema.org?" required />
+        </div>
+        <div class="mb-3">
+          <label for="faqA3" class="form-label">Answer 3:</label>
+          <textarea class="form-control" id="faqA3" name="faqA3" rows="3" placeholder="Answer here..." required></textarea>
+        </div>
+  <label for="faqQ4" class="form-label">Question 4:</label>
+          <input type="text" class="form-control" id="faqQ4" name="faqQ4" placeholder="What is Schema.org?" required />
+        </div>
+        <div class="mb-3">
+          <label for="faqA4" class="form-label">Answer 4:</label>
+          <textarea class="form-control" id="faqA4" name="faqA4" rows="3" placeholder="Answer here..." required></textarea>
+        </div>
         <!-- Can add more FAQ items similarly -->
+  <button type="button" id="fillFaqTemplate" class="btn btn-secondary mb-3">
+  Fill FAQ with Template (Title, Summary, Keywords)
+</button>
       </div>
 
       <div id="blogposting-fields" class="schema-fields hidden-fields">
@@ -315,6 +339,22 @@
         }
       });
     });
+    document.addEventListener('DOMContentLoaded', function() {
+    const fillFaqBtn = document.getElementById('fillFaqTemplate');
+
+    // Escucha el click en el botón
+    fillFaqBtn.addEventListener('click', function() {
+        // Cambia los valores de los campos pregunta
+        document.getElementById('faqQ1').value = 'Título del artículo';
+        document.getElementById('faqQ2').value = 'Resumen del artículo';
+        document.getElementById('faqQ3').value = 'Keywords a targetear e incluir';
+
+        // Limpia las respuestas para que el usuario las complete después
+        document.getElementById('faqA1').value = '';
+        document.getElementById('faqA2').value = '';
+        document.getElementById('faqA3').value = '';
+    });
+});
   </script>
 </body>
 
