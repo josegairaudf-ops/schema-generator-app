@@ -205,24 +205,33 @@ def generate_faq():
         f"Title: {title}\nSummary: {summary}\nKeywords: {keywords}\n"
         + "\n".join([f"{i+1}." for i in range(count)])
     )
-    try:
-        response = openai.Completion.create(
-            model="text-davinci-003",
-            prompt=prompt,
-            max_tokens=100 + count * 35,
-            temperature=0.7
-        )
-        text = response.choices[0].text.strip()
-        faqs = []
-        for line in text.split('\n'):
-            line = line.strip()
-            if line and line[0].isdigit():
-                faqs.append(line.lstrip('1234567890. ').strip())
-        faqs = [q for q in faqs if q]
-        return jsonify({'faqs': faqs[:count]})
-    except Exception as e:
-        print('[OpenAI Error]', e)
-        return jsonify({'error': 'Error generating FAQs'}), 500
+  try:
+    response = openai.chat.completions.create(
+        model="gpt-3.5-turbo",  # Usa "gpt-4" si tu clave lo permite
+        messages=[
+            {"role": "system", "content": "Eres un generador de preguntas frecuentes para SEO."},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.7,
+        max_tokens=100 + count * 35
+    )
+
+    text = response.choices[0].message.content.strip()
+    print("[OPENAI RAW]", text, flush=True)
+
+    faqs = []
+    for line in text.split('\n'):
+        line = line.strip()
+        if line and line[0].isdigit():
+            faqs.append(line.lstrip('1234567890. ').strip())
+    faqs = [q for q in faqs if q]
+    print("[FAQS]", faqs, flush=True)
+    return jsonify({'faqs': faqs[:count]})
+except Exception as e:
+    import traceback
+    print('[OpenAI Error]', e, flush=True)
+    print(traceback.format_exc(), flush=True)
+    return jsonify({'error': f'Error generating FAQs: {e}'}), 500
 
 if __name__ == '__main__':
     if not os.path.exists(DB_FILE):
