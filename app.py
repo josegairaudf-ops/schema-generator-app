@@ -194,7 +194,7 @@ def generate_faq():
     title = data.get('title')
     summary = data.get('summary')
     keywords = data.get('keywords', '')
-    count = int(data.get('count', 4))
+    count = int(data.get('count', 4))  # Default 4 if not provided
 
     if not title or not summary:
         return jsonify({'error': 'Missing title or summary'}), 400
