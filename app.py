@@ -6,7 +6,7 @@ from datetime import datetime
 from rich import print as rprint
 
 import openai
-openai.api_key = os.environ.get("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")
+openai.api_key = os.environ.get("OPENAI_API_KEY")
 app = Flask(__name__)
 DB_FILE = 'schemas_templates.db'
 
@@ -194,18 +194,17 @@ def generate_faq():
     title = data.get('title')
     summary = data.get('summary')
     keywords = data.get('keywords', '')
-    count = int(data.get('count', 4))  # Default 4 if not provided
+    count = int(data.get('count', 4))
 
     if not title or not summary:
         return jsonify({'error': 'Missing title or summary'}), 400
 
     prompt = (
-        f"Given the article info below, suggest {count} unique, concise FAQ questions for SEO. "
+        f"Given the article info below, suggest {count} concise, relevant FAQ questions for SEO. "
         f"Just questions, no answers.\n\n"
         f"Title: {title}\nSummary: {summary}\nKeywords: {keywords}\n"
         + "\n".join([f"{i+1}." for i in range(count)])
     )
-
     try:
         response = openai.Completion.create(
             model="text-davinci-003",
@@ -224,6 +223,7 @@ def generate_faq():
     except Exception as e:
         print('[OpenAI Error]', e)
         return jsonify({'error': 'Error generating FAQs'}), 500
+
 if __name__ == '__main__':
     if not os.path.exists(DB_FILE):
         print(f"Database '{DB_FILE}' not found. Please run 'python create_db.py' first.")
