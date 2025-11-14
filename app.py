@@ -3,7 +3,7 @@ import sqlite3
 import json
 import os
 from datetime import datetime
-from rich import  as rprint
+from rich import print as rprint
 
 from huggingface_hub import InferenceClient
 
@@ -168,8 +168,8 @@ def generate_schema():
     else:
         return jsonify({"error": "Invalid schema type selected"}), 400
 
-    r("[bold blue]Generated Schema:[/bold blue]")
-    r(generated_schema)
+    rprint("[bold blue]Generated Schema:[/bold blue]")
+    rprint(generated_schema)
     return jsonify(generated_schema)
 
 @app.route('/get_template/<template_type>/<template_name>', methods=['GET'])
@@ -213,7 +213,8 @@ def generate_faq():
             max_new_tokens=200
         )
 
-        text = response['generated_text']
+        # Para tu versión y modelo, la respuesta es un string plano
+        text = response
 
         faqs = []
         for line in text.split('\n'):
@@ -232,5 +233,5 @@ def generate_faq():
 
 if __name__ == '__main__':
     if not os.path.exists(DB_FILE):
-        (f"Database '{DB_FILE}' not found. Please run 'python create_db.py' first.")
+        print(f"Database '{DB_FILE}' not found. Please run 'python create_db.py' first.")
     app.run(debug=True)
