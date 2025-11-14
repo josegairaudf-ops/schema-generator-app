@@ -208,11 +208,10 @@ def generate_faq():
 
     try:
         response = client.text_generation(
-            model="google/flan-t5-large",
-            inputs=prompt,
-            max_new_tokens=200
-        )
-
+    model="google/flan-t5-large",
+    prompt=prompt,
+    max_new_tokens=200
+)
         text = response[0]['generated_text']
 
         faqs = []
