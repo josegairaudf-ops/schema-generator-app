@@ -208,11 +208,12 @@ def generate_faq():
 
     try:
         response = client.text_generation(
-    model="google/flan-t5-large",
-    prompt=prompt,
-    max_new_tokens=200
-)
-        text = response[0]['generated_text']
+            model="google/flan-t5-large",
+            prompt=prompt,
+            max_new_tokens=200
+        )
+
+        text = response['generated_text']
 
         faqs = []
         for line in text.split('\n'):
@@ -224,9 +225,10 @@ def generate_faq():
 
     except Exception as e:
         import traceback
-        ('[HuggingFace Error]', e, flush=True)
-        (traceback.format_exc(), flush=True)
-        return jsonify({'error': f'Error generating FAQs: {e}'}), 500
+        tb = traceback.format_exc()
+        print('[HuggingFace Error]', e, flush=True)
+        print(tb, flush=True)
+        return jsonify({'error': f'Error generating FAQs: {e}', 'traceback': tb}), 500
 
 if __name__ == '__main__':
     if not os.path.exists(DB_FILE):
