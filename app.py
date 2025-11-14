@@ -3,7 +3,7 @@ import sqlite3
 import json
 import os
 from datetime import datetime
-from rich import print as rprint
+from rich import  as rprint
 
 from huggingface_hub import InferenceClient
 
@@ -168,8 +168,8 @@ def generate_schema():
     else:
         return jsonify({"error": "Invalid schema type selected"}), 400
 
-    rprint("[bold blue]Generated Schema:[/bold blue]")
-    rprint(generated_schema)
+    r("[bold blue]Generated Schema:[/bold blue]")
+    r(generated_schema)
     return jsonify(generated_schema)
 
 @app.route('/get_template/<template_type>/<template_name>', methods=['GET'])
@@ -224,11 +224,11 @@ def generate_faq():
 
     except Exception as e:
         import traceback
-        print('[HuggingFace Error]', e, flush=True)
-        print(traceback.format_exc(), flush=True)
+        ('[HuggingFace Error]', e, flush=True)
+        (traceback.format_exc(), flush=True)
         return jsonify({'error': f'Error generating FAQs: {e}'}), 500
 
 if __name__ == '__main__':
     if not os.path.exists(DB_FILE):
-        print(f"Database '{DB_FILE}' not found. Please run 'python create_db.py' first.")
+        (f"Database '{DB_FILE}' not found. Please run 'python create_db.py' first.")
     app.run(debug=True)
