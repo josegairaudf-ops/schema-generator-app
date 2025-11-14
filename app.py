@@ -5,8 +5,12 @@ import os
 from datetime import datetime
 from rich import print as rprint
 
-import openai
-openai.api_key = os.environ.get("OPENAI_API_KEY")
+from openai import OpenAI
+
+client = OpenAI(
+    api_key=os.environ.get("DEEPSEEK_API_KEY"),  # Variable de entorno para tu clave DeepSeek
+    base_url="https://api.deepseek.com"
+)
 
 app = Flask(__name__)
 DB_FILE = 'schemas_templates.db'
@@ -187,7 +191,7 @@ def get_schema_template(template_type, template_name):
     else:
         return jsonify({"error": "Template not found"}), 404
 
-# ----------- FAQ Generator OpenAI Endpoint ------------
+# ----------- FAQ Generator DeepSeek Endpoint ------------
 
 @app.route('/api/generate-faq', methods=['POST'])
 def generate_faq():
@@ -208,8 +212,8 @@ def generate_faq():
     )
 
     try:
-        response = openai.chat.completions.create(
-            model="gpt-3.5-turbo",  # Usa "gpt-4" si tu clave lo permite
+        response = client.chat.completions.create(
+            model="deepseek-chat",  # Modelo recomendado DeepSeek para chats
             messages=[
                 {"role": "system", "content": "Eres un generador de preguntas frecuentes para SEO."},
                 {"role": "user", "content": prompt}
@@ -219,7 +223,7 @@ def generate_faq():
         )
 
         text = response.choices[0].message.content.strip()
-        print("[OPENAI RAW]", text, flush=True)
+        print("[DEEPSEEK RAW]", text, flush=True)
 
         faqs = []
         for line in text.split('\n'):
@@ -231,7 +235,7 @@ def generate_faq():
         return jsonify({'faqs': faqs[:count]})
     except Exception as e:
         import traceback
-        print('[OpenAI Error]', e, flush=True)
+        print('[DeepSeek Error]', e, flush=True)
         print(traceback.format_exc(), flush=True)
         return jsonify({'error': f'Error generating FAQs: {e}'}), 500
 
