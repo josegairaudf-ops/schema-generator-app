@@ -8,7 +8,7 @@ from rich import print as rprint
 from openai import OpenAI
 
 client = OpenAI(
-    api_key=os.environ.get("DEEPSEEK_API_KEY"),  # Variable de entorno para tu clave DeepSeek
+    api_key=os.environ.get("OPENAI_API_KEY"),  # Variable de entorno para tu clave DeepSeek
     base_url="https://api.deepseek.com"
 )
 
