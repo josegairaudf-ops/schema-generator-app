@@ -5,12 +5,9 @@ import os
 from datetime import datetime
 from rich import print as rprint
 
-from openai import OpenAI
+from huggingface_hub import InferenceClient
 
-client = OpenAI(
-    api_key=os.environ.get("OPENAI_API_KEY"),  # Variable de entorno para tu clave DeepSeek
-    base_url="https://api.deepseek.com"
-)
+client = InferenceClient(token=os.environ.get("HF_TOKEN"))
 
 app = Flask(__name__)
 DB_FILE = 'schemas_templates.db'
@@ -191,7 +188,7 @@ def get_schema_template(template_type, template_name):
     else:
         return jsonify({"error": "Template not found"}), 404
 
-# ----------- FAQ Generator DeepSeek Endpoint ------------
+# ----------- FAQ Generator Hugging Face Endpoint ------------
 
 @app.route('/api/generate-faq', methods=['POST'])
 def generate_faq():
@@ -205,37 +202,30 @@ def generate_faq():
         return jsonify({'error': 'Missing title or summary'}), 400
 
     prompt = (
-        f"Given the article info below, suggest {count} concise, relevant FAQ questions for SEO. "
-        f"Just questions, no answers.\n\n"
-        f"Title: {title}\nSummary: {summary}\nKeywords: {keywords}\n"
-        + "\n".join([f"{i+1}." for i in range(count)])
+        f"Generate {count} concise SEO FAQ questions based on the following article information.\n"
+        f"Title: {title}\nSummary: {summary}\nKeywords: {keywords}"
     )
 
     try:
-        response = client.chat.completions.create(
-            model="deepseek-chat",  # Modelo recomendado DeepSeek para chats
-            messages=[
-                {"role": "system", "content": "Eres un generador de preguntas frecuentes para SEO."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.7,
-            max_tokens=100 + count * 35
+        response = client.text_generation(
+            model="google/flan-t5-large",
+            inputs=prompt,
+            max_new_tokens=200
         )
 
-        text = response.choices[0].message.content.strip()
-        print("[DEEPSEEK RAW]", text, flush=True)
+        text = response[0]['generated_text']
 
         faqs = []
         for line in text.split('\n'):
             line = line.strip()
-            if line and line[0].isdigit():
-                faqs.append(line.lstrip('1234567890. ').strip())
+            if line and (line[0].isdigit() or line.startswith('-') or line.startswith('*')):
+                faqs.append(line.lstrip('1234567890.-* ').strip())
         faqs = [q for q in faqs if q]
-        print("[FAQS]", faqs, flush=True)
         return jsonify({'faqs': faqs[:count]})
+
     except Exception as e:
         import traceback
-        print('[DeepSeek Error]', e, flush=True)
+        print('[HuggingFace Error]', e, flush=True)
         print(traceback.format_exc(), flush=True)
         return jsonify({'error': f'Error generating FAQs: {e}'}), 500
 
