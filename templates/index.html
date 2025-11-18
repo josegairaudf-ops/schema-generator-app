@@ -313,22 +313,28 @@
       const schemaGeneratorForm = document.getElementById('schemaForm');
       const generatedSchemaOutput = document.getElementById('generatedSchemaOutput');
       schemaGeneratorForm.addEventListener('submit', async function (e) {
-        e.preventDefault();
-        const formData = new FormData(schemaGeneratorForm);
-        const response = await fetch('/generate_schema', {
-          method: 'POST',
-          body: formData
-        });
+  e.preventDefault();
+  const formData = new FormData(schemaGeneratorForm);
+  const wrapScript = document.getElementById('wrapScriptTag').checked;
 
-        if (response.ok) {
-          const schema = await response.json();
-          generatedSchemaOutput.textContent = JSON.stringify(schema, null, 2);
-        } else {
-          const error = await response.json();
-          generatedSchemaOutput.textContent = `Error: ${error.error || 'Something went wrong'}`;
-        }
-      });
+  const response = await fetch('/generate_schema', {
+    method: 'POST',
+    body: formData
+  });
 
+  let schemaText = '';
+  if (response.ok) {
+    const schema = await response.json();
+    schemaText = JSON.stringify(schema, null, 2);
+    if (wrapScript) {
+      schemaText = `<script type="application/ld+json">\n${schemaText}\n</script>`;
+    }
+    generatedSchemaOutput.textContent = schemaText;
+  } else {
+    const error = await response.json();
+    generatedSchemaOutput.textContent = `Error: ${error.error || 'Something went wrong'}`;
+  }
+});
       // Copiar resultado
       document.getElementById("copyBtn").addEventListener("click", function () {
         const jsonText = document.getElementById("generatedSchemaOutput").innerText;
