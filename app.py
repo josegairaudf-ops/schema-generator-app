@@ -12,8 +12,6 @@ client = InferenceClient(token=os.environ.get("HF_TOKEN"))
 app = Flask(__name__)
 DB_FILE = 'schemas_templates.db'
 
-# --- Helper functions for database interaction ---
-
 def get_db_connection():
     conn = sqlite3.connect(DB_FILE)
     conn.row_factory = sqlite3.Row
@@ -26,8 +24,6 @@ def get_template(table_name, template_name):
     template = cursor.fetchone()
     conn.close()
     return template
-
-# --- Schema Generation Functions ---
 
 def generate_faq_schema(data):
     questions_answers = []
@@ -148,8 +144,6 @@ def generate_review_schema(data):
     }
     return schema
 
-# --- Flask Routes ---
-
 @app.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
@@ -194,16 +188,13 @@ def get_schema_template(template_type, template_name):
     else:
         return jsonify({"error": "Template not found"}), 404
 
-# ----------- FAQ Generator Hugging Face Endpoint ------------
-
 @app.route('/api/generate-faq', methods=['POST'])
 def generate_faq():
     data = request.get_json()
     title = data.get('title')
     summary = data.get('summary')
     keywords = data.get('keywords', '')
-    count = int(data.get('count', 4))  # Default 4 if not provided
-
+    count = int(data.get('count', 4))
     if not title or not summary:
         return jsonify({'error': 'Missing title or summary'}), 400
 
@@ -211,7 +202,6 @@ def generate_faq():
         f"Generate {count} concise SEO FAQ questions based on the following article information.\n"
         f"Title: {title}\nSummary: {summary}\nKeywords: {keywords}"
     )
-
     try:
         response = client.text_generation(
             model="google/flan-t5-large",
@@ -219,7 +209,6 @@ def generate_faq():
             max_new_tokens=200
         )
         text = response.get('generated_text') if isinstance(response, dict) else str(response)
-
         faqs = []
         for line in text.split('\n'):
             line = line.strip()
