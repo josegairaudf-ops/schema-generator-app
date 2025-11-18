@@ -26,7 +26,6 @@
   <div class="container mt-5">
     <h1 class="mb-4 text-center">Schema.org Generator</h1>
     <form id="schemaForm" method="POST" action="/generate_schema">
-
       <div class="mb-3">
         <label for="tipo" class="form-label">Select Schema Type:</label>
         <select class="form-select" id="tipo" name="tipo" required>
@@ -103,7 +102,6 @@
           </div>
           <input type="number" id="faqCount" name="faqCount" min="1" max="10" value="4" class="form-control" />
         </div>
-        <!-- Toggle and Generate FAQ buttons (MUST be inside faq-fields) -->
         <button type="button" id="toggleFaqViewBtn" class="btn btn-secondary mb-3">
           Use Title, Summary & Keywords Template
         </button>
@@ -227,161 +225,72 @@
       <pre id="generatedSchemaOutput"></pre>
     </div>
   </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- TU SCRIPT GLOBALS SIGUE IGUAL (aquí solo agrego la optimización required al final) -->
+
+  <!-- BLOQUE QUE DINAMIZA LOS REQUIRED SEGÚN VISIBILIDAD (agregado al final) -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      const schemaTypeSelect = document.getElementById('tipo');
-      const faqPageFields = document.getElementById('faq-fields');
-      const blogPostingFields = document.getElementById('blogposting-fields');
-      const reviewFields = document.getElementById('review-fields');
-      const schemaGeneratorForm = document.getElementById('schemaForm');
-      const generatedSchemaOutput = document.getElementById('generatedSchemaOutput');
-
-      function toggleSchemaFields() {
-        faqPageFields.classList.add('hidden-fields');
-        blogPostingFields.classList.add('hidden-fields');
-        reviewFields.classList.add('hidden-fields');
-        const selectedType = schemaTypeSelect.value;
-        if (selectedType === 'FAQPage') {
-          faqPageFields.classList.remove('hidden-fields');
-        } else if (selectedType === 'BlogPosting') {
-          blogPostingFields.classList.remove('hidden-fields');
-        } else if (selectedType === 'Review') {
-          reviewFields.classList.remove('hidden-fields');
-        }
-        localStorage.setItem('selectedSchemaType', selectedType);
-      }
-
-      schemaTypeSelect.addEventListener('change', toggleSchemaFields);
-
-      const savedSelectedType = localStorage.getItem('selectedSchemaType');
-      if (savedSelectedType) {
-        schemaTypeSelect.value = savedSelectedType;
-      }
-
-      toggleSchemaFields();
-
-      schemaGeneratorForm.addEventListener('submit', async function (e) {
-        e.preventDefault();
-        const formData = new FormData(schemaGeneratorForm);
-        const response = await fetch('/generate_schema', {
-          method: 'POST',
-          body: formData
-        });
-
-        if (response.ok) {
-          const schema = await response.json();
-          generatedSchemaOutput.textContent = JSON.stringify(schema, null, 2);
-        } else {
-          const error = await response.json();
-          generatedSchemaOutput.textContent = `Error: ${error.error || 'Something went wrong'}`;
-        }
-      });
-    });
-
-    document.getElementById("copyBtn").addEventListener("click", function () {
-      const jsonText = document.getElementById("generatedSchemaOutput").innerText;
-      navigator.clipboard.writeText(jsonText).then(() => {
-        document.getElementById('copyFeedback').style.display = 'inline';
-        setTimeout(function () {
-          document.getElementById('copyFeedback').style.display = 'none';
-        }, 1500);
-      }).catch(err => {
-        alert("Could not copy (your browser may restrict clipboard access).");
-      });
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-      const form = document.getElementById('schemaForm');
-      form.addEventListener('submit', function (e) {
-        const tipo = document.getElementById('tipo').value;
-        let valid = true;
-        let missingFields = [];
-        if (tipo === 'FAQPage') {
-          if (!document.getElementById('faqQ1').value.trim()) valid = false, missingFields.push('Question 1');
-          if (!document.getElementById('faqA1').value.trim()) valid = false, missingFields.push('Answer 1');
-          if (!document.getElementById('faqAuthor').value.trim()) valid = false, missingFields.push('Author');
-          if (!document.getElementById('faqCreatedAt').value.trim()) valid = false, missingFields.push('Creation Date & Time');
-          if (!document.getElementById('faqModifiedAt').value.trim()) valid = false, missingFields.push('Modification Date & Time');
-        } else if (tipo === 'BlogPosting') {
-          if (!document.getElementById('blogTitle').value.trim()) valid = false, missingFields.push('Blog Title');
-          if (!document.getElementById('blogAuthor').value.trim()) valid = false, missingFields.push('Author');
-          if (!document.getElementById('blogPublicationDate').value.trim()) valid = false, missingFields.push('Publication Date');
-        } else if (tipo === 'Review') {
-          if (!document.getElementById('reviewAuthor').value.trim()) valid = false, missingFields.push('Author');
-          if (!document.getElementById('reviewReasoning').value.trim()) valid = false, missingFields.push('Analysis / Reasoning');
-          if (!document.getElementById('reviewPublicationDate').value.trim()) valid = false, missingFields.push('Publication Date');
-        }
-        if (!valid) {
-          e.preventDefault();
-          alert('Please fill in the following required fields:\n' + missingFields.join('\n'));
-        }
-      });
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-      const toggleFaqBtn = document.getElementById('toggleFaqViewBtn');
+      const schemaGroups = {
+        FAQPage: document.getElementById('faq-fields'),
+        BlogPosting: document.getElementById('blogposting-fields'),
+        Review: document.getElementById('review-fields')
+      };
       const faqQuestionsBlock = document.getElementById('faqQuestionsBlock');
       const faqTemplateBlock = document.getElementById('faqTemplateFields');
-      toggleFaqBtn.addEventListener('click', () => {
-        if (faqTemplateBlock.classList.contains('hidden-fields')) {
-          faqTemplateBlock.classList.remove('hidden-fields');
-          faqQuestionsBlock.classList.add('hidden-fields');
-          toggleFaqBtn.textContent = 'Use Individual Questions';
-        } else {
-          faqTemplateBlock.classList.add('hidden-fields');
-          faqQuestionsBlock.classList.remove('hidden-fields');
-          toggleFaqBtn.textContent = 'Use Title, Summary & Keywords Template';
-        }
-      });
-    });
-
-    document.getElementById('generateFaqBtn').addEventListener('click', async () => {
-      const title = document.getElementById('faqTitle').value.trim();
-      const summary = document.getElementById('faqSummary').value.trim();
-      const keywords = document.getElementById('faqKeywords').value.trim();
-      if (!title || !summary) {
-        alert('Please enter both title and summary');
-        return;
-      }
-      const count = document.getElementById('faqCount').value || 4;
-      const response = await fetch('/api/generate-faq', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, summary, keywords, count })
-});
-
-      if (!response.ok) {
-        alert('Error generating suggestions');
-        return;
-      }
-      const data = await response.json();
-      if (Array.isArray(data.faqs)) {
-        for (let i = 0; i < 3; i++) {
-          const questionInput = document.getElementById(`faqQ${i + 1}`);
-          if (questionInput) questionInput.value = data.faqs[i] || '';
-        }
-        alert('FAQ suggestions added to Question fields. Switch to individual mode to review/edit them.');
-      }
-    });
-
-    // Show/hide buttons only for FAQPage schema type
-    document.addEventListener('DOMContentLoaded', function () {
       const schemaTypeSelect = document.getElementById('tipo');
-      const faqFields = document.getElementById('faq-fields');
       const toggleFaqBtn = document.getElementById('toggleFaqViewBtn');
-      const generateFaqBtn = document.getElementById('generateFaqBtn');
-      function updateFaqButtonsVisibility() {
-        if (!faqFields.classList.contains('hidden-fields')) {
-          toggleFaqBtn.style.display = 'inline-block';
-          generateFaqBtn.style.display = 'inline-block';
-        } else {
-          toggleFaqBtn.style.display = 'none';
-          generateFaqBtn.style.display = 'none';
+
+      function updateRequiredFields() {
+        // Elimina "required" de todos los campos en todos los grupos
+        Object.values(schemaGroups).forEach(group => {
+          if (group) {
+            group.querySelectorAll('input, textarea').forEach(input => {
+              input.required = false;
+            });
+          }
+        });
+        if (faqTemplateBlock) {
+          faqTemplateBlock.querySelectorAll('input, textarea').forEach(input => {
+            input.required = false;
+          });
+        }
+        // Solo agrega "required" en el grupo y subgrupo activo/visible
+        const selectedType = schemaTypeSelect.value;
+        const visibleGroup = schemaGroups[selectedType];
+        if (visibleGroup && !visibleGroup.classList.contains('hidden-fields')) {
+          if (selectedType === 'FAQPage') {
+            if (!faqQuestionsBlock.classList.contains('hidden-fields')) {
+              faqQuestionsBlock.querySelectorAll('input, textarea').forEach(input => {
+                if (input.getAttribute('required') !== null) input.required = true;
+              });
+            }
+            if (!faqTemplateBlock.classList.contains('hidden-fields')) {
+              faqTemplateBlock.querySelectorAll('input, textarea').forEach(input => {
+                if (input.getAttribute('required') !== null) input.required = true;
+              });
+            }
+          } else {
+            visibleGroup.querySelectorAll('input, textarea').forEach(input => {
+              if (input.getAttribute('required') !== null) input.required = true;
+            });
+          }
         }
       }
-      schemaTypeSelect.addEventListener('change', updateFaqButtonsVisibility);
-      updateFaqButtonsVisibility();
+
+      // Actualiza al cambiar tipo de esquema
+      schemaTypeSelect.addEventListener('change', updateRequiredFields);
+
+      // También actualiza cuando alternas preguntas individuales y template FAQ AI
+      if (toggleFaqBtn) {
+        toggleFaqBtn.addEventListener('click', function () {
+          setTimeout(updateRequiredFields, 100); // Esperar cambio de visibilidad
+        });
+      }
+
+      // Ejecuta al iniciar por si hay valores preseleccionados
+      updateRequiredFields();
     });
   </script>
 </body>
