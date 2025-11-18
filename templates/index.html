@@ -25,7 +25,7 @@
 <body>
   <div class="container mt-5">
     <h1 class="mb-4 text-center">Schema.org Generator</h1>
-    <form id="schemaForm" method="POST" action="/generate_schema">
+    <form id="schemaForm" method="POST">
       <div class="mb-3">
         <label for="tipo" class="form-label">Select Schema Type:</label>
         <select class="form-select" id="tipo" name="tipo" required>
@@ -225,11 +225,12 @@
       <pre id="generatedSchemaOutput"></pre>
     </div>
   </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  
-  <!-- VISIBILIDAD DINÁMICA Y CAMPOS REQUIRED -->
+
   <script>
     document.addEventListener('DOMContentLoaded', function () {
+      // Visibilidad dinámica de bloques
       const schemaTypeSelect = document.getElementById('tipo');
       const faqPageFields = document.getElementById('faq-fields');
       const blogPostingFields = document.getElementById('blogposting-fields');
@@ -253,7 +254,6 @@
         localStorage.setItem('selectedSchemaType', selectedType);
         updateRequiredFields();
       }
-      
       function updateRequiredFields() {
         [faqPageFields, blogPostingFields, reviewFields].forEach(group => {
           if (group) group.querySelectorAll('input, textarea').forEach(el => el.required = false);
@@ -284,7 +284,6 @@
           });
         }
       }
-
       schemaTypeSelect.addEventListener('change', toggleSchemaFields);
 
       const savedSelectedType = localStorage.getItem('selectedSchemaType');
@@ -309,6 +308,84 @@
           setTimeout(updateRequiredFields, 100);
         });
       }
+
+      // Submit del formulario SOLO por JS, muestra el resultado en la caja abajo
+      const schemaGeneratorForm = document.getElementById('schemaForm');
+      const generatedSchemaOutput = document.getElementById('generatedSchemaOutput');
+      schemaGeneratorForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const formData = new FormData(schemaGeneratorForm);
+        const response = await fetch('/generate_schema', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (response.ok) {
+          const schema = await response.json();
+          generatedSchemaOutput.textContent = JSON.stringify(schema, null, 2);
+        } else {
+          const error = await response.json();
+          generatedSchemaOutput.textContent = `Error: ${error.error || 'Something went wrong'}`;
+        }
+      });
+
+      // Copiar resultado
+      document.getElementById("copyBtn").addEventListener("click", function () {
+        const jsonText = document.getElementById("generatedSchemaOutput").innerText;
+        navigator.clipboard.writeText(jsonText).then(() => {
+          document.getElementById('copyFeedback').style.display = 'inline';
+          setTimeout(function () {
+            document.getElementById('copyFeedback').style.display = 'none';
+          }, 1500);
+        }).catch(err => {
+          alert("Could not copy (your browser may restrict clipboard access).");
+        });
+      });
+
+      // Botones FAQ AI vs Individual
+      document.getElementById('generateFaqBtn').addEventListener('click', async () => {
+        const title = document.getElementById('faqTitle').value.trim();
+        const summary = document.getElementById('faqSummary').value.trim();
+        const keywords = document.getElementById('faqKeywords').value.trim();
+        if (!title || !summary) {
+          alert('Please enter both title and summary');
+          return;
+        }
+        const count = document.getElementById('faqCount').value || 4;
+        const response = await fetch('/api/generate-faq', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, summary, keywords, count })
+        });
+        if (!response.ok) {
+          alert('Error generating suggestions');
+          return;
+        }
+        const data = await response.json();
+        if (Array.isArray(data.faqs)) {
+          for (let i = 0; i < 3; i++) {
+            const questionInput = document.getElementById(`faqQ${i + 1}`);
+            if (questionInput) questionInput.value = data.faqs[i] || '';
+          }
+          alert('FAQ suggestions added to Question fields. Switch to individual mode to review/edit them.');
+        }
+      });
+
+      // Mostrar/ocultar botones para FAQPage
+      const faqFields = document.getElementById('faq-fields');
+      function updateFaqButtonsVisibility() {
+        const toggleFaqBtn = document.getElementById('toggleFaqViewBtn');
+        const generateFaqBtn = document.getElementById('generateFaqBtn');
+        if (!faqFields.classList.contains('hidden-fields')) {
+          toggleFaqBtn.style.display = 'inline-block';
+          generateFaqBtn.style.display = 'inline-block';
+        } else {
+          toggleFaqBtn.style.display = 'none';
+          generateFaqBtn.style.display = 'none';
+        }
+      }
+      schemaTypeSelect.addEventListener('change', updateFaqButtonsVisibility);
+      updateFaqButtonsVisibility();
     });
   </script>
 </body>
