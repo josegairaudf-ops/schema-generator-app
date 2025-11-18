@@ -225,72 +225,90 @@
       <pre id="generatedSchemaOutput"></pre>
     </div>
   </div>
-
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- TU SCRIPT GLOBALS SIGUE IGUAL (aquí solo agrego la optimización required al final) -->
-
-  <!-- BLOQUE QUE DINAMIZA LOS REQUIRED SEGÚN VISIBILIDAD (agregado al final) -->
+  
+  <!-- VISIBILIDAD DINÁMICA Y CAMPOS REQUIRED -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      const schemaGroups = {
-        FAQPage: document.getElementById('faq-fields'),
-        BlogPosting: document.getElementById('blogposting-fields'),
-        Review: document.getElementById('review-fields')
-      };
+      const schemaTypeSelect = document.getElementById('tipo');
+      const faqPageFields = document.getElementById('faq-fields');
+      const blogPostingFields = document.getElementById('blogposting-fields');
+      const reviewFields = document.getElementById('review-fields');
       const faqQuestionsBlock = document.getElementById('faqQuestionsBlock');
       const faqTemplateBlock = document.getElementById('faqTemplateFields');
-      const schemaTypeSelect = document.getElementById('tipo');
       const toggleFaqBtn = document.getElementById('toggleFaqViewBtn');
 
+      function toggleSchemaFields() {
+        faqPageFields.classList.add('hidden-fields');
+        blogPostingFields.classList.add('hidden-fields');
+        reviewFields.classList.add('hidden-fields');
+        const selectedType = schemaTypeSelect.value;
+        if (selectedType === 'FAQPage') {
+          faqPageFields.classList.remove('hidden-fields');
+        } else if (selectedType === 'BlogPosting') {
+          blogPostingFields.classList.remove('hidden-fields');
+        } else if (selectedType === 'Review') {
+          reviewFields.classList.remove('hidden-fields');
+        }
+        localStorage.setItem('selectedSchemaType', selectedType);
+        updateRequiredFields();
+      }
+      
       function updateRequiredFields() {
-        // Elimina "required" de todos los campos en todos los grupos
-        Object.values(schemaGroups).forEach(group => {
-          if (group) {
-            group.querySelectorAll('input, textarea').forEach(input => {
-              input.required = false;
+        [faqPageFields, blogPostingFields, reviewFields].forEach(group => {
+          if (group) group.querySelectorAll('input, textarea').forEach(el => el.required = false);
+        });
+        if (faqTemplateBlock) faqTemplateBlock.querySelectorAll('input, textarea').forEach(el => el.required = false);
+
+        const selectedType = schemaTypeSelect.value;
+        if (selectedType === 'FAQPage' && !faqPageFields.classList.contains('hidden-fields')) {
+          if (!faqQuestionsBlock.classList.contains('hidden-fields')) {
+            faqQuestionsBlock.querySelectorAll('input, textarea').forEach(el => {
+              if (el.getAttribute('required') !== null) el.required = true;
             });
           }
-        });
-        if (faqTemplateBlock) {
-          faqTemplateBlock.querySelectorAll('input, textarea').forEach(input => {
-            input.required = false;
+          if (!faqTemplateBlock.classList.contains('hidden-fields')) {
+            faqTemplateBlock.querySelectorAll('input, textarea').forEach(el => {
+              if (el.getAttribute('required') !== null) el.required = true;
+            });
+          }
+        }
+        if (selectedType === 'BlogPosting' && !blogPostingFields.classList.contains('hidden-fields')) {
+          blogPostingFields.querySelectorAll('input, textarea').forEach(el => {
+            if (el.getAttribute('required') !== null) el.required = true;
           });
         }
-        // Solo agrega "required" en el grupo y subgrupo activo/visible
-        const selectedType = schemaTypeSelect.value;
-        const visibleGroup = schemaGroups[selectedType];
-        if (visibleGroup && !visibleGroup.classList.contains('hidden-fields')) {
-          if (selectedType === 'FAQPage') {
-            if (!faqQuestionsBlock.classList.contains('hidden-fields')) {
-              faqQuestionsBlock.querySelectorAll('input, textarea').forEach(input => {
-                if (input.getAttribute('required') !== null) input.required = true;
-              });
-            }
-            if (!faqTemplateBlock.classList.contains('hidden-fields')) {
-              faqTemplateBlock.querySelectorAll('input, textarea').forEach(input => {
-                if (input.getAttribute('required') !== null) input.required = true;
-              });
-            }
-          } else {
-            visibleGroup.querySelectorAll('input, textarea').forEach(input => {
-              if (input.getAttribute('required') !== null) input.required = true;
-            });
-          }
+        if (selectedType === 'Review' && !reviewFields.classList.contains('hidden-fields')) {
+          reviewFields.querySelectorAll('input, textarea').forEach(el => {
+            if (el.getAttribute('required') !== null) el.required = true;
+          });
         }
       }
 
-      // Actualiza al cambiar tipo de esquema
-      schemaTypeSelect.addEventListener('change', updateRequiredFields);
+      schemaTypeSelect.addEventListener('change', toggleSchemaFields);
 
-      // También actualiza cuando alternas preguntas individuales y template FAQ AI
-      if (toggleFaqBtn) {
-        toggleFaqBtn.addEventListener('click', function () {
-          setTimeout(updateRequiredFields, 100); // Esperar cambio de visibilidad
-        });
+      const savedSelectedType = localStorage.getItem('selectedSchemaType');
+      if (savedSelectedType) {
+        schemaTypeSelect.value = savedSelectedType;
       }
 
-      // Ejecuta al iniciar por si hay valores preseleccionados
-      updateRequiredFields();
+      toggleSchemaFields();
+
+      // Alternar entre preguntas individuales y template FAQ AI
+      if (toggleFaqBtn) {
+        toggleFaqBtn.addEventListener('click', function () {
+          if (faqTemplateBlock.classList.contains('hidden-fields')) {
+            faqTemplateBlock.classList.remove('hidden-fields');
+            faqQuestionsBlock.classList.add('hidden-fields');
+            toggleFaqBtn.textContent = 'Use Individual Questions';
+          } else {
+            faqTemplateBlock.classList.add('hidden-fields');
+            faqQuestionsBlock.classList.remove('hidden-fields');
+            toggleFaqBtn.textContent = 'Use Title, Summary & Keywords Template';
+          }
+          setTimeout(updateRequiredFields, 100);
+        });
+      }
     });
   </script>
 </body>
