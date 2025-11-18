@@ -35,7 +35,6 @@
           <option value="Review">Review (Betting Picks)</option>
         </select>
       </div>
-
       <!-- FAQ Schema Block -->
       <div id="faq-fields" class="schema-fields hidden-fields">
         <h2 class="mt-4 mb-3">FAQPage Schema Fields</h2>
@@ -51,7 +50,6 @@
           <label for="faqModifiedAt" class="form-label">Modification Date & Time:</label>
           <input type="datetime-local" class="form-control" id="faqModifiedAt" name="faqModifiedAt" required />
         </div>
-
         <div id="faqQuestionsBlock">
           <div class="mb-3">
             <label for="faqQ1" class="form-label">Question 1:</label>
@@ -109,7 +107,6 @@
           Generate FAQ Suggestions
         </button>
       </div>
-
       <!-- BlogPosting Schema Block -->
       <div id="blogposting-fields" class="schema-fields hidden-fields">
         <h2 class="mt-4 mb-3">BlogPosting Schema Fields</h2>
@@ -153,7 +150,6 @@
         <input type="text" class="form-control mb-2" id="eventTeam1" name="eventTeam1" placeholder="Team 1" />
         <input type="text" class="form-control mb-2" id="eventTeam2" name="eventTeam2" placeholder="Team 2" />
       </div>
-
       <!-- Review Schema Block -->
       <div id="review-fields" class="schema-fields hidden-fields">
         <h2 class="mt-4 mb-3">Review Schema Fields (Betting Picks)</h2>
@@ -227,10 +223,9 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      // Visibilidad dinámica de bloques
+      // Visibilidad de bloques principales
       const schemaTypeSelect = document.getElementById('tipo');
       const faqPageFields = document.getElementById('faq-fields');
       const blogPostingFields = document.getElementById('blogposting-fields');
@@ -254,6 +249,7 @@
         localStorage.setItem('selectedSchemaType', selectedType);
         updateRequiredFields();
       }
+
       function updateRequiredFields() {
         [faqPageFields, blogPostingFields, reviewFields].forEach(group => {
           if (group) group.querySelectorAll('input, textarea').forEach(el => el.required = false);
@@ -284,6 +280,7 @@
           });
         }
       }
+
       schemaTypeSelect.addEventListener('change', toggleSchemaFields);
 
       const savedSelectedType = localStorage.getItem('selectedSchemaType');
@@ -309,32 +306,31 @@
         });
       }
 
-      // Submit del formulario SOLO por JS, muestra el resultado en la caja abajo
+      // Botón generar schema
       const schemaGeneratorForm = document.getElementById('schemaForm');
       const generatedSchemaOutput = document.getElementById('generatedSchemaOutput');
       schemaGeneratorForm.addEventListener('submit', async function (e) {
-  e.preventDefault();
-  const formData = new FormData(schemaGeneratorForm);
-  const wrapScript = document.getElementById('wrapScriptTag').checked;
+        e.preventDefault();
+        const formData = new FormData(schemaGeneratorForm);
+        const wrapScript = document.getElementById('wrapScriptTag').checked;
+        const response = await fetch('/generate_schema', {
+          method: 'POST',
+          body: formData
+        });
+        let schemaText = '';
+        if (response.ok) {
+          const schema = await response.json();
+          schemaText = JSON.stringify(schema, null, 2);
+          if (wrapScript) {
+            schemaText = `<script type="application/ld+json">\n${schemaText}\n</script>`;
+          }
+          generatedSchemaOutput.textContent = schemaText;
+        } else {
+          const error = await response.json();
+          generatedSchemaOutput.textContent = `Error: ${error.error || 'Something went wrong'}`;
+        }
+      });
 
-  const response = await fetch('/generate_schema', {
-    method: 'POST',
-    body: formData
-  });
-
-  let schemaText = '';
-  if (response.ok) {
-    const schema = await response.json();
-    schemaText = JSON.stringify(schema, null, 2);
-    if (wrapScript) {
-      schemaText = `<script type="application/ld+json">\n${schemaText}\n</script>`;
-    }
-    generatedSchemaOutput.textContent = schemaText;
-  } else {
-    const error = await response.json();
-    generatedSchemaOutput.textContent = `Error: ${error.error || 'Something went wrong'}`;
-  }
-});
       // Copiar resultado
       document.getElementById("copyBtn").addEventListener("click", function () {
         const jsonText = document.getElementById("generatedSchemaOutput").innerText;
@@ -376,7 +372,6 @@
           alert('FAQ suggestions added to Question fields. Switch to individual mode to review/edit them.');
         }
       });
-
       // Mostrar/ocultar botones para FAQPage
       const faqFields = document.getElementById('faq-fields');
       function updateFaqButtonsVisibility() {
