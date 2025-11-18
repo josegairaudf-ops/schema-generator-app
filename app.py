@@ -156,14 +156,20 @@ def index():
 
 @app.route('/generate_schema', methods=['POST'])
 def generate_schema():
-    schema_type = request.form.get('schemaType')
+    schema_type = request.form.get('tipo')
     form_data = request.form.to_dict()
     generated_schema = {}
     if schema_type == 'FAQPage':
+        if not form_data.get('faqQ1') or not form_data.get('faqA1'):
+            return jsonify({'error': 'At least one FAQ question and answer is required'}), 400
         generated_schema = generate_faq_schema(form_data)
     elif schema_type == 'BlogPosting':
+        if not form_data.get('blogTitle') or not form_data.get('blogAuthor'):
+            return jsonify({'error': 'Blog title and author are required'}), 400
         generated_schema = generate_blog_schema(form_data)
     elif schema_type == 'Review':
+        if not form_data.get('reviewAuthor') or not form_data.get('reviewReasoning'):
+            return jsonify({'error': 'Review author and reasoning are required'}), 400
         generated_schema = generate_review_schema(form_data)
     else:
         return jsonify({"error": "Invalid schema type selected"}), 400
@@ -212,9 +218,7 @@ def generate_faq():
             prompt=prompt,
             max_new_tokens=200
         )
-
-        # Para tu versión y modelo, la respuesta es un string plano
-        text = response
+        text = response.get('generated_text') if isinstance(response, dict) else str(response)
 
         faqs = []
         for line in text.split('\n'):
