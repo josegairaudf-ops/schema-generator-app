@@ -35,6 +35,7 @@
           <option value="Review">Review (Betting Picks)</option>
         </select>
       </div>
+
       <!-- FAQ Schema Block -->
       <div id="faq-fields" class="schema-fields hidden-fields">
         <h2 class="mt-4 mb-3">FAQPage Schema Fields</h2>
@@ -50,7 +51,7 @@
           <label for="faqModifiedAt" class="form-label">Modification Date & Time:</label>
           <input type="datetime-local" class="form-control" id="faqModifiedAt" name="faqModifiedAt" required />
         </div>
-        <div id="faqQuestionsBlock">
+        <div>
           <div class="mb-3">
             <label for="faqQ1" class="form-label">Question 1:</label>
             <input type="text" class="form-control" id="faqQ1" name="faqQ1" placeholder="What is Schema.org?" required />
@@ -61,7 +62,7 @@
           </div>
           <div class="mb-3">
             <label for="faqQ2" class="form-label">Question 2:</label>
-            <input type="text" class="form-control" id="faqQ2" name="faqQ2" placeholder="What is Schema.org?" required />
+            <input type="text" class="form-control" id="faqQ2" name="faqQ2" placeholder="Next question..." required />
           </div>
           <div class="mb-3">
             <label for="faqA2" class="form-label">Answer 2:</label>
@@ -69,44 +70,23 @@
           </div>
           <div class="mb-3">
             <label for="faqQ3" class="form-label">Question 3:</label>
-            <input type="text" class="form-control" id="faqQ3" name="faqQ3" placeholder="What is Schema.org?" required />
+            <input type="text" class="form-control" id="faqQ3" name="faqQ3" placeholder="Next question..." />
           </div>
           <div class="mb-3">
             <label for="faqA3" class="form-label">Answer 3:</label>
-            <textarea class="form-control" id="faqA3" name="faqA3" rows="3" placeholder="Answer here..." required></textarea>
+            <textarea class="form-control" id="faqA3" name="faqA3" rows="3" placeholder="Answer here..."></textarea>
           </div>
           <div class="mb-3">
             <label for="faqQ4" class="form-label">Question 4:</label>
-            <input type="text" class="form-control" id="faqQ4" name="faqQ4" placeholder="What is Schema.org?" />
+            <input type="text" class="form-control" id="faqQ4" name="faqQ4" placeholder="Next question..." />
           </div>
           <div class="mb-3">
             <label for="faqA4" class="form-label">Answer 4:</label>
             <textarea class="form-control" id="faqA4" name="faqA4" rows="3" placeholder="Answer here..."></textarea>
           </div>
         </div>
-        <!-- Template block for FAQ suggestion -->
-        <div id="faqTemplateFields" class="hidden-fields">
-          <div class="mb-3">
-            <label for="faqTitle" class="form-label">Title:</label>
-            <input type="text" class="form-control" id="faqTitle" name="faqTitle" placeholder="Enter article title" />
-          </div>
-          <div class="mb-3">
-            <label for="faqSummary" class="form-label">Summary:</label>
-            <textarea class="form-control" id="faqSummary" name="faqSummary" rows="3" placeholder="Enter article summary"></textarea>
-          </div>
-          <div class="mb-3">
-            <label for="faqKeywords" class="form-label">Keywords:</label>
-            <input type="text" class="form-control" id="faqKeywords" name="faqKeywords" placeholder="Enter keywords to target" />
-          </div>
-          <input type="number" id="faqCount" name="faqCount" min="1" max="10" value="4" class="form-control" />
-        </div>
-        <button type="button" id="toggleFaqViewBtn" class="btn btn-secondary mb-3">
-          Use Title, Summary & Keywords Template
-        </button>
-        <button type="button" id="generateFaqBtn" class="btn btn-info mb-3">
-          Generate FAQ Suggestions
-        </button>
       </div>
+
       <!-- BlogPosting Schema Block -->
       <div id="blogposting-fields" class="schema-fields hidden-fields">
         <h2 class="mt-4 mb-3">BlogPosting Schema Fields</h2>
@@ -150,6 +130,7 @@
         <input type="text" class="form-control mb-2" id="eventTeam1" name="eventTeam1" placeholder="Team 1" />
         <input type="text" class="form-control mb-2" id="eventTeam2" name="eventTeam2" placeholder="Team 2" />
       </div>
+
       <!-- Review Schema Block -->
       <div id="review-fields" class="schema-fields hidden-fields">
         <h2 class="mt-4 mb-3">Review Schema Fields (Betting Picks)</h2>
@@ -230,17 +211,11 @@
       const faqPageFields = document.getElementById('faq-fields');
       const blogPostingFields = document.getElementById('blogposting-fields');
       const reviewFields = document.getElementById('review-fields');
-      const faqQuestionsBlock = document.getElementById('faqQuestionsBlock');
-      const faqTemplateBlock = document.getElementById('faqTemplateFields');
-      const toggleFaqBtn = document.getElementById('toggleFaqViewBtn');
 
       function toggleSchemaFields() {
-        // Ocultar todos los bloques de campos
         faqPageFields.classList.add('hidden-fields');
         blogPostingFields.classList.add('hidden-fields');
         reviewFields.classList.add('hidden-fields');
-
-        // Mostrar el bloque correspondiente al tipo seleccionado
         const selectedType = schemaTypeSelect.value;
         if (selectedType === 'FAQPage') {
           faqPageFields.classList.remove('hidden-fields');
@@ -249,32 +224,20 @@
         } else if (selectedType === 'Review') {
           reviewFields.classList.remove('hidden-fields');
         }
-
-        // Guardar la selección en localStorage
         localStorage.setItem('selectedSchemaType', selectedType);
         updateRequiredFields();
       }
 
       function updateRequiredFields() {
-        // Desactivar el atributo required en todos los campos
         [faqPageFields, blogPostingFields, reviewFields].forEach(group => {
           if (group) group.querySelectorAll('input, textarea').forEach(el => el.required = false);
         });
-        if (faqTemplateBlock) faqTemplateBlock.querySelectorAll('input, textarea').forEach(el => el.required = false);
-
-        // Activar el atributo required solo en los campos visibles
         const selectedType = schemaTypeSelect.value;
         if (selectedType === 'FAQPage' && !faqPageFields.classList.contains('hidden-fields')) {
-          if (!faqQuestionsBlock.classList.contains('hidden-fields')) {
-            faqQuestionsBlock.querySelectorAll('input, textarea').forEach(el => {
-              if (el.getAttribute('required') !== null) el.required = true;
-            });
-          }
-          if (!faqTemplateBlock.classList.contains('hidden-fields')) {
-            faqTemplateBlock.querySelectorAll('input, textarea').forEach(el => {
-              if (el.getAttribute('required') !== null) el.required = true;
-            });
-          }
+          ['faqAuthor', 'faqCreatedAt', 'faqModifiedAt', 'faqQ1', 'faqA1', 'faqQ2', 'faqA2'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.required = true;
+          });
         }
         if (selectedType === 'BlogPosting' && !blogPostingFields.classList.contains('hidden-fields')) {
           blogPostingFields.querySelectorAll('input, textarea').forEach(el => {
@@ -294,35 +257,31 @@
       if (savedSelectedType) {
         schemaTypeSelect.value = savedSelectedType;
       }
-
       toggleSchemaFields();
 
-      // Botón generar schema
+      // Submit del formulario
       const schemaGeneratorForm = document.getElementById('schemaForm');
       const generatedSchemaOutput = document.getElementById('generatedSchemaOutput');
       schemaGeneratorForm.addEventListener('submit', async function (e) {
         e.preventDefault();
+        updateRequiredFields();
         const formData = new FormData(schemaGeneratorForm);
         const wrapScript = document.getElementById('wrapScriptTag').checked;
-        try {
-          const response = await fetch('/generate_schema', {
-            method: 'POST',
-            body: formData
-          });
-          let schemaText = '';
-          if (response.ok) {
-            const schema = await response.json();
-            schemaText = JSON.stringify(schema, null, 2);
-            if (wrapScript) {
-              schemaText = `<script type="application/ld+json">\n${schemaText}\n</script>`;
-            }
-            generatedSchemaOutput.textContent = schemaText;
-          } else {
-            const error = await response.json();
-            generatedSchemaOutput.textContent = `Error: ${error.error || 'Something went wrong'}`;
+        const response = await fetch('/generate_schema', {
+          method: 'POST',
+          body: formData
+        });
+        let schemaText = '';
+        if (response.ok) {
+          const schema = await response.json();
+          schemaText = JSON.stringify(schema, null, 2);
+          if (wrapScript) {
+            schemaText = `<script type="application/ld+json">\n${schemaText}\n</script>`;
           }
-        } catch (err) {
-          generatedSchemaOutput.textContent = 'Error: Unable to connect to the server.';
+          generatedSchemaOutput.textContent = schemaText;
+        } else {
+          const error = await response.json();
+          generatedSchemaOutput.textContent = `Error: ${error.error || 'Something went wrong'}`;
         }
       });
 
