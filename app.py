@@ -5,10 +5,6 @@ import os
 from datetime import datetime
 from rich import print as rprint
 
-from huggingface_hub import InferenceClient
-
-client = InferenceClient(token=os.environ.get("HF_TOKEN"))
-
 app = Flask(__name__)
 DB_FILE = 'schemas_templates.db'
 
@@ -153,6 +149,7 @@ def generate_schema():
     schema_type = request.form.get('tipo')
     form_data = request.form.to_dict()
     generated_schema = {}
+
     if schema_type == 'FAQPage':
         if not form_data.get('faqQ1') or not form_data.get('faqA1'):
             return jsonify({'error': 'At least one FAQ question and answer is required'}), 400
@@ -187,42 +184,6 @@ def get_schema_template(template_type, template_name):
         return jsonify(dict(template_data))
     else:
         return jsonify({"error": "Template not found"}), 404
-
-@app.route('/api/generate-faq', methods=['POST'])
-def generate_faq():
-    data = request.get_json()
-    title = data.get('title')
-    summary = data.get('summary')
-    keywords = data.get('keywords', '')
-    count = int(data.get('count', 4))
-    if not title or not summary:
-        return jsonify({'error': 'Missing title or summary'}), 400
-
-    prompt = (
-        f"Generate {count} concise SEO FAQ questions based on the following article information.\n"
-        f"Title: {title}\nSummary: {summary}\nKeywords: {keywords}"
-    )
-    try:
-        response = client.text_generation(
-            model="google/flan-t5-large",
-            prompt=prompt,
-            max_new_tokens=200
-        )
-        text = response.get('generated_text') if isinstance(response, dict) else str(response)
-        faqs = []
-        for line in text.split('\n'):
-            line = line.strip()
-            if line and (line[0].isdigit() or line.startswith('-') or line.startswith('*')):
-                faqs.append(line.lstrip('1234567890.-* ').strip())
-        faqs = [q for q in faqs if q]
-        return jsonify({'faqs': faqs[:count]})
-
-    except Exception as e:
-        import traceback
-        tb = traceback.format_exc()
-        print('[HuggingFace Error]', e, flush=True)
-        print(tb, flush=True)
-        return jsonify({'error': f'Error generating FAQs: {e}', 'traceback': tb}), 500
 
 if __name__ == '__main__':
     if not os.path.exists(DB_FILE):
