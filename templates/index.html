@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Schema.org Generator</title>
@@ -60,7 +60,84 @@
             </div>
         </div>
 
-        <!-- Repeat similar blocks for Blog and Review as needed -->
+        <!-- Blog Fields -->
+        <div id="blogFields" class="schema-fields" style="display:none;">
+            <h2 class="mb-3">BlogPosting Schema Fields</h2>
+            <div class="mb-2">
+                <label for="blogTitle" class="form-label">Title:</label>
+                <input type="text" class="form-control" id="blogTitle" name="blogTitle">
+            </div>
+            <div class="mb-2">
+                <label for="blogAuthor" class="form-label">Author:</label>
+                <input type="text" class="form-control" id="blogAuthor" name="blogAuthor">
+            </div>
+            <div class="mb-2">
+                <label for="blogPublicationDate" class="form-label">Publication Date:</label>
+                <input type="date" class="form-control" id="blogPublicationDate" name="blogPublicationDate">
+            </div>
+            <div class="mb-2">
+                <label for="blogImage" class="form-label">Image URL:</label>
+                <input type="text" class="form-control" id="blogImage" name="blogImage">
+            </div>
+            <div class="mb-2">
+                <label for="blogContent" class="form-label">Content:</label>
+                <textarea rows="4" class="form-control" id="blogContent" name="blogContent"></textarea>
+            </div>
+        </div>
+
+        <!-- Review Fields -->
+        <div id="reviewFields" class="schema-fields" style="display:none;">
+            <h2 class="mb-3">Review Schema Fields</h2>
+            <div class="mb-2">
+                <label for="reviewAuthor" class="form-label">Author:</label>
+                <input type="text" class="form-control" id="reviewAuthor" name="reviewAuthor">
+            </div>
+            <div class="mb-2">
+                <label for="reviewPublicationDate" class="form-label">Publication Date:</label>
+                <input type="date" class="form-control" id="reviewPublicationDate" name="reviewPublicationDate">
+            </div>
+            <div class="mb-2">
+                <label for="reviewReasoning" class="form-label">Review Body:</label>
+                <textarea rows="3" class="form-control" id="reviewReasoning" name="reviewReasoning"></textarea>
+            </div>
+            <div class="mb-2">
+                <label for="reviewRating" class="form-label">Rating (1-5):</label>
+                <input type="number" class="form-control" id="reviewRating" name="reviewRating" min="1" max="5">
+            </div>
+            <div class="mb-2">
+                <label for="reviewEventName" class="form-label">Event Name:</label>
+                <input type="text" class="form-control" id="reviewEventName" name="reviewEventName">
+            </div>
+            <div class="mb-2">
+                <label for="reviewEventDate" class="form-label">Event Date:</label>
+                <input type="date" class="form-control" id="reviewEventDate" name="reviewEventDate">
+            </div>
+            <div class="mb-2">
+                <label for="reviewEventLocation" class="form-label">Event Location:</label>
+                <input type="text" class="form-control" id="reviewEventLocation" name="reviewEventLocation">
+            </div>
+            <div class="mb-2">
+                <label for="reviewMarketType" class="form-label">Market Type:</label>
+                <input type="text" class="form-control" id="reviewMarketType" name="reviewMarketType">
+            </div>
+            <div class="mb-2">
+                <label for="reviewSelection" class="form-label">Selection:</label>
+                <input type="text" class="form-control" id="reviewSelection" name="reviewSelection">
+            </div>
+            <div class="mb-2">
+                <label for="reviewOdds" class="form-label">Odds:</label>
+                <input type="text" class="form-control" id="reviewOdds" name="reviewOdds">
+            </div>
+            <div class="mb-2">
+                <label for="reviewBookmaker" class="form-label">Bookmaker:</label>
+                <input type="text" class="form-control" id="reviewBookmaker" name="reviewBookmaker">
+            </div>
+            <div class="mb-2">
+                <label for="reviewUnits" class="form-label">Units/Risk:</label>
+                <input type="text" class="form-control" id="reviewUnits" name="reviewUnits">
+            </div>
+        </div>
+
         <button type="submit" class="btn btn-primary w-100 mt-3">Generate Schema</button>
         <div class="mt-3">
             <label for="generatedSchema" class="form-label">Generated Schema.org JSON-LD:</label>
@@ -69,6 +146,23 @@
     </form>
 </div>
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const schemaTypeSelect = document.getElementById('schemaType');
+    const faqFields = document.getElementById('faqFields');
+    const blogFields = document.getElementById('blogFields');
+    const reviewFields = document.getElementById('reviewFields');
+
+    function updateSchemaFields() {
+        const selected = schemaTypeSelect.value;
+        faqFields.style.display = (selected === 'FAQPage') ? '' : 'none';
+        blogFields.style.display = (selected === 'BlogPosting') ? '' : 'none';
+        reviewFields.style.display = (selected === 'Review') ? '' : 'none';
+    }
+
+    schemaTypeSelect.addEventListener('change', updateSchemaFields);
+    updateSchemaFields(); // Inicializa al cargar
+});
+
 document.getElementById('schemaForm').addEventListener('submit', async function(e){
     e.preventDefault();
     let formData = {};
