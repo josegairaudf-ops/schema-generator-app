@@ -39,16 +39,30 @@ def generate_blog_schema(data):
         "@context": "https://schema.org",
         "@type": "BlogPosting",
         "headline": data.get('blogTitle'),
+        "description": data.get('blogDescription'),
+        "mainEntityOfPage": data.get('blogUrl'),
         "author": {
             "@type": "Person",
             "name": data.get('blogAuthor')
         },
+        "publisher": {
+            "@type": "Organization",
+            "name": data.get('blogPublisherName'),
+            "logo": {
+                "@type": "ImageObject",
+                "url": data.get('blogPublisherLogo')
+            }
+        },
         "datePublished": data.get('blogPublicationDate'),
+        "dateModified": data.get('blogModifiedDate'),
         "image": data.get('blogImage'),
+        "inLanguage": data.get('blogLanguage', 'en'),
+        "keywords": data.get('blogKeywords'),
+        "wordCount": int(data.get('blogWordCount', 0)) if data.get('blogWordCount') else None,
         "articleBody": data.get('blogContent')
     }
-    # Extend with event fields as needed
     return schema
+
 
 def generate_review_schema(data):
     rating = int(data['reviewRating']) if data.get('reviewRating') else None
