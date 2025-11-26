@@ -28,9 +28,10 @@ def generate_faq_schema(data):
         "dateCreated": data.get('faqCreatedAt', datetime.now().isoformat()),
         "dateModified": data.get('faqModifiedAt', datetime.now().isoformat()),
         "author": {
-            "@type": "Person",
-            "name": data.get('faqAuthor', 'Anonymous')
-        }
+    "@type": "Person",
+    "name": data.get('blogAuthor'),
+    "url": data.get('blogAuthorUrl')
+}
     }
     return schema
 
