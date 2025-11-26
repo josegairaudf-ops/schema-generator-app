@@ -77,7 +77,11 @@
     </div>
     <div class="mb-2">
         <label for="blogAuthor" class="form-label">Author:</label>
-        <input type="text" class="form-control" id="blogAuthor" name="blogAuthor">
+        <select class="form-select" id="blogAuthor" name="blogAuthor">
+            <option value="">Select author</option>
+            <!-- Opciones se agregan por JavaScript -->
+        </select>
+        <input type="hidden" id="blogAuthorUrl" name="blogAuthorUrl">
     </div>
     <div class="mb-2">
         <label for="blogPublicationDate" class="form-label">Publication Date:</label>
@@ -116,7 +120,6 @@
         <textarea rows="4" class="form-control" id="blogContent" name="blogContent"></textarea>
     </div>
 </div>
-
         <!-- Review Fields -->
         <div id="reviewFields" class="schema-fields" style="display:none;">
             <h2 class="mb-3">Review Schema Fields</h2>
@@ -221,6 +224,54 @@ document.getElementById('copySchemaBtn').addEventListener('click', function() {
     const msg = document.getElementById('copyMsg');
     msg.classList.remove('d-none');
     setTimeout(() => { msg.classList.add('d-none'); }, 1200);
+});
+const authors = {
+    "Alex Campean": "https://www.betus.com.pa/author/campean/",
+    "Austin Boyd": "https://www.betus.com.pa/author/boyd/",
+    "Daniel Saenz (Daniels)": "https://www.betus.com.pa/author/daniels",
+    "Daryl Curnow": "https://www.betus.com.pa/author/daryl-curnow/",
+    "Dave Manyun (Manyun)": "https://www.betus.com.pa/author/manyun/",
+    "Javier Zuniga (Zack Robinson)": "https://www.betus.com.pa/author/zack-robinson/",
+    "Jim Fuller": "https://www.betus.com.pa/author/jim/",
+    "Jon Adams": "https://www.betus.com.pa/author/jonadams/",
+    "Jose Rhodin": "https://www.betus.com.pa/author/joserohdin/",
+    "Mark Pukalo": "https://www.betus.com.pa/author/mark/",
+    "Mark Rich": "https://www.betus.com.pa/author/mark-rich/",
+    "Oscar Diaz": "https://www.betus.com.pa/author/oscar-diaz/",
+    "Paolo Go": "https://www.betus.com.pa/author/paolo/",
+    "Patrick Gustavson (LR staff)": "https://www.betus.com.pa/author/patrick-gustavson/",
+    "Tom Viera": "https://www.betus.com.pa/author/viera/",
+    "Tony Lee (LR staff)": "https://www.betus.com.pa/author/tony-lee/",
+    "Zach Lowy": "https://www.betus.com.pa/author/lowy/",
+    "Jeremy Block": "https://www.betus.com.pa/author/jeremy-",
+    "Eric Williams": "https://www.betus.com.pa/author/eric-williams/",
+    "EZ Ryder": "https://www.betus.com.pa/author/ez/",
+    "Scott Kacsmar": "https://www.betus.com.pa/author/scott-kacsmar/",
+    "Bryan Bejarano": "https://www.betus.com.pa/author/bryanbejarano/",
+    "Kelsey Kramer": "https://www.betus.com.pa/author/kramer/",
+    "Perry Petty": "https://www.betus.com.pa/author/petty/",
+    "Jamie Johnson": "https://www.betus.com.pa/author/jamie/",
+    "Lola": "https://www.betus.com.pa/author/lola/",
+    "Lone Ranger": "https://www.betus.com.pa/author/lone-ranger/",
+    "Donald Norton": "https://www.betus.com.pa/author/donald-norton/"
+};
+
+window.addEventListener('DOMContentLoaded', function() {
+    const authorSelect = document.getElementById("blogAuthor");
+    const authorUrlInput = document.getElementById("blogAuthorUrl");
+
+    // Genera las opciones automáticamente
+    Object.keys(authors).forEach(author => {
+        const option = document.createElement("option");
+        option.value = author;
+        option.textContent = author;
+        authorSelect.appendChild(option);
+    });
+
+    // Actualiza el URL cuando cambias de autor
+    authorSelect.addEventListener("change", function() {
+        authorUrlInput.value = authors[this.value] || "";
+    });
 });
 </script>
 </body>
