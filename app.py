@@ -45,7 +45,7 @@ def generate_blog_schema(data):
         "author": {
             "@type": "Person",
             "name": data.get('blogAuthor'),
-            "url": data.get('blogAuthor URL')
+            "url": data.get('blogAuthorUrl')
         },
         "publisher": {
             "@type": "Organization",
