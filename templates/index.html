@@ -203,6 +203,7 @@ document.getElementById('schemaForm').addEventListener('submit', async function(
     e.preventDefault();
     let formData = {};
     new FormData(this).forEach((v, k) => {formData[k] = v;});
+    console.log("Form Data:", formData);
     const endpoint = '/generate_schema';
     try {
         const response = await fetch(endpoint, {
