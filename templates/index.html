@@ -189,6 +189,7 @@
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // --- Cambio de tipo de schema ---
     const schemaTypeSelect = document.getElementById('schemaType');
     const faqFields = document.getElementById('faqFields');
     const blogFields = document.getElementById('blogFields');
@@ -203,76 +204,83 @@ document.addEventListener('DOMContentLoaded', function() {
 
     schemaTypeSelect.addEventListener('change', updateSchemaFields);
     updateSchemaFields(); // Inicializa al cargar
-});
 
-document.getElementById('schemaForm').addEventListener('submit', async function(e){
-    e.preventDefault();
-    let formData = {};
-    new FormData(this).forEach((v, k) => {formData[k] = v;});
-    console.log("Form Data:", formData);
-    const endpoint = '/generate_schema';
-    try {
-        const response = await fetch(endpoint, {
-            method: 'POST',
-            body: new URLSearchParams(formData)
-        });
-        const schemaData = await response.json();
-const wrap = document.getElementById('wrapScript').checked;
-let output = JSON.stringify(schemaData, null, 2);
+    // --- Submit del formulario ---
+    const form = document.getElementById('schemaForm');
+    const outputTextarea = document.getElementById('generatedSchema');
+    const wrapCheckbox = document.getElementById('wrapScript');
 
-if (wrap) {
-    output = '<script type="application/ld+json">\n' + output + '\n</script>';
-}
-document.getElementById('generatedSchema').value = output;
-    } catch (err) {
-        document.getElementById('generatedSchema').value = "Error generating schema";
-    }
-});
-document.getElementById('copySchemaBtn').addEventListener('click', function() {
-    const schemaText = document.getElementById('generatedSchema');
-    schemaText.select();
-    schemaText.setSelectionRange(0, 99999); // Para dispositivos móviles
-    document.execCommand('copy');
-    const msg = document.getElementById('copyMsg');
-    msg.classList.remove('d-none');
-    setTimeout(() => { msg.classList.add('d-none'); }, 1200);
-});
-const authors = {
-    "Alex Campean": "https://www.betus.com.pa/author/campean/",
-    "Austin Boyd": "https://www.betus.com.pa/author/boyd/",
-    "Daniel Saenz (Daniels)": "https://www.betus.com.pa/author/daniels",
-    "Daryl Curnow": "https://www.betus.com.pa/author/daryl-curnow/",
-    "Dave Manyun (Manyun)": "https://www.betus.com.pa/author/manyun/",
-    "Javier Zuniga (Zack Robinson)": "https://www.betus.com.pa/author/zack-robinson/",
-    "Jim Fuller": "https://www.betus.com.pa/author/jim/",
-    "Jon Adams": "https://www.betus.com.pa/author/jonadams/",
-    "Jose Rhodin": "https://www.betus.com.pa/author/joserohdin/",
-    "Mark Pukalo": "https://www.betus.com.pa/author/mark/",
-    "Mark Rich": "https://www.betus.com.pa/author/mark-rich/",
-    "Oscar Diaz": "https://www.betus.com.pa/author/oscar-diaz/",
-    "Paolo Go": "https://www.betus.com.pa/author/paolo/",
-    "Patrick Gustavson (LR staff)": "https://www.betus.com.pa/author/patrick-gustavson/",
-    "Tom Viera": "https://www.betus.com.pa/author/viera/",
-    "Tony Lee (LR staff)": "https://www.betus.com.pa/author/tony-lee/",
-    "Zach Lowy": "https://www.betus.com.pa/author/lowy/",
-    "Jeremy Block": "https://www.betus.com.pa/author/jeremy-",
-    "Eric Williams": "https://www.betus.com.pa/author/eric-williams/",
-    "EZ Ryder": "https://www.betus.com.pa/author/ez/",
-    "Scott Kacsmar": "https://www.betus.com.pa/author/scott-kacsmar/",
-    "Bryan Bejarano": "https://www.betus.com.pa/author/bryanbejarano/",
-    "Kelsey Kramer": "https://www.betus.com.pa/author/kramer/",
-    "Perry Petty": "https://www.betus.com.pa/author/petty/",
-    "Jamie Johnson": "https://www.betus.com.pa/author/jamie/",
-    "Lola": "https://www.betus.com.pa/author/lola/",
-    "Lone Ranger": "https://www.betus.com.pa/author/lone-ranger/",
-    "Donald Norton": "https://www.betus.com.pa/author/donald-norton/"
-};
+    form.addEventListener('submit', async function(e){
+        e.preventDefault();
+        let formData = {};
+        new FormData(form).forEach((v, k) => {formData[k] = v;});
+        console.log("Form Data:", formData);
+        const endpoint = '/generate_schema';
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                body: new URLSearchParams(formData)
+            });
+            const schemaData = await response.json();
+            let output = JSON.stringify(schemaData, null, 2);
 
-window.addEventListener('DOMContentLoaded', function() {
+            if (wrapCheckbox.checked) {
+                output = '<script type="application/ld+json">\n' + output + '\n</script>';
+            }
+
+            outputTextarea.value = output;
+        } catch (err) {
+            outputTextarea.value = "Error generating schema";
+        }
+    });
+
+    // --- Copiar Schema ---
+    const copyBtn = document.getElementById('copySchemaBtn');
+    const copyMsg = document.getElementById('copyMsg');
+
+    copyBtn.addEventListener('click', function() {
+        outputTextarea.select();
+        outputTextarea.setSelectionRange(0, 99999); // Para móviles
+        document.execCommand('copy');
+        copyMsg.classList.remove('d-none');
+        setTimeout(() => { copyMsg.classList.add('d-none'); }, 1200);
+    });
+
+    // --- Autores y URLs ---
+    const authors = {
+        "Alex Campean": "https://www.betus.com.pa/author/campean/",
+        "Austin Boyd": "https://www.betus.com.pa/author/boyd/",
+        "Daniel Saenz (Daniels)": "https://www.betus.com.pa/author/daniels",
+        "Daryl Curnow": "https://www.betus.com.pa/author/daryl-curnow/",
+        "Dave Manyun (Manyun)": "https://www.betus.com.pa/author/manyun/",
+        "Javier Zuniga (Zack Robinson)": "https://www.betus.com.pa/author/zack-robinson/",
+        "Jim Fuller": "https://www.betus.com.pa/author/jim/",
+        "Jon Adams": "https://www.betus.com.pa/author/jonadams/",
+        "Jose Rhodin": "https://www.betus.com.pa/author/joserohdin/",
+        "Mark Pukalo": "https://www.betus.com.pa/author/mark/",
+        "Mark Rich": "https://www.betus.com.pa/author/mark-rich/",
+        "Oscar Diaz": "https://www.betus.com.pa/author/oscar-diaz/",
+        "Paolo Go": "https://www.betus.com.pa/author/paolo/",
+        "Patrick Gustavson (LR staff)": "https://www.betus.com.pa/author/patrick-gustavson/",
+        "Tom Viera": "https://www.betus.com.pa/author/viera/",
+        "Tony Lee (LR staff)": "https://www.betus.com.pa/author/tony-lee/",
+        "Zach Lowy": "https://www.betus.com.pa/author/lowy/",
+        "Jeremy Block": "https://www.betus.com.pa/author/jeremy-",
+        "Eric Williams": "https://www.betus.com.pa/author/eric-williams/",
+        "EZ Ryder": "https://www.betus.com.pa/author/ez/",
+        "Scott Kacsmar": "https://www.betus.com.pa/author/scott-kacsmar/",
+        "Bryan Bejarano": "https://www.betus.com.pa/author/bryanbejarano/",
+        "Kelsey Kramer": "https://www.betus.com.pa/author/kramer/",
+        "Perry Petty": "https://www.betus.com.pa/author/petty/",
+        "Jamie Johnson": "https://www.betus.com.pa/author/jamie/",
+        "Lola": "https://www.betus.com.pa/author/lola/",
+        "Lone Ranger": "https://www.betus.com.pa/author/lone-ranger/",
+        "Donald Norton": "https://www.betus.com.pa/author/donald-norton/"
+    };
+
     const authorSelect = document.getElementById("blogAuthor");
     const authorUrlInput = document.getElementById("blogAuthorUrl");
 
-    // Genera las opciones automáticamente
     Object.keys(authors).forEach(author => {
         const option = document.createElement("option");
         option.value = author;
@@ -280,7 +288,6 @@ window.addEventListener('DOMContentLoaded', function() {
         authorSelect.appendChild(option);
     });
 
-    // Actualiza el URL cuando cambias de autor
     authorSelect.addEventListener("change", function() {
         authorUrlInput.value = authors[this.value] || "";
     });
