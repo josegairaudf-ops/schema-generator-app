@@ -223,9 +223,7 @@ let output = JSON.stringify(schemaData, null, 2);
 if (wrap) {
     output = '<script type="application/ld+json">\n' + output + '\n</script>';
 }
-
 document.getElementById('generatedSchema').value = output;
-
     } catch (err) {
         document.getElementById('generatedSchema').value = "Error generating schema";
     }
