@@ -285,9 +285,10 @@
         <label for="seOfferUrl" class="form-label">Sportsbook Event URL:</label>
         <input type="text" class="form-control" id="seOfferUrl" name="seOfferUrl">
     </div>
-</div>  <!-- SOLO este cierre, sin otro </div> extra -->
+</div> <!-- cierra SOLO #sportsEventFields -->
 
 <button type="submit" class="btn btn-primary w-100 mt-3">Generate Schema</button>
+
 <div class="mt-3">
     <label for="generatedSchema" class="form-label">Generated Schema.org JSON-LD:</label>
     <textarea readonly class="form-control" id="generatedSchema" rows="10"></textarea>
@@ -302,8 +303,9 @@
     <button type="button" class="btn btn-success mt-2 w-100" id="copySchemaBtn">Copy Schema</button>
     <span id="copyMsg" class="text-success small d-none">Done!</span>
 </div>
+
 </form>
-</div>
+</div> <!-- este es el cierre del .container -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // --- Cambio de tipo de schema ---
