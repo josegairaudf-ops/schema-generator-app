@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function() {
             let output = JSON.stringify(schemaData, null, 2);
 
             if (wrapCheckbox.checked) {
-                output = '<script type="application/ld+json">\n' + output + '\n</script>';
+                output = '<script type="application/ld+json">\n' + output + '\n<\/script>';
             }
 
             outputTextarea.value = output;
