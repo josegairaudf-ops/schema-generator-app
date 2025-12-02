@@ -175,9 +175,7 @@
         
     <h2 class="mb-3">SportsEvent Schema Fields</h2>
     <div id="sportsEventFields" class="schema-fields" style="display:none;">
-    <h2 class="mb-3">SportsEvent Schema Fields</h2>
-
-    <!-- Datos generales del evento -->
+        <!-- Datos generales del evento -->
     <div class="mb-2">
         <label for="seName" class="form-label">Event Name (Team A vs Team B):</label>
         <input type="text" class="form-control" id="seName" name="seName">
@@ -239,6 +237,51 @@
     <div class="mb-2">
         <label for="seDescription" class="form-label">Description (SEO betting summary):</label>
         <textarea class="form-control" id="seDescription" name="seDescription" rows="3"></textarea>
+    </div>
+            <!-- Estado del evento y modo de asistencia -->
+    <div class="mb-2">
+        <label for="seEventStatus" class="form-label">Event Status:</label>
+        <select class="form-select" id="seEventStatus" name="seEventStatus">
+            <option value="https://schema.org/EventScheduled">Scheduled</option>
+            <option value="https://schema.org/EventPostponed">Postponed</option>
+            <option value="https://schema.org/EventCancelled">Cancelled</option>
+            <option value="https://schema.org/EventRescheduled">Rescheduled</option>
+        </select>
+    </div>
+    <div class="mb-2">
+        <label for="seAttendanceMode" class="form-label">Attendance Mode:</label>
+        <select class="form-select" id="seAttendanceMode" name="seAttendanceMode">
+            <option value="https://schema.org/OfflineEventAttendanceMode">Offline</option>
+            <option value="https://schema.org/OnlineEventAttendanceMode">Online</option>
+            <option value="https://schema.org/MixedEventAttendanceMode">Mixed</option>
+        </select>
+    </div>
+
+    <!-- Idioma y accesibilidad -->
+    <div class="mb-2">
+        <label for="seLanguage" class="form-label">Language:</label>
+        <input type="text" class="form-control" id="seLanguage" name="seLanguage" value="en-US">
+    </div>
+    <div class="form-check mb-2">
+        <input class="form-check-input" type="checkbox" id="seFree" name="seFree" checked>
+        <label class="form-check-label" for="seFree">
+            Is Accessible For Free
+        </label>
+    </div>
+
+    <!-- Main pick / Offer -->
+    <h3 class="mt-3 mb-2">Main Pick Offer</h3>
+    <div class="mb-2">
+        <label for="seOfferName" class="form-label">Pick Name:</label>
+        <input type="text" class="form-control" id="seOfferName" name="seOfferName" placeholder="Chiefs -3.5 vs Cowboys">
+    </div>
+    <div class="mb-2">
+        <label for="seOfferPrice" class="form-label">Odds (Price):</label>
+        <input type="text" class="form-control" id="seOfferPrice" name="seOfferPrice" placeholder="-110">
+    </div>
+    <div class="mb-2">
+        <label for="seOfferUrl" class="form-label">Sportsbook Event URL:</label>
+        <input type="text" class="form-control" id="seOfferUrl" name="seOfferUrl">
     </div>
 </div>
 </div>
