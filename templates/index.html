@@ -174,7 +174,73 @@
         </div>
         <div id="sportsEventFields" class="schema-fields" style="display:none;">
     <h2 class="mb-3">SportsEvent Schema Fields</h2>
-    <!-- Aquí luego iremos agregando los inputs uno por uno -->
+    <div id="sportsEventFields" class="schema-fields" style="display:none;">
+    <h2 class="mb-3">SportsEvent Schema Fields</h2>
+
+    <!-- Datos generales del evento -->
+    <div class="mb-2">
+        <label for="seName" class="form-label">Event Name (Team A vs Team B):</label>
+        <input type="text" class="form-control" id="seName" name="seName">
+    </div>
+    <div class="mb-2">
+        <label for="seSport" class="form-label">Sport:</label>
+        <input type="text" class="form-control" id="seSport" name="seSport" placeholder="American Football, NBA, Soccer...">
+    </div>
+    <div class="mb-2">
+        <label for="seStartDate" class="form-label">Start Date & Time:</label>
+        <input type="datetime-local" class="form-control" id="seStartDate" name="seStartDate">
+    </div>
+    <div class="mb-2">
+        <label for="seEndDate" class="form-label">End Date & Time:</label>
+        <input type="datetime-local" class="form-control" id="seEndDate" name="seEndDate">
+    </div>
+
+    <!-- Location -->
+    <div class="mb-2">
+        <label for="seStadium" class="form-label">Stadium Name:</label>
+        <input type="text" class="form-control" id="seStadium" name="seStadium">
+    </div>
+    <div class="mb-2">
+        <label for="seCity" class="form-label">City:</label>
+        <input type="text" class="form-control" id="seCity" name="seCity">
+    </div>
+    <div class="mb-2">
+        <label for="seRegion" class="form-label">State/Region:</label>
+        <input type="text" class="form-control" id="seRegion" name="seRegion">
+    </div>
+    <div class="mb-2">
+        <label for="seCountry" class="form-label">Country Code:</label>
+        <input type="text" class="form-control" id="seCountry" name="seCountry" value="US">
+    </div>
+
+    <!-- Equipos / performers -->
+    <div class="mb-2">
+        <label for="seTeamA" class="form-label">Team A (Home):</label>
+        <input type="text" class="form-control" id="seTeamA" name="seTeamA">
+    </div>
+    <div class="mb-2">
+        <label for="seTeamB" class="form-label">Team B (Away):</label>
+        <input type="text" class="form-control" id="seTeamB" name="seTeamB">
+    </div>
+    <div class="mb-2">
+        <label for="seKeyPlayer" class="form-label">Key Player (optional):</label>
+        <input type="text" class="form-control" id="seKeyPlayer" name="seKeyPlayer">
+    </div>
+
+    <!-- Meta del artículo / imagen -->
+    <div class="mb-2">
+        <label for="seUrl" class="form-label">Article URL:</label>
+        <input type="text" class="form-control" id="seUrl" name="seUrl">
+    </div>
+    <div class="mb-2">
+        <label for="seImage" class="form-label">Featured Image URL:</label>
+        <input type="text" class="form-control" id="seImage" name="seImage">
+    </div>
+    <div class="mb-2">
+        <label for="seDescription" class="form-label">Description (SEO betting summary):</label>
+        <textarea class="form-control" id="seDescription" name="seDescription" rows="3"></textarea>
+    </div>
+</div>
 </div>
         <button type="submit" class="btn btn-primary w-100 mt-3">Generate Schema</button>
         <div class="mt-3">
