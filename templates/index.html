@@ -16,6 +16,7 @@
                 <option value="FAQPage">FAQPage</option>
                 <option value="BlogPosting">BlogPosting</option>
                 <option value="Review">Review</option>
+                <option value="SportsEvent">SportsEvent</option>
             </select>
         </div>
         <!-- FAQ Fields -->
@@ -171,7 +172,10 @@
                 <input type="text" class="form-control" id="reviewUnits" name="reviewUnits">
             </div>
         </div>
-
+        <div id="sportsEventFields" class="schema-fields" style="display:none;">
+    <h2 class="mb-3">SportsEvent Schema Fields</h2>
+    <!-- Aquí luego iremos agregando los inputs uno por uno -->
+</div>
         <button type="submit" class="btn btn-primary w-100 mt-3">Generate Schema</button>
         <div class="mt-3">
             <label for="generatedSchema" class="form-label">Generated Schema.org JSON-LD:</label>
@@ -195,14 +199,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const faqFields = document.getElementById('faqFields');
     const blogFields = document.getElementById('blogFields');
     const reviewFields = document.getElementById('reviewFields');
+    const sportsEventFields = document.getElementById('sportsEventFields');
 
     function updateSchemaFields() {
-        const selected = schemaTypeSelect.value;
-        faqFields.style.display = (selected === 'FAQPage') ? '' : 'none';
-        blogFields.style.display = (selected === 'BlogPosting') ? '' : 'none';
-        reviewFields.style.display = (selected === 'Review') ? '' : 'none';
-    }
-
+    const selected = schemaTypeSelect.value;
+    faqFields.style.display = (selected === 'FAQPage') ? '' : 'none';
+    blogFields.style.display = (selected === 'BlogPosting') ? '' : 'none';
+    reviewFields.style.display = (selected === 'Review') ? '' : 'none';
+    sportsEventFields.style.display = (selected === 'SportsEvent') ? '' : 'none';
+}
     schemaTypeSelect.addEventListener('change', updateSchemaFields);
     updateSchemaFields(); // Inicializa al cargar
 
