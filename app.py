@@ -112,6 +112,79 @@ def generate_review_schema(data):
     }
     return schema
 
+def generate_sportsevent_schema(data):
+    is_free = bool(data.get('seFree'))  # checkbox
+
+    schema = {
+        "@context": "https://schema.org",
+        "@type": "SportsEvent",
+        "name": data.get("seName"),
+        "sport": data.get("seSport"),
+        "startDate": data.get("seStartDate"),
+        "endDate": data.get("seEndDate"),
+        "eventStatus": data.get("seEventStatus"),
+        "eventAttendanceMode": data.get("seAttendanceMode"),
+        "location": {
+            "@type": "Place",
+            "name": data.get("seStadium"),
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": data.get("seCity"),
+                "addressRegion": data.get("seRegion"),
+                "addressCountry": data.get("seCountry")
+            }
+        },
+        "competitor": [
+            {
+                "@type": "SportsTeam",
+                "name": data.get("seTeamA")
+            },
+            {
+                "@type": "SportsTeam",
+                "name": data.get("seTeamB")
+            }
+        ],
+        "performer": [
+            {
+                "@type": "SportsTeam",
+                "name": data.get("seTeamA")
+            },
+            {
+                "@type": "SportsTeam",
+                "name": data.get("seTeamB")
+            }
+        ],
+        "organizer": {
+            "@type": "Organization",
+            "name": "BetUS",
+            "url": "https://www.betus.com.pa/"
+        },
+        "url": data.get("seUrl"),
+        "image": data.get("seImage"),
+        "description": data.get("seDescription"),
+        "offers": {
+            "@type": "Offer",
+            "name": data.get("seOfferName"),
+            "price": data.get("seOfferPrice"),
+            "priceCurrency": "USD",
+            "availability": "https://schema.org/InStock",
+            "url": data.get("seOfferUrl")
+        },
+        "isAccessibleForFree": is_free,
+        "inLanguage": data.get("seLanguage")
+    }
+
+    # Key player opcional
+    key_player = data.get("seKeyPlayer")
+    if key_player:
+        schema["performer"].append({
+            "@type": "Person",
+            "name": key_player
+        })
+
+    return schema
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -127,6 +200,8 @@ def generate_schema():
         generated_schema = generate_blog_schema(form_data)
     elif schema_type == 'Review':
         generated_schema = generate_review_schema(form_data)
+    elif schema_type == 'SportsEvent':
+        generated_schema = generate_sportsevent_schema(form_data)
     else:
         return jsonify({"error": "Invalid schema type selected"}), 400
     return jsonify(generated_schema)
