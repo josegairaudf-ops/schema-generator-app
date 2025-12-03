@@ -192,6 +192,7 @@ def index():
 @app.route('/generate_schema', methods=['POST'])
 def generate_schema():
     schema_type = request.form.get('schemaType')
+    print("DEBUG schema_type:", schema_type)
     form_data = request.form.to_dict()
     generated_schema = {}
     if schema_type == 'FAQPage':
