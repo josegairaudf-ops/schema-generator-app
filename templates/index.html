@@ -438,17 +438,232 @@ const countryInput = document.getElementById('seCountry');
 
 // aquí luego pondremos todos los equipos por liga
 const teams = {
-  // ejemplo mínimo de estructura
+  // NFL
+  "Arizona Cardinals": {
+    league: "NFL",
+    stadium: "State Farm Stadium",
+    city: "Glendale",
+    region: "AZ",
+    country: "US"
+  },
+  "Atlanta Falcons": {
+    league: "NFL",
+    stadium: "Mercedes-Benz Stadium",
+    city: "Atlanta",
+    region: "GA",
+    country: "US"
+  },
+  "Baltimore Ravens": {
+    league: "NFL",
+    stadium: "M&T Bank Stadium",
+    city: "Baltimore",
+    region: "MD",
+    country: "US"
+  },
+  "Buffalo Bills": {
+    league: "NFL",
+    stadium: "Highmark Stadium",
+    city: "Orchard Park",
+    region: "NY",
+    country: "US"
+  },
+  "Carolina Panthers": {
+    league: "NFL",
+    stadium: "Bank of America Stadium",
+    city: "Charlotte",
+    region: "NC",
+    country: "US"
+  },
+  "Chicago Bears": {
+    league: "NFL",
+    stadium: "Soldier Field",
+    city: "Chicago",
+    region: "IL",
+    country: "US"
+  },
+  "Cincinnati Bengals": {
+    league: "NFL",
+    stadium: "Paycor Stadium",
+    city: "Cincinnati",
+    region: "OH",
+    country: "US"
+  },
+  "Cleveland Browns": {
+    league: "NFL",
+    stadium: "Huntington Bank Field",
+    city: "Cleveland",
+    region: "OH",
+    country: "US"
+  },
   "Dallas Cowboys": {
     league: "NFL",
     stadium: "AT&T Stadium",
     city: "Arlington",
     region: "TX",
     country: "US"
+  },
+  "Denver Broncos": {
+    league: "NFL",
+    stadium: "Empower Field at Mile High",
+    city: "Denver",
+    region: "CO",
+    country: "US"
+  },
+  "Detroit Lions": {
+    league: "NFL",
+    stadium: "Ford Field",
+    city: "Detroit",
+    region: "MI",
+    country: "US"
+  },
+  "Green Bay Packers": {
+    league: "NFL",
+    stadium: "Lambeau Field",
+    city: "Green Bay",
+    region: "WI",
+    country: "US"
+  },
+  "Houston Texans": {
+    league: "NFL",
+    stadium: "NRG Stadium",
+    city: "Houston",
+    region: "TX",
+    country: "US"
+  },
+  "Indianapolis Colts": {
+    league: "NFL",
+    stadium: "Lucas Oil Stadium",
+    city: "Indianapolis",
+    region: "IN",
+    country: "US"
+  },
+  "Jacksonville Jaguars": {
+    league: "NFL",
+    stadium: "EverBank Stadium",
+    city: "Jacksonville",
+    region: "FL",
+    country: "US"
+  },
+  "Kansas City Chiefs": {
+    league: "NFL",
+    stadium: "GEHA Field at Arrowhead Stadium",
+    city: "Kansas City",
+    region: "MO",
+    country: "US"
+  },
+  "Las Vegas Raiders": {
+    league: "NFL",
+    stadium: "Allegiant Stadium",
+    city: "Las Vegas",
+    region: "NV",
+    country: "US"
+  },
+  "Los Angeles Chargers": {
+    league: "NFL",
+    stadium: "SoFi Stadium",
+    city: "Inglewood",
+    region: "CA",
+    country: "US"
+  },
+  "Los Angeles Rams": {
+    league: "NFL",
+    stadium: "SoFi Stadium",
+    city: "Inglewood",
+    region: "CA",
+    country: "US"
+  },
+  "Miami Dolphins": {
+    league: "NFL",
+    stadium: "Hard Rock Stadium",
+    city: "Miami Gardens",
+    region: "FL",
+    country: "US"
+  },
+  "Minnesota Vikings": {
+    league: "NFL",
+    stadium: "U.S. Bank Stadium",
+    city: "Minneapolis",
+    region: "MN",
+    country: "US"
+  },
+  "New England Patriots": {
+    league: "NFL",
+    stadium: "Gillette Stadium",
+    city: "Foxborough",
+    region: "MA",
+    country: "US"
+  },
+  "New Orleans Saints": {
+    league: "NFL",
+    stadium: "Caesars Superdome",
+    city: "New Orleans",
+    region: "LA",
+    country: "US"
+  },
+  "New York Giants": {
+    league: "NFL",
+    stadium: "MetLife Stadium",
+    city: "East Rutherford",
+    region: "NJ",
+    country: "US"
+  },
+  "New York Jets": {
+    league: "NFL",
+    stadium: "MetLife Stadium",
+    city: "East Rutherford",
+    region: "NJ",
+    country: "US"
+  },
+  "Philadelphia Eagles": {
+    league: "NFL",
+    stadium: "Lincoln Financial Field",
+    city: "Philadelphia",
+    region: "PA",
+    country: "US"
+  },
+  "Pittsburgh Steelers": {
+    league: "NFL",
+    stadium: "Acrisure Stadium",
+    city: "Pittsburgh",
+    region: "PA",
+    country: "US"
+  },
+  "San Francisco 49ers": {
+    league: "NFL",
+    stadium: "Levi's Stadium",
+    city: "Santa Clara",
+    region: "CA",
+    country: "US"
+  },
+  "Seattle Seahawks": {
+    league: "NFL",
+    stadium: "Lumen Field",
+    city: "Seattle",
+    region: "WA",
+    country: "US"
+  },
+  "Tampa Bay Buccaneers": {
+    league: "NFL",
+    stadium: "Raymond James Stadium",
+    city: "Tampa",
+    region: "FL",
+    country: "US"
+  },
+  "Tennessee Titans": {
+    league: "NFL",
+    stadium: "Nissan Stadium",
+    city: "Nashville",
+    region: "TN",
+    country: "US"
+  },
+  "Washington Commanders": {
+    league: "NFL",
+    stadium: "Northwest Stadium",
+    city: "Landover",
+    region: "MD",
+    country: "US"
   }
-  // ...más equipos
 };
-
 // filtra opciones de Team A según la liga seleccionada
 function populateTeamsForLeague(league) {
   // limpia opciones
