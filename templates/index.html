@@ -428,6 +428,73 @@ const sportsEventFields = document.getElementById('sportsEventFields');
         authorUrlInput.value = authors[this.value] || "";
     });
 });
+// --- SportsEvent: sport + equipos + location auto ---
+const sportSelect = document.getElementById('seSport');
+const teamASelect = document.getElementById('seTeamA');
+const stadiumInput = document.getElementById('seStadium');
+const cityInput = document.getElementById('seCity');
+const regionInput = document.getElementById('seRegion');
+const countryInput = document.getElementById('seCountry');
+
+// aquí luego pondremos todos los equipos por liga
+const teams = {
+  // ejemplo mínimo de estructura
+  "Dallas Cowboys": {
+    league: "NFL",
+    stadium: "AT&T Stadium",
+    city: "Arlington",
+    region: "TX",
+    country: "US"
+  }
+  // ...más equipos
+};
+
+// filtra opciones de Team A según la liga seleccionada
+function populateTeamsForLeague(league) {
+  // limpia opciones
+  teamASelect.innerHTML = '<option value="">Select home team</option>';
+
+  Object.entries(teams).forEach(([name, data]) => {
+    if (!league || data.league === league) {
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      teamASelect.appendChild(opt);
+    }
+  });
+}
+
+// cuando cambie el sport, recargar los equipos de Team A
+sportSelect.addEventListener('change', function () {
+  const league = this.value;
+
+  if (league === 'NFL' || league === 'NBA' || league === 'MLB' || league === 'NHL') {
+    populateTeamsForLeague(league);
+  } else {
+    // other/custom: puedes permitir todos los equipos o dejar el select vacío
+    populateTeamsForLeague(null);
+  }
+
+  // limpiar location cuando cambia liga
+  stadiumInput.value = '';
+  cityInput.value = '';
+  regionInput.value = '';
+  countryInput.value = 'US';
+});
+
+// cuando cambie Team A, autocompletar location
+teamASelect.addEventListener('change', function () {
+  const data = teams[this.value];
+  if (data) {
+    stadiumInput.value = data.stadium || '';
+    cityInput.value = data.city || '';
+    regionInput.value = data.region || '';
+    countryInput.value = data.country || 'US';
+  }
+});
+
+// inicial
+populateTeamsForLeague(null);    
 </script>
 </body>
 </html>
