@@ -183,11 +183,17 @@
     <div id="sportsEventFields" class="schema-fields" style="display:none;">
         <h2 class="mb-3">SportsEvent Schema Fields</h2>
     <!-- ... TODOS los campos seName, seSport, etc ... -->
-        <!-- Datos generales del evento -->
-    <div class="mb-2">
-        <label for="seName" class="form-label">Event Name (Team A vs Team B):</label>
-        <input type="text" class="form-control" id="seName" name="seName">
-    </div>
+        <div class="mb-2">
+  <label for="seSport" class="form-label">Sport / League:</label>
+  <select class="form-select" id="seSport" name="seSport">
+    <option value="">Select sport/league</option>
+    <option value="NFL">NFL</option>
+    <option value="NBA">NBA</option>
+    <option value="MLB">MLB</option>
+    <option value="NHL">NHL</option>
+    <option value="Other">Other / Custom</option>
+  </select>
+</div>
     <!-- Equipos / performers -->
     <div class="mb-2">
   <label for="seTeamA" class="form-label">Team A (Home):</label>
@@ -204,17 +210,11 @@
         <label for="seKeyPlayer" class="form-label">Key Player (optional):</label>
         <input type="text" class="form-control" id="seKeyPlayer" name="seKeyPlayer">
     </div>
+    <!-- Datos generales del evento -->
     <div class="mb-2">
-  <label for="seSport" class="form-label">Sport / League:</label>
-  <select class="form-select" id="seSport" name="seSport">
-    <option value="">Select sport/league</option>
-    <option value="NFL">NFL</option>
-    <option value="NBA">NBA</option>
-    <option value="MLB">MLB</option>
-    <option value="NHL">NHL</option>
-    <option value="Other">Other / Custom</option>
-  </select>
-</div>
+        <label for="seName" class="form-label">Event Name (Team A vs Team B):</label>
+        <input type="text" class="form-control" id="seName" name="seName">
+    </div>
     <div class="mb-2">
         <label for="seStartDate" class="form-label">Start Date & Time:</label>
         <input type="datetime-local" class="form-control" id="seStartDate" name="seStartDate">
