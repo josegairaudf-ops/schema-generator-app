@@ -430,6 +430,22 @@ const sportsEventFields = document.getElementById('sportsEventFields');
 // --- SportsEvent: sport + equipos + location auto ---
 const sportSelect = document.getElementById('seSport');
 const teamASelect = document.getElementById('seTeamA');
+const teamBInput    = document.getElementById('seTeamB');
+// Referencias necesarias para el nombre del evento
+const eventNameInput = document.getElementById('seName');
+const teamBInput = document.getElementById('seTeamB');
+
+// Genera "Team A vs Team B"
+function updateEventName() {
+  const home = teamASelect.value || '';
+  const away = teamBInput.value || '';
+  if (home && away) {
+    eventNameInput.value = `${home} vs ${away}`;
+  }
+}
+// Actualizar cuando cambia el home o se escribe el away
+teamASelect.addEventListener('change', updateEventName);
+teamBInput.addEventListener('input', updateEventName);
 const stadiumInput = document.getElementById('seStadium');
 const cityInput = document.getElementById('seCity');
 const regionInput = document.getElementById('seRegion');
