@@ -113,7 +113,12 @@ def generate_review_schema(data):
     return schema
 
 def generate_sportsevent_schema(data):
-    is_free = bool(data.get('seFree'))  # checkbox
+    # flags básicos
+    is_free = bool(data.get('seFree'))
+
+    # home vs away (usa tu lógica actual, aquí simplificado)
+    home_team = data.get("seTeamA") or data.get("seTeamACustom")
+    away_team = data.get("seTeamB")
 
     schema = {
         "@context": "https://schema.org",
@@ -123,7 +128,7 @@ def generate_sportsevent_schema(data):
         "startDate": data.get("seStartDate"),
         "endDate": data.get("seEndDate"),
         "eventStatus": data.get("seEventStatus"),
-        "eventAttendanceMode": data.get("seAttendanceMode"),
+        "eventAttendanceMode": data.get("seEventAttendanceMode"),
         "location": {
             "@type": "Place",
             "name": data.get("seStadium"),
@@ -137,21 +142,21 @@ def generate_sportsevent_schema(data):
         "competitor": [
             {
                 "@type": "SportsTeam",
-                "name": data.get("seTeamA")
+                "name": home_team
             },
             {
                 "@type": "SportsTeam",
-                "name": data.get("seTeamB")
+                "name": away_team
             }
         ],
         "performer": [
             {
                 "@type": "SportsTeam",
-                "name": data.get("seTeamA")
+                "name": home_team
             },
             {
                 "@type": "SportsTeam",
-                "name": data.get("seTeamB")
+                "name": away_team
             }
         ],
         "organizer": {
@@ -162,28 +167,52 @@ def generate_sportsevent_schema(data):
         "url": data.get("seUrl"),
         "image": data.get("seImage"),
         "description": data.get("seDescription"),
-        "offers": {
-            "@type": "Offer",
-            "name": data.get("seOfferName"),
-            "price": data.get("seOfferPrice"),
-            "priceCurrency": "USD",
-            "availability": "https://schema.org/InStock",
-            "url": data.get("seOfferUrl")
-        },
         "isAccessibleForFree": is_free,
         "inLanguage": data.get("seLanguage")
     }
 
-    # Key player opcional
-    key_player = data.get("seKeyPlayer")
-    if key_player:
-        schema["performer"].append({
-            "@type": "Person",
-            "name": key_player
+    # -------------------------
+    # construir lista de offers
+    # -------------------------
+    offers = []
+
+    # 0) Offer “principal” (los campos que ya tenías)
+    base_name = data.get("seOfferName")
+    base_price = data.get("seOfferPrice")
+    base_url = data.get("seOfferUrl")
+    if base_name or base_price or base_url:
+        offers.append({
+            "@type": "Offer",
+            "name": base_name,
+            "price": base_price,
+            "priceCurrency": "USD",
+            "url": base_url
         })
 
-    return schema
+    # helper interno para no repetir código
+    def add_pick(name_key, price_key, url_key):
+        name = data.get(name_key)
+        price = data.get(price_key)
+        url = data.get(url_key)
+        if name or price or url:
+            offers.append({
+                "@type": "Offer",
+                "name": name,
+                "price": price,
+                "priceCurrency": "USD",
+                "url": url
+            })
 
+    # 1) Pick 1, 2 y 3
+    add_pick("pick1Name", "pick1Price", "pick1Url")
+    add_pick("pick2Name", "pick2Price", "pick2Url")
+    add_pick("pick3Name", "pick3Price", "pick3Url")
+
+    # si hay al menos un offer, lo añadimos al schema
+    if offers:
+        schema["offers"] = offers
+
+    return schema
 
 @app.route('/')
 def index():
