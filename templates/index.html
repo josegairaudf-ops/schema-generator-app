@@ -184,15 +184,24 @@
         <h2 class="mb-3">SportsEvent Schema Fields</h2>
     <!-- ... TODOS los campos seName, seSport, etc ... -->
         <div class="mb-2">
-  <label for="seSport" class="form-label">Sport / League:</label>
+  <label for="seSport" class="form-label">League:</label>
   <select class="form-select" id="seSport" name="seSport">
-    <option value="">Select sport/league</option>
+    <option value="">Select league</option>
     <option value="NFL">NFL</option>
     <option value="NBA">NBA</option>
     <option value="MLB">MLB</option>
     <option value="NHL">NHL</option>
     <option value="Other">Other / Custom</option>
   </select>
+</div>
+        <div class="mb-2">
+  <label for="seLeagueCustom" class="form-label">Custom League (Other):</label>
+  <input type="text" class="form-control" id="seLeagueCustom" name="seLeagueCustom" placeholder="e.g. La Liga, UFC, EPL">
+</div>
+
+<div class="mb-2">
+  <label for="seSportCustom" class="form-label">Custom Sport (Other):</label>
+  <input type="text" class="form-control" id="seSportCustom" name="seSportCustom" placeholder="e.g. Soccer, MMA, Tennis">
 </div>
     <!-- Equipos / performers -->
     <div class="mb-2">
