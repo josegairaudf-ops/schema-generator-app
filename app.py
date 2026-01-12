@@ -113,10 +113,19 @@ def generate_review_schema(data):
     return schema
 
 def generate_sportsevent_schema(data):
-    # flags básicos
     is_free = bool(data.get('seFree'))
 
-    # home vs away (usa tu lógica actual, aquí simplificado)
+    league = data.get("seSport")  # NFL / NBA / MLB / NHL / Other
+
+    # mapear liga -> deporte legible
+    league_to_sport = {
+        "NFL": "American Football",
+        "NBA": "Basketball",
+        "MLB": "Baseball",
+        "NHL": "Ice Hockey",
+    }
+    sport_name = league_to_sport.get(league, "Sports")  # fallback genérico
+
     home_team = data.get("seTeamA") or data.get("seTeamACustom")
     away_team = data.get("seTeamB")
 
@@ -124,7 +133,8 @@ def generate_sportsevent_schema(data):
         "@context": "https://schema.org",
         "@type": "SportsEvent",
         "name": data.get("seName"),
-        "sport": data.get("seSport"),
+        "sport": sport_name,      # ← deporte legible (Basketball, etc.)
+        "league": league,         # ← tu liga tal cual (NBA, NFL, etc.)
         "startDate": data.get("seStartDate"),
         "endDate": data.get("seEndDate"),
         "eventStatus": data.get("seEventStatus"),
@@ -140,24 +150,12 @@ def generate_sportsevent_schema(data):
             }
         },
         "competitor": [
-            {
-                "@type": "SportsTeam",
-                "name": home_team
-            },
-            {
-                "@type": "SportsTeam",
-                "name": away_team
-            }
+            {"@type": "SportsTeam", "name": home_team},
+            {"@type": "SportsTeam", "name": away_team}
         ],
         "performer": [
-            {
-                "@type": "SportsTeam",
-                "name": home_team
-            },
-            {
-                "@type": "SportsTeam",
-                "name": away_team
-            }
+            {"@type": "SportsTeam", "name": home_team},
+            {"@type": "SportsTeam", "name": away_team}
         ],
         "organizer": {
             "@type": "Organization",
@@ -170,12 +168,10 @@ def generate_sportsevent_schema(data):
         "isAccessibleForFree": is_free,
         "inLanguage": data.get("seLanguage")
     }
-
     # -------------------------
     # construir lista de offers
     # -------------------------
     offers = []
-
     # 0) Offer “principal” (los campos que ya tenías)
     base_name = data.get("seOfferName")
     base_price = data.get("seOfferPrice")
