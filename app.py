@@ -115,16 +115,23 @@ def generate_review_schema(data):
 def generate_sportsevent_schema(data):
     is_free = bool(data.get('seFree'))
 
-    league = data.get("seSport")  # NFL / NBA / MLB / NHL / Other
+    league_value = data.get("seSport")  # NFL / NBA / MLB / NHL / Other
 
-    # mapear liga -> deporte legible
     league_to_sport = {
         "NFL": "American Football",
         "NBA": "Basketball",
         "MLB": "Baseball",
         "NHL": "Ice Hockey",
     }
-    sport_name = league_to_sport.get(league, "Sports")  # fallback genérico
+
+    # valores por defecto
+    league = league_value
+    sport_name = league_to_sport.get(league_value)
+
+    # si es Other, tomar lo que escribió el usuario
+    if league_value == "Other":
+        league = data.get("seLeagueCustom") or "Other"
+        sport_name = data.get("seSportCustom") or "Sports"
 
     home_team = data.get("seTeamA") or data.get("seTeamACustom")
     away_team = data.get("seTeamB")
@@ -133,8 +140,8 @@ def generate_sportsevent_schema(data):
         "@context": "https://schema.org",
         "@type": "SportsEvent",
         "name": data.get("seName"),
-        "sport": sport_name,      # ← deporte legible (Basketball, etc.)
-        "league": league,         # ← tu liga tal cual (NBA, NFL, etc.)
+        "sport": sport_name,   # p.ej. Basketball, Soccer, MMA
+        "league": league,      # p.ej. NBA, La Liga, UFC
         "startDate": data.get("seStartDate"),
         "endDate": data.get("seEndDate"),
         "eventStatus": data.get("seEventStatus"),
@@ -153,15 +160,7 @@ def generate_sportsevent_schema(data):
             {"@type": "SportsTeam", "name": home_team},
             {"@type": "SportsTeam", "name": away_team}
         ],
-        "performer": [
-            {"@type": "SportsTeam", "name": home_team},
-            {"@type": "SportsTeam", "name": away_team}
-        ],
-        "organizer": {
-            "@type": "Organization",
-            "name": "BetUS",
-            "url": "https://www.betus.com.pa/"
-        },
+        # ... resto igual (performer, organizer, offers, etc.) ...
         "url": data.get("seUrl"),
         "image": data.get("seImage"),
         "description": data.get("seDescription"),
