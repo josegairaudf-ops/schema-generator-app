@@ -832,8 +832,8 @@ document.addEventListener('DOMContentLoaded', function() {
   },
   "Los Angeles Clippers": {
     league: "NBA",
-    stadium: "Crypto.com Arena",
-    city: "Los Angeles",
+    stadium: "Intuit Dome",
+    city: "Inglewood",
     region: "CA",
     country: "US"
   },
@@ -1468,6 +1468,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // inicial
     populateTeamsForLeague(null);
 });
+    const sportSelect     = document.getElementById('seSport');
+const leagueCustomInp = document.getElementById('seLeagueCustom');
+const sportCustomInp  = document.getElementById('seSportCustom');
+
+function toggleCustomLeague() {
+  if (sportSelect.value === 'Other') {
+    leagueCustomInp.disabled = false;
+    sportCustomInp.disabled = false;
+  } else {
+    leagueCustomInp.disabled = true;
+    sportCustomInp.disabled = true;
+    leagueCustomInp.value = '';
+    sportCustomInp.value = '';
+  }
+}
+sportSelect.addEventListener('change', toggleCustomLeague);
+toggleCustomLeague();
 </script>
 </body>
 </html>
