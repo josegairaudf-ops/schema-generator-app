@@ -204,7 +204,8 @@ def generate_sportsevent_schema(data):
     add_pick("pick3Name", "pick3Price", "pick3Url")
     add_pick("pick4Name", "pick4Price", "pick4Url")  # ← nuevo
     add_pick("pick5Name", "pick5Price", "pick5Url")  # ← nuevo
-
+    add_pick("pick6Name", "pick6Price", "pick6Url")
+    add_pick("pick7Name", "pick7Price", "pick7Url")
 
     # si hay al menos un offer, lo añadimos al schema
     if offers:
