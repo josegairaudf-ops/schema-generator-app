@@ -412,7 +412,20 @@
 </div><!-- cierra SOLO #sportsEventFields -->
 
 <button type="submit" class="btn btn-primary w-100 mt-3">Generate Schema</button>
+<div class="form-section">
+    <h2>Detalles del Parlay</h2>
+    <label for="parlayName">Nombre del Parlay:</label>
+    <input type="text" id="parlayName" name="parlayName" placeholder="Ej: Parlay SGP: Madrid Gana + Over 2.5 Goles">
 
+    <label for="parlayDescription">Descripción del Parlay:</label>
+    <textarea id="parlayDescription" name="parlayDescription" placeholder="Ej: Combina la victoria del Real Madrid con más de 2.5 goles en el partido."></textarea>
+
+    <label for="parlayOdds">Cuota Total del Parlay:</label>
+    <input type="text" id="parlayOdds" name="parlayOdds" placeholder="Ej: 3.50">
+
+    <label for="parlayUrl">URL de la Oferta del Parlay:</label>
+    <input type="url" id="parlayUrl" name="parlayUrl" placeholder="Ej: https://tucasaapuestas.com/mi-parlay-especial">
+</div>
 <div class="mt-3">
     <label for="generatedSchema" class="form-label">Generated Schema.org JSON-LD:</label>
     <textarea readonly class="form-control" id="generatedSchema" rows="10"></textarea>
