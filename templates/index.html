@@ -2,189 +2,210 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Schema Generator - All Types</title>
+    <title>Ultimate Schema Generator</title>
     <style>
-        body { font-family: sans-serif; background: #f4f7f6; padding: 20px; }
-        .container { max-width: 950px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .section { border: 1px solid #ddd; padding: 20px; border-radius: 8px; margin-bottom: 20px; background: #fafafa; }
+        :root { --primary: #1a73e8; --bg: #f8f9fa; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .section { padding: 20px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .pick-grid { display: grid; grid-template-columns: 2fr 1fr 2fr; gap: 10px; background: #f1f3f4; padding: 10px; border-radius: 5px; margin-bottom: 5px; }
+        label { font-weight: 600; font-size: 13px; color: #555; display: block; margin-bottom: 5px; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #dadce0; border-radius: 4px; box-sizing: border-box; }
         .hidden { display: none; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .pick-grid { display: grid; grid-template-columns: 2fr 1fr 2fr; gap: 10px; margin-bottom: 10px; }
-        label { font-weight: bold; font-size: 13px; display: block; margin-bottom: 5px; }
-        input, select, textarea { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
-        #jsonOutput { width: 100%; background: #222; color: #0f0; padding: 15px; font-family: monospace; }
+        button { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 6px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; }
+        #jsonOutput { background: #202124; color: #81c995; font-family: 'Consolas', monospace; padding: 20px; border-radius: 8px; width: 100%; margin-top: 20px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Multi-Schema Generator</h1>
 
-        <div class="section">
-            <label>Select Schema Type:</label>
-            <select id="schemaTypeSelect" onchange="toggleFields()">
-                <option value="SportsEvent">Sports Event</option>
-                <option value="FAQPage">FAQ Page</option>
-                <option value="BlogPosting">Blog Posting</option>
-                <option value="Review">Review</option>
-            </select>
-        </div>
+<div class="container">
+    <h1>Schema Tool Pro</h1>
 
-        <form id="mainForm">
-            <input type="hidden" name="schemaType" id="hiddenType" value="SportsEvent">
-
-            <!-- SECCIÓN SPORTS (Visible por defecto) -->
-            <div id="sportsFields">
-                <div class="section">
-                    <h2>Event & League</h2>
-                    <select name="seSport" id="seSport" onchange="updateTeams()">
-                        <option value="NFL">NFL</option>
-                        <option value="NBA">NBA</option>
-                        <option value="MLB">MLB</option>
-                        <option value="NHL">NHL</option>
-                        <option value="Other">Other Sports</option>
-                    </select>
-
-                    <div id="customSportFields" class="hidden">
-                        <div class="grid">
-                            <input type="text" name="seLeagueCustom" placeholder="Custom League">
-                            <input type="text" name="seSportCustom" placeholder="Custom Sport">
-                        </div>
-                    </div>
-
-                    <div class="grid">
-                        <div>
-                            <label>Home Team:</label>
-                            <select name="seTeamA" id="seTeamA" onchange="syncName()"></select>
-                            <input type="text" name="seTeamACustom" id="seTeamACustom" class="hidden" placeholder="Team A" oninput="syncName()">
-                        </div>
-                        <div>
-                            <label>Away Team:</label>
-                            <select name="seTeamB" id="seTeamB" onchange="syncName()"></select>
-                            <input type="text" name="seTeamBCustom" id="seTeamBCustom" class="hidden" placeholder="Team B" oninput="syncName()">
-                        </div>
-                    </div>
-                    <label>Event Name:</label>
-                    <input type="text" name="seName" id="seName" placeholder="Auto-generated name">
-                </div>
-
-                <div class="section">
-                    <h2>Location & Status</h2>
-                    <div class="grid">
-                        <input type="text" name="seStadium" placeholder="Stadium">
-                        <input type="text" name="seCity" placeholder="City">
-                        <input type="text" name="seRegion" placeholder="Region">
-                        <input type="text" name="seCountry" value="USA">
-                    </div>
-                    <input type="datetime-local" name="seStartDate">
-                </div>
-
-                <div class="section">
-                    <h2>Picks 1-7</h2>
-                    {% for i in range(1, 8) %}
-                    <div class="pick-grid">
-                        <input type="text" name="pick{{i}}Name" placeholder="Pick {{i}}">
-                        <input type="text" name="pick{{i}}Price" placeholder="Odds">
-                        <input type="url" name="pick{{i}}Url" placeholder="URL">
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <!-- SECCIÓN FAQ -->
-            <div id="faqFields" class="hidden">
-                <div class="section">
-                    <h2>FAQ Details</h2>
-                    <input type="text" name="faqQuestion" placeholder="Question">
-                    <textarea name="faqAnswer" placeholder="Answer"></textarea>
-                </div>
-            </div>
-
-            <!-- SECCIÓN BLOG -->
-            <div id="blogFields" class="hidden">
-                <div class="section">
-                    <h2>Blog Details</h2>
-                    <input type="text" name="blogHeadline" placeholder="Headline">
-                    <input type="datetime-local" name="blogDatePublished">
-                    <input type="text" name="blogAuthor" placeholder="Author Name">
-                </div>
-            </div>
-
-            <!-- SECCIÓN REVIEW -->
-            <div id="reviewFields" class="hidden">
-                <div class="section">
-                    <h2>Review Details</h2>
-                    <input type="text" name="reviewItem" placeholder="Item Name">
-                    <input type="number" name="reviewRating" step="0.1" min="1" max="5" placeholder="Rating (1-5)">
-                    <textarea name="reviewBody" placeholder="Review content..."></textarea>
-                </div>
-            </div>
-
-            <button type="submit">Generate JSON-LD</button>
-        </form>
-
-        <div class="section">
-            <textarea id="jsonOutput" rows="15" readonly></textarea>
-        </div>
+    <div class="section" style="background: #e8f0fe;">
+        <label>Select Type:</label>
+        <select id="schemaTypeSelect" onchange="switchSchema()">
+            <option value="SportsEvent">Sports Event (Betting)</option>
+            <option value="FAQPage">FAQ Page</option>
+            <option value="BlogPosting">Blog Posting</option>
+            <option value="Review">Review</option>
+        </select>
     </div>
 
-    <script>
-        const teams = {
-            "NFL": ["Arizona Cardinals", "Atlanta Falcons", "Buffalo Bills", "Kansas City Chiefs", "Dallas Cowboys"], // Simplificado para el ejemplo
-            "NBA": ["Lakers", "Celtics", "Warriors", "Bulls", "Nets"],
-            "MLB": ["Yankees", "Dodgers", "Red Sox"],
-            "NHL": ["Bruins", "Rangers", "Maple Leafs"]
-        };
+    <form id="mainForm">
+        <input type="hidden" name="schemaType" id="hiddenType" value="SportsEvent">
 
-        function toggleFields() {
-            const val = document.getElementById('schemaTypeSelect').value;
-            document.getElementById('hiddenType').value = val;
-            document.getElementById('sportsFields').classList.toggle('hidden', val !== 'SportsEvent');
-            document.getElementById('faqFields').classList.toggle('hidden', val !== 'FAQPage');
-            document.getElementById('blogFields').classList.toggle('hidden', val !== 'BlogPosting');
-            document.getElementById('reviewFields').classList.toggle('hidden', val !== 'Review');
-        }
+        <!-- SPORTS EVENT -->
+        <div id="fields_SportsEvent">
+            <div class="section">
+                <h2>League & Teams</h2>
+                <div class="grid">
+                    <div>
+                        <label>Sport/League:</label>
+                        <select name="seSport" id="seSport" onchange="loadTeams()">
+                            <option value="NFL">NFL</option>
+                            <option value="NBA">NBA</option>
+                            <option value="MLB">MLB</option>
+                            <option value="NHL">NHL</option>
+                            <option value="Other">Other (Custom)</option>
+                        </select>
+                    </div>
+                    <div id="customL" class="hidden">
+                        <label>Custom League & Sport:</label>
+                        <div class="grid">
+                            <input type="text" name="seLeagueCustom" placeholder="League">
+                            <input type="text" name="seSportCustom" placeholder="Sport">
+                        </div>
+                    </div>
+                </div>
 
-        function updateTeams() {
-            const league = document.getElementById('seSport').value;
-            const isOther = league === 'Other';
-            document.getElementById('customSportFields').classList.toggle('hidden', !isOther);
-            document.getElementById('seTeamA').classList.toggle('hidden', isOther);
-            document.getElementById('seTeamB').classList.toggle('hidden', isOther);
-            document.getElementById('seTeamACustom').classList.toggle('hidden', !isOther);
-            document.getElementById('seTeamBCustom').classList.toggle('hidden', !isOther);
+                <div class="grid" style="margin-top:15px;">
+                    <div>
+                        <label>Home Team:</label>
+                        <select name="seTeamA" id="seTeamA" onchange="updName()"></select>
+                        <input type="text" name="seTeamACustom" id="seTeamACustom" class="hidden" placeholder="Team A" oninput="updName()">
+                    </div>
+                    <div>
+                        <label>Away Team:</label>
+                        <select name="seTeamB" id="seTeamB" onchange="updName()"></select>
+                        <input type="text" name="seTeamBCustom" id="seTeamBCustom" class="hidden" placeholder="Team B" oninput="updName()">
+                    </div>
+                </div>
+                <label style="margin-top:15px;">Event Name:</label>
+                <input type="text" name="seName" id="seName">
+            </div>
 
-            if (!isOther) {
-                const list = teams[league] || [];
-                const options = list.map(t => `<option value="${t}">${t}</option>`).join('');
-                document.getElementById('seTeamA').innerHTML = options;
-                document.getElementById('seTeamB').innerHTML = options;
-            }
-            syncName();
-        }
+            <div class="section">
+                <h2>Event Details & SEO</h2>
+                <div class="grid">
+                    <input type="datetime-local" name="seStartDate" title="Start Date">
+                    <input type="datetime-local" name="seEndDate" title="End Date">
+                    <select name="seStatus">
+                        <option value="http://schema.org/EventScheduled">Scheduled</option>
+                        <option value="http://schema.org/EventCancelled">Cancelled</option>
+                    </select>
+                    <select name="seMode">
+                        <option value="http://schema.org/OfflineEventAttendanceMode">Offline</option>
+                        <option value="http://schema.org/OnlineEventAttendanceMode">Online</option>
+                    </select>
+                </div>
+                <div class="grid" style="margin-top:10px;">
+                    <input type="text" name="seStadium" placeholder="Stadium">
+                    <input type="text" name="seCity" placeholder="City">
+                    <input type="text" name="seCountry" value="USA">
+                    <input type="text" name="seLang" value="en-US">
+                </div>
+                <textarea name="seDesc" placeholder="Description/SEO Summary" style="margin-top:10px;"></textarea>
+                <input type="url" name="seImage" placeholder="Image URL">
+            </div>
 
-        function syncName() {
-            const league = document.getElementById('seSport').value;
-            let a, b;
-            if (league === 'Other') {
-                a = document.getElementById('seTeamACustom').value;
-                b = document.getElementById('seTeamBCustom').value;
-            } else {
-                a = document.getElementById('seTeamA').value;
-                b = document.getElementById('seTeamB').value;
-            }
-            document.getElementById('seName').value = a && b ? `${a} vs ${b}` : "";
-        }
+            <div class="section">
+                <h2>Main Offer & 7 Picks</h2>
+                <div class="pick-grid" style="background:#e8f0fe">
+                    <input type="text" name="seOfferName" placeholder="Main Market">
+                    <input type="text" name="seOfferPrice" placeholder="Odds">
+                    <input type="url" name="seOfferUrl" placeholder="URL">
+                </div>
+                {% for i in range(1, 8) %}
+                <div class="pick-grid">
+                    <input type="text" name="pick{{i}}Name" placeholder="Pick {{i}}">
+                    <input type="text" name="pick{{i}}Price" placeholder="Odds">
+                    <input type="url" name="pick{{i}}Url" placeholder="URL">
+                </div>
+                {% endfor %}
+            </div>
+        </div>
 
-        document.getElementById('mainForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            fetch('/generate_schema', { method: 'POST', body: new FormData(this) })
-                .then(r => r.json())
-                .then(data => document.getElementById('jsonOutput').value = JSON.stringify(data, null, 2));
+        <!-- FAQ -->
+        <div id="fields_FAQPage" class="hidden">
+            <div class="section">
+                <h2>FAQ Content</h2>
+                <input type="text" name="faqQ1" placeholder="Question">
+                <textarea name="faqA1" placeholder="Answer"></textarea>
+            </div>
+        </div>
+
+        <!-- BLOG -->
+        <div id="fields_BlogPosting" class="hidden">
+            <div class="section">
+                <h2>Blog Meta</h2>
+                <input type="text" name="blogHeadline" placeholder="Headline">
+                <input type="text" name="blogDesc" placeholder="Brief Summary">
+                <input type="datetime-local" name="blogDate">
+                <div class="grid">
+                    <input type="text" name="blogAuthor" placeholder="Author">
+                    <input type="text" name="blogPub" placeholder="Publisher" value="BetUS">
+                    <input type="url" name="blogUrl" placeholder="Article URL">
+                </div>
+                <input type="url" name="blogImage" placeholder="Main Image URL">
+            </div>
+        </div>
+
+        <!-- REVIEW -->
+        <div id="fields_Review" class="hidden">
+            <div class="section">
+                <h2>Rating Data</h2>
+                <input type="text" name="revItem" placeholder="What are you reviewing?">
+                <input type="number" name="revValue" step="0.1" min="1" max="5" value="5">
+                <input type="text" name="revAuthor" placeholder="Reviewer Name">
+                <textarea name="revBody" placeholder="The review text..."></textarea>
+            </div>
+        </div>
+
+        <button type="submit">Generate JSON-LD</button>
+    </form>
+
+    <textarea id="jsonOutput" rows="20" readonly placeholder="Result will appear here..."></textarea>
+</div>
+
+<script>
+    const teamData = {
+        "NFL": ["Arizona Cardinals", "Atlanta Falcons", "Baltimore Ravens", "Buffalo Bills", "Carolina Panthers", "Chicago Bears", "Cincinnati Bengals", "Cleveland Browns", "Dallas Cowboys", "Denver Broncos", "Detroit Lions", "Green Bay Packers", "Houston Texans", "Indianapolis Colts", "Jacksonville Jaguars", "Kansas City Chiefs", "Las Vegas Raiders", "Los Angeles Chargers", "Los Angeles Rams", "Miami Dolphins", "Minnesota Vikings", "New England Patriots", "New Orleans Saints", "New York Giants", "New York Jets", "Philadelphia Eagles", "Pittsburgh Steelers", "San Francisco 49ers", "Seattle Seahawks", "Tampa Bay Buccaneers", "Tennessee Titans", "Washington Commanders"],
+        "NBA": ["Lakers", "Celtics", "Warriors", "Bulls", "Heat", "Suns", "Bucks", "Nets"],
+        "MLB": ["Yankees", "Dodgers", "Red Sox", "Astros", "Braves"],
+        "NHL": ["Bruins", "Rangers", "Maple Leafs", "Golden Knights"]
+    };
+
+    function switchSchema() {
+        const type = document.getElementById('schemaTypeSelect').value;
+        document.getElementById('hiddenType').value = type;
+        ["SportsEvent", "FAQPage", "BlogPosting", "Review"].forEach(t => {
+            document.getElementById(`fields_${t}`).classList.toggle('hidden', t !== type);
         });
+    }
 
-        // Inicializar
-        updateTeams();
-    </script>
+    function loadTeams() {
+        const league = document.getElementById('seSport').value;
+        const isOther = league === 'Other';
+        document.getElementById('customL').classList.toggle('hidden', !isOther);
+        document.getElementById('seTeamA').classList.toggle('hidden', isOther);
+        document.getElementById('seTeamB').classList.toggle('hidden', isOther);
+        document.getElementById('seTeamACustom').classList.toggle('hidden', !isOther);
+        document.getElementById('seTeamBCustom').classList.toggle('hidden', !isOther);
+
+        if(!isOther) {
+            const options = (teamData[league] || []).map(t => `<option value="${t}">${t}</option>`).join('');
+            document.getElementById('seTeamA').innerHTML = options;
+            document.getElementById('seTeamB').innerHTML = options;
+        }
+        updName();
+    }
+
+    function updName() {
+        const league = document.getElementById('seSport').value;
+        let a = (league === 'Other') ? document.getElementById('seTeamACustom').value : document.getElementById('seTeamA').value;
+        let b = (league === 'Other') ? document.getElementById('seTeamBCustom').value : document.getElementById('seTeamB').value;
+        document.getElementById('seName').value = a && b ? `${a} vs ${b}` : "";
+    }
+
+    document.getElementById('mainForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
+        const json = await res.json();
+        document.getElementById('jsonOutput').value = JSON.stringify(json, null, 2);
+    };
+
+    loadTeams();
+</script>
 </body>
 </html>
