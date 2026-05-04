@@ -168,8 +168,8 @@ def generate():
     if stype == 'FAQPage': res = gen_faq(data)
     elif stype == 'BlogPosting': res = gen_blog(data)
     elif stype == 'Review': res = gen_review(data)
-    else: res = gen_sports(data)
     elif stype == 'Parlay': res = gen_parlay(data)
+    else: res = gen_sports(data)
     return jsonify(clean_nones(res))
 
 if __name__ == '__main__':
