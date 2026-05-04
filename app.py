@@ -4,15 +4,13 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-# --- Limpiador de diccionarios (Elimina campos vacíos) ---
 def clean_nones(value):
     if isinstance(value, dict):
-        return {k: v for k, v in ((k, clean_nones(v)) for k, v in value.items()) if v}
+        # Mantenemos valores como 0 o cuotas que podrían ser interpretadas como False
+        return {k: v for k, v in ((k, clean_nones(v)) for k, v in value.items()) if v is not None and v != ""}
     if isinstance(value, list):
-        return [v for v in (clean_nones(v) for v in value) if v]
+        return [v for v in (clean_nones(v) for v in value) if v is not None and v != ""]
     return value
-
-# --- GENERADORES ---
 
 def gen_faq(data):
     return {
@@ -34,7 +32,7 @@ def gen_blog(data):
         "image": data.get("blogImage"),
         "datePublished": data.get("blogDate") or datetime.now().isoformat(),
         "author": {"@type": "Person", "name": data.get("blogAuthor")},
-        "publisher": {"@type": "Organization", "name": data.get("blogPub")},
+        "publisher": {"@type": "Organization", "name": data.get("blogPub", "BetUS")},
         "mainEntityOfPage": {"@type": "WebPage", "@id": data.get("blogUrl")}
     }
 
@@ -46,8 +44,7 @@ def gen_review(data):
         "reviewRating": {
             "@type": "Rating",
             "ratingValue": data.get("revValue"),
-            "bestRating": "5",
-            "worstRating": "1"
+            "bestRating": "5"
         },
         "author": {"@type": "Person", "name": data.get("revAuthor")},
         "reviewBody": data.get("revBody")
@@ -60,31 +57,24 @@ def gen_sports(data):
         t_a, t_b = data.get("seTeamACustom"), data.get("seTeamBCustom")
     else:
         league = l_val
-        sport = {"NFL": "American Football", "NBA": "Basketball", "MLB": "Baseball", "NHL": "Ice Hockey"}.get(l_val, "Sports")
+        sport_map = {"NFL": "American Football", "NBA": "Basketball", "MLB": "Baseball", "NHL": "Ice Hockey"}
+        sport = sport_map.get(l_val, "Sports")
         t_a, t_b = data.get("seTeamA"), data.get("seTeamB")
 
-    # Estructura completa para pasar el Rich Results Test
-    schema = {
+    return {
         "@context": "https://schema.org",
         "@type": "SportsEvent",
         "name": data.get("seName"),
         "description": data.get("seDesc"),
         "sport": sport,
         "startDate": data.get("seStartDate"),
-        "endDate": data.get("seEndDate"), # REQUERIDO
+        "endDate": data.get("seEndDate"),
         "eventStatus": data.get("seStatus"),
         "image": [data.get("seImage")] if data.get("seImage") else [],
         "homeTeam": {"@type": "SportsTeam", "name": t_a},
         "awayTeam": {"@type": "SportsTeam", "name": t_b},
-        "performer": [ # REQUERIDO
-            {"@type": "SportsTeam", "name": t_a},
-            {"@type": "SportsTeam", "name": t_b}
-        ],
-        "organizer": { # REQUERIDO
-            "@type": "Organization",
-            "name": data.get("seOrganizer") or "BetUS",
-            "url": "https://www.betus.com.pa"
-        },
+        "performer": [{"@type": "SportsTeam", "name": t_a}, {"@type": "SportsTeam", "name": t_b}],
+        "organizer": {"@type": "Organization", "name": data.get("seOrganizer", "BetUS"), "url": "https://www.betus.com.pa"},
         "location": {
             "@type": "Place",
             "name": data.get("seStadium"),
@@ -98,29 +88,44 @@ def gen_sports(data):
         "offers": {
             "@type": "Offer",
             "url": data.get("seOfferUrl"),
-            "availability": "https://schema.org/InStock", # REQUERIDO
+            "availability": "https://schema.org/InStock",
             "price": data.get("seOfferPrice") or "0",
             "priceCurrency": "USD",
-            "validFrom": data.get("seValidFrom") # REQUERIDO
+            "validFrom": data.get("seValidFrom")
         }
     }
-    
-    return schema
+
 def gen_parlay(data):
-    schema = {
+    legs = []
+    for i in range(1, 8):
+        p_event = data.get(f"pPick{i}Event")
+        p_name = data.get(f"pPick{i}Name")
+        p_odds = data.get(f"pPick{i}Price")
+        if p_event and p_name:
+            legs.append({
+                "@type": "ListItem",
+                "position": i,
+                "item": {
+                    "@type": "Offer",
+                    "name": p_name,
+                    "price": p_odds,
+                    "itemOffered": {"@type": "SportsEvent", "name": p_event}
+                }
+            })
+
+    return {
         "@context": "https://schema.org",
         "@type": "CreativeWork",
         "name": data.get("parlayName"),
         "description": data.get("parlayDesc"),
-        "startDate": data.get("seStartDate"), 
-        "endDate": data.get("seEndDate"),
+        "startDate": data.get("seStartDate"),
         "location": {
             "@type": "Place",
-            "name": data.get("p_seStadium"), # Nota el prefijo p_
+            "name": data.get("p_seStadium"),
             "address": {
                 "@type": "PostalAddress",
-                "addressLocality": data.get("p_seCity"), # Nota el prefijo p_
-                "addressRegion": data.get("p_seRegion"), # Nota el prefijo p_
+                "addressLocality": data.get("p_seCity"),
+                "addressRegion": data.get("p_seRegion"),
                 "addressCountry": "US"
             }
         },
@@ -135,37 +140,11 @@ def gen_parlay(data):
         },
         "mainEntity": {
             "@type": "ItemList",
-            "name": "Parlay Selection Details",
-            "numberOfItems": 0,
-            "itemListElement": []
+            "numberOfItems": len(legs),
+            "itemListElement": legs
         }
     }
 
-    legs = []
-    # Recorremos los 7 posibles picks del parlay
-    for i in range(1, 8):
-        p_event = data.get(f"pPick{i}Event")
-        p_name = data.get(f"pPick{i}Name")
-        p_odds = data.get(f"pPick{i}Price")
-        
-        if p_event and p_name:
-            legs.append({
-                "@type": "ListItem",
-                "position": len(legs) + 1,
-                "item": {
-                    "@type": "Offer",
-                    "name": p_name,
-                    "price": p_odds,
-                    "itemOffered": {
-                        "@type": "SportsEvent",
-                        "name": p_event
-                    }
-                }
-            })
-
-    schema["mainEntity"]["itemListElement"] = legs
-    schema["mainEntity"]["numberOfItems"] = len(legs)
-    return schema
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -176,25 +155,15 @@ def generate_schema():
         stype = request.form.get('schemaType')
         data = request.form.to_dict()
         
-        # Validación de qué generador usar
-        if stype == 'FAQPage':
-            res = gen_faq(data)
-        elif stype == 'BlogPosting':
-            res = gen_blog(data)
-        elif stype == 'Review':
-            res = gen_review(data)
-        elif stype == 'Parlay':
-            res = gen_parlay(data)
-        else:
-            # Por defecto genera SportsEvent si no es ninguno de los anteriores
-            res = gen_sports(data)
+        if stype == 'FAQPage': res = gen_faq(data)
+        elif stype == 'BlogPosting': res = gen_blog(data)
+        elif stype == 'Review': res = gen_review(data)
+        elif stype == 'Parlay': res = gen_parlay(data)
+        else: res = gen_sports(data)
         
-        # clean_nones es la función que elimina campos vacíos
         return jsonify(clean_nones(res))
     except Exception as e:
-        # Esto te ayudará a ver errores en los logs de Render
         return jsonify({"error": str(e)}), 500
 
-# El bloque de ejecución también sin espacios al inicio
 if __name__ == '__main__':
     app.run(debug=True)
