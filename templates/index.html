@@ -365,40 +365,56 @@
     }
 }
 function autoFillVenue() {
-    const type = document.getElementById('schemaTypeSelect').value;
+    // 1. Verificar que el selector principal existe
+    const typeSelect = document.getElementById('schemaTypeSelect');
+    if (!typeSelect) return;
+    const type = typeSelect.value;
+
+    // 2. Verificar que los selectores de liga y equipo existen
     const leagueEl = document.getElementById('seSport');
     const teamAEl = document.getElementById('seTeamA');
-
     if (!leagueEl || !teamAEl) return;
 
     const league = leagueEl.value;
     const homeTeam = teamAEl.value;
 
-    // Solo entramos si hay datos en nuestra base de datos para ese equipo
+    // 3. Verificar si el equipo está en nuestra base de datos
     if (league !== 'Other' && teamData[league] && teamData[league][homeTeam]) {
         const info = teamData[league][homeTeam];
 
         if (type === 'SportsEvent') {
-            // Rellenar campos de SportsEvent (Solo si existen)
-            const st = document.getElementById('seStadium');
-            const ci = document.getElementById('seCity');
-            const re = document.getElementById('seRegion');
-            const co = document.getElementById('seCountry');
-
-            if (st) st.value = info.stadium;
-            if (ci) ci.value = info.city;
-            if (re) re.value = info.region;
-            if (co) co.value = (league === "NHL" && info.region === "ON") ? "CA" : "US";
+            // Mapeo de IDs para SportsEvent
+            const fields = {
+                'seStadium': info.stadium,
+                'seCity': info.city,
+                'seRegion': info.region,
+                'seCountry': (league === "NHL" && info.region === "ON") ? "CA" : "US"
+            };
+            
+            // Asignación con chequeo de existencia
+            Object.keys(fields).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.value = fields[id];
+                } else {
+                    console.warn("Atención: No se encontró el ID en el HTML:", id);
+                }
+            });
         } 
         else if (type === 'Parlay') {
-            // Rellenar campos de Parlay (Solo si les pusiste el prefijo p_)
-            const pst = document.getElementById('p_seStadium');
-            const pci = document.getElementById('p_seCity');
-            const pre = document.getElementById('p_seRegion');
+            // Mapeo de IDs para Parlay (usando el prefijo p_)
+            const pFields = {
+                'p_seStadium': info.stadium,
+                'p_seCity': info.city,
+                'p_seRegion': info.region
+            };
 
-            if (pst) pst.value = info.stadium;
-            if (pci) pci.value = info.city;
-            if (pre) pre.value = info.region;
+            Object.keys(pFields).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.value = pFields[id];
+                }
+            });
         }
     }
     updName();
