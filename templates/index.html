@@ -90,7 +90,23 @@
                     <div><label>3. Offer Published On:</label><input type="datetime-local" name="seValidFrom"></div>
                 </div>
             </div>
-            <!-- Resto de campos omitidos por brevedad pero incluidos en tu archivo final -->
+            <div class="section">
+                <h2>Offers & 7 Picks</h2>
+                <label>Main Market / Pick:</label>
+                <div class="pick-grid" style="background:#e8f0fe">
+                    <input type="text" name="seOfferName" placeholder="Main Market (e.g. Moneyline)">
+                    <input type="text" name="seOfferPrice" placeholder="Odds">
+                    <input type="url" name="seOfferUrl" placeholder="URL">
+                </div>
+                <label>Additional Picks:</label>
+                {% for i in range(1, 8) %}
+                <div class="pick-grid">
+                    <input type="text" name="pick{{i}}Name" placeholder="Pick {{i}}">
+                    <input type="text" name="pick{{i}}Price" placeholder="Odds">
+                    <input type="url" name="pick{{i}}Url" placeholder="URL">
+                </div>
+                {% endfor %}
+            </div>
         </div>
 
         <!-- El resto de las secciones Parlay, FAQ, etc. se mantienen igual -->
