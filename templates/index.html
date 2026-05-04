@@ -168,9 +168,8 @@
         {% endfor %}
     </div>
 </div>
-        <button type="submit">Generate Professional Schema</button>
     </form>
-
+ <button type="submit">Generate Professional Schema</button>
     <textarea id="jsonOutput" rows="20" readonly></textarea>
     <button type="button" id="copyBtn" onclick="copyToClipboard()" style="background-color: #34a853; margin-top: 10px;">
     Copy Schema Code
@@ -313,14 +312,24 @@
         "Winnipeg Jets": { stadium: "Canada Life Centre", city: "Winnipeg", region: "MB" }
     }
     };
-
     function switchSchema() {
         const type = document.getElementById('schemaTypeSelect').value;
         document.getElementById('hiddenType').value = type;
-        ["SportsEvent", "FAQPage", "BlogPosting", "Review"].forEach(t => {
-            document.getElementById(`fields_${t}`).classList.toggle('hidden', t !== type);
-        });
-    }
+       const schemas = ["SportsEvent", "FAQPage", "BlogPosting", "Review", "Parlay"];
+
+    schemas.forEach(s => {
+        const div = document.getElementById(`fields_${s}`);
+        if (div) {
+            if (s === type) {
+                div.style.display = 'block'; // Fuerza a mostrarlo
+                div.classList.remove('hidden');
+            } else {
+                div.style.display = 'none';  // Fuerza a ocultarlo
+                div.classList.add('hidden');
+            }
+        }
+    });
+}
 
     function loadTeams() {
         const league = document.getElementById('seSport').value;
