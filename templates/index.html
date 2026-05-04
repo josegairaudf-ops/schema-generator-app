@@ -325,147 +325,146 @@
     }
     };
     function switchSchema() {
-        const type = document.getElementById('schemaTypeSelect').value;
-        document.getElementById('hiddenType').value = type;
-       const schemas = ["SportsEvent", "FAQPage", "BlogPosting", "Review", "Parlay"];
+        const typeSelect = document.getElementById('schemaTypeSelect');
+        const hiddenType = document.getElementById('hiddenType');
+        if (!typeSelect || !hiddenType) return;
 
-    schemas.forEach(s => {
-        const div = document.getElementById(`fields_${s}`);
-        if (div) {
-            if (s === type) {
-                div.style.display = 'block'; // Fuerza a mostrarlo
-                div.classList.remove('hidden');
-            } else {
-                div.style.display = 'none';  // Fuerza a ocultarlo
-                div.classList.add('hidden');
+        const type = typeSelect.value;
+        hiddenType.value = type;
+
+        const schemas = ["SportsEvent", "FAQPage", "BlogPosting", "Review", "Parlay"];
+
+        schemas.forEach(s => {
+            const div = document.getElementById(`fields_${s}`);
+            if (div) {
+                if (s === type) {
+                    div.style.display = 'block';
+                    div.classList.remove('hidden');
+                } else {
+                    div.style.display = 'none';
+                    div.classList.add('hidden');
+                }
+            }
+        });
+        
+        // Si es SportsEvent, cargamos equipos. Si es Parlay, limpiamos.
+        if (type === 'SportsEvent') loadTeams();
+    }
+
+    function loadTeams() {
+        const leagueEl = document.getElementById('seSport');
+        if (!leagueEl) return;
+
+        const league = leagueEl.value;
+        const isOther = league === 'Other';
+        
+        // Mostrar/Ocultar campos de liga personalizada de forma segura
+        const customDiv = document.getElementById('customL');
+        if (customDiv) customDiv.classList.toggle('hidden', !isOther);
+
+        const teamA = document.getElementById('seTeamA');
+        const teamB = document.getElementById('seTeamB');
+
+        if (teamA && teamB) {
+            teamA.classList.toggle('hidden', isOther);
+            teamB.classList.toggle('hidden', isOther);
+
+            if (!isOther) {
+                const names = Object.keys(teamData[league] || {});
+                const options = names.map(t => `<option value="${t}">${t}</option>`).join('');
+                teamA.innerHTML = options;
+                teamB.innerHTML = options;
             }
         }
-    });
-}
-    function loadTeams() {
-    const type = document.getElementById('schemaTypeSelect').value;
-    // Solo ejecutamos lógica de equipos si estamos en SportsEvent
-    if (type !== 'SportsEvent') return; 
-
-    const league = document.getElementById('seSport').value;
-    const isOther = league === 'Other';
-    
-    document.getElementById('customL').classList.toggle('hidden', !isOther);
-    document.getElementById('seTeamA').classList.toggle('hidden', isOther);
-    document.getElementById('seTeamB').classList.toggle('hidden', isOther);
-    document.getElementById('seTeamACustom').classList.toggle('hidden', !isOther);
-    document.getElementById('seTeamBCustom').classList.toggle('hidden', !isOther);
-
-    if(!isOther) {
-        const teamNames = Object.keys(teamData[league] || {});
-        const options = teamNames.map(t => `<option value="${t}">${t}</option>`).join('');
-        document.getElementById('seTeamA').innerHTML = options;
-        document.getElementById('seTeamB').innerHTML = options;
         autoFillVenue(); 
     }
-}
-function autoFillVenue() {
-    // 1. Verificar que el selector principal existe
-    const typeSelect = document.getElementById('schemaTypeSelect');
-    if (!typeSelect) return;
-    const type = typeSelect.value;
 
-    // 2. Verificar que los selectores de liga y equipo existen
-    const leagueEl = document.getElementById('seSport');
-    const teamAEl = document.getElementById('seTeamA');
-    if (!leagueEl || !teamAEl) return;
-
-    const league = leagueEl.value;
-    const homeTeam = teamAEl.value;
-
-    // 3. Verificar si el equipo está en nuestra base de datos
-    if (league !== 'Other' && teamData[league] && teamData[league][homeTeam]) {
-        const info = teamData[league][homeTeam];
-
+    function autoFillVenue() {
+        const type = document.getElementById('schemaTypeSelect').value;
+        
+        // Lógica para SportsEvent
         if (type === 'SportsEvent') {
-            // Mapeo de IDs para SportsEvent
-            const fields = {
-                'seStadium': info.stadium,
-                'seCity': info.city,
-                'seRegion': info.region,
-                'seCountry': (league === "NHL" && info.region === "ON") ? "CA" : "US"
-            };
-            
-            // Asignación con chequeo de existencia
-            Object.keys(fields).forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.value = fields[id];
-                } else {
-                    console.warn("Atención: No se encontró el ID en el HTML:", id);
-                }
-            });
+            const league = document.getElementById('seSport').value;
+            const homeTeam = document.getElementById('seTeamA').value;
+
+            if (league !== 'Other' && teamData[league] && teamData[league][homeTeam]) {
+                const info = teamData[league][homeTeam];
+                const setV = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
+                
+                setV('seStadium', info.stadium);
+                setV('seCity', info.city);
+                setV('seRegion', info.region);
+                setV('seCountry', (league === "NHL" && info.region === "ON") ? "CA" : "US");
+            }
         } 
+        // Lógica para Parlay (Independiente)
         else if (type === 'Parlay') {
-            // Mapeo de IDs para Parlay (usando el prefijo p_)
-            const pFields = {
-                'p_seStadium': info.stadium,
-                'p_seCity': info.city,
-                'p_seRegion': info.region
-            };
-
-            Object.keys(pFields).forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.value = pFields[id];
-                }
-            });
+            const pst = document.getElementById('p_seStadium');
+            // Aquí podrías añadir lógica de auto-relleno para parlay si quisieras
         }
+        updName();
     }
-    updName();
-}
-function updName() {
-    const type = document.getElementById('schemaTypeSelect').value;
-    if (type !== 'SportsEvent') return; // El nombre auto-generado es solo para SportsEvent
 
-    const league = document.getElementById('seSport').value;
-    let a = (league === 'Other') ? document.getElementById('seTeamACustom').value : document.getElementById('seTeamA').value;
-    let b = (league === 'Other') ? document.getElementById('seTeamBCustom').value : document.getElementById('seTeamB').value;
-    
-    const nameField = document.getElementById('seName');
-    if (nameField) nameField.value = a && b ? `${a} vs ${b}` : "";
-}
+    function updName() {
+        const type = document.getElementById('schemaTypeSelect').value;
+        if (type !== 'SportsEvent') return;
+
+        const league = document.getElementById('seSport').value;
+        let a = (league === 'Other') ? document.getElementById('seTeamACustom').value : document.getElementById('seTeamA').value;
+        let b = (league === 'Other') ? document.getElementById('seTeamBCustom').value : document.getElementById('seTeamB').value;
+        
+        const nameField = document.getElementById('seName');
+        if (nameField) nameField.value = a && b ? `${a} vs ${b}` : "";
+    }
+
     function copyToClipboard() {
-    const copyText = document.getElementById("jsonOutput");
-    const btn = document.getElementById("copyBtn");
+        const copyText = document.getElementById("jsonOutput");
+        const btn = document.getElementById("copyBtn");
+        if (!copyText || !btn) return;
 
-    // Seleccionamos el contenido del textarea
-    copyText.select();
-    copyText.setSelectionRange(0, 99999); // Para dispositivos móviles
+        copyText.select();
+        navigator.clipboard.writeText(copyText.value).then(() => {
+            const originalText = btn.innerText;
+            btn.innerText = "Copied! ✅";
+            btn.style.backgroundColor = "#1d6634";
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.style.backgroundColor = "#34a853";
+            }, 2000);
+        });
+    }
 
-    // Copiamos al portapapeles
-    navigator.clipboard.writeText(copyText.value).then(() => {
-        // Feedback visual: Cambiamos el botón temporalmente
-        const originalText = btn.innerText;
-        btn.innerText = "Copied! ✅";
-        btn.style.backgroundColor = "#1d6634"; // Un verde más oscuro
+    // EL EVENTO DE ENVÍO (CORREGIDO)
+    const mainForm = document.getElementById('mainForm');
+    if (mainForm) {
+        mainForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const jsonOutput = document.getElementById('jsonOutput');
+            jsonOutput.value = "Generating... Please wait.";
 
-        // Regresamos al estado original después de 2 segundos
-        setTimeout(() => {
-            btn.innerText = originalText;
-            btn.style.backgroundColor = "#34a853";
-        }, 2000);
-    }).catch(err => {
-        console.error('Error al copiar: ', err);
-        alert("The code could not be copied. Please select it and copy it manually.");
-    });
-}
-    document.getElementById('mainForm').onsubmit = async (e) => {
-        e.preventDefault();
-        const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
-        const json = await res.json();
-// Esto añade los tags de script y el JSON-LD al inicio y al final
-        const formattedJson = `<script type="application/ld+json">\n${JSON.stringify(json, null, 2)}\n<\/script>`;
-        document.getElementById('jsonOutput').value = formattedJson;
-    };
+            try {
+                const res = await fetch('/generate_schema', { 
+                    method: 'POST', 
+                    body: new FormData(e.target) 
+                });
+                
+                const json = await res.json();
+                
+                if (json.error) {
+                    jsonOutput.value = "Error: " + json.error;
+                } else {
+                    const formattedJson = `<script type="application/ld+json">\n${JSON.stringify(json, null, 2)}\n<\/script>`;
+                    jsonOutput.value = formattedJson;
+                }
+            } catch (err) {
+                jsonOutput.value = "Error connecting to server. Check Render logs.";
+            }
+        };
+    }
 
-    // Inicialización
-    loadTeams();
-</script>
+    // INICIALIZACIÓN CORRECTA
+    window.onload = () => {
+        switchSchema(); // Esto asegura que todo se oculte/muestre al cargar
+    };</script>
 </body>
 </html>
