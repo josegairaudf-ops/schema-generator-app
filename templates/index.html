@@ -336,7 +336,9 @@
         e.preventDefault();
         const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
         const json = await res.json();
-        document.getElementById('jsonOutput').value = JSON.stringify(json, null, 2);
+// Esto añade los tags de script y el JSON-LD al inicio y al final
+        const formattedJson = `<script type="application/ld+json">\n${JSON.stringify(json, null, 2)}\n<\/script>`;
+        document.getElementById('jsonOutput').value = formattedJson;
     };
 
     // Inicialización
