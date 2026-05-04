@@ -171,16 +171,30 @@ def index():
     return render_template('index.html')
 
 @app.route('/generate_schema', methods=['POST'])
-def generate():
-    stype = request.form.get('schemaType')
-    data = request.form.to_dict()
-    
-    if stype == 'FAQPage': res = gen_faq(data)
-    elif stype == 'BlogPosting': res = gen_blog(data)
-    elif stype == 'Review': res = gen_review(data)
-    elif stype == 'Parlay': res = gen_parlay(data)
-    else: res = gen_sports(data)
-    return jsonify(clean_nones(res))
+def generate_schema():
+    try:
+        stype = request.form.get('schemaType')
+        data = request.form.to_dict()
+        
+        # Validación de qué generador usar
+        if stype == 'FAQPage':
+            res = gen_faq(data)
+        elif stype == 'BlogPosting':
+            res = gen_blog(data)
+        elif stype == 'Review':
+            res = gen_review(data)
+        elif stype == 'Parlay':
+            res = gen_parlay(data)
+        else:
+            # Por defecto genera SportsEvent si no es ninguno de los anteriores
+            res = gen_sports(data)
+        
+        # clean_nones es la función que elimina campos vacíos
+        return jsonify(clean_nones(res))
+    except Exception as e:
+        # Esto te ayudará a ver errores en los logs de Render
+        return jsonify({"error": str(e)}), 500
 
+# El bloque de ejecución también sin espacios al inicio
 if __name__ == '__main__':
     app.run(debug=True)
