@@ -88,10 +88,14 @@
                         <input type="text" name="seCity" id="seCity" placeholder="City">
                     </div>
                     <div>
-                        <label>Country:</label>
-                        <input type="text" name="seCountry" id="seCountry" value="USA">
-                    </div>
-                </div>
+                        <label>Region:</label>
+        <input type="text" name="seRegion" id="seRegion" placeholder="Region (CA, TX...)">
+    </div>
+    <div>
+        <label>Country:</label>
+        <input type="text" name="seCountry" id="seCountry" value="US">
+    </div>
+</div>
                 <div class="grid" style="margin-top:10px;">
                     <input type="datetime-local" name="seStartDate" title="Start Date">
                     <select name="seStatus">
@@ -153,14 +157,14 @@
         
         <!-- CAMPOS INDEPENDIENTES PARA PARLAY -->
         <div class="grid" style="margin-top:10px;">
-            <input type="text" name="seStadium" id="p_seStadium" placeholder="Stadium">
-            <input type="text" name="seCity" id="p_seCity" placeholder="City">
-            <input type="text" name="seRegion" id="p_seRegion" placeholder="Region (CA, TX...)">
+            <input type="text" name="p_seStadium" id="p_seStadium" placeholder="Stadium">
+            <input type="text" name="p_seCity" id="p_seCity" placeholder="City">
+            <input type="text" name="p_seRegion" id="p_seRegion" placeholder="Region (CA, TX...)">
         </div>
         <div class="grid" style="margin-top:10px;">
-            <label>Start:</label><input type="datetime-local" name="seStartDate">
-            <label>End:</label><input type="datetime-local" name="seEndDate">
-            <label>Valid From:</label><input type="datetime-local" name="seValidFrom">
+            <label>Start:</label><input type="datetime-local" name="p_seStartDate">
+            <label>End:</label><input type="datetime-local" name="p_seEndDate">
+            <label>Valid From:</label><input type="datetime-local" name="p_seValidFrom">
         </div>
         <textarea name="parlayDesc" placeholder="Description..." style="margin-top:10px;"></textarea>
     </div>
@@ -365,24 +369,40 @@ function autoFillVenue() {
     const leagueEl = document.getElementById('seSport');
     const teamAEl = document.getElementById('seTeamA');
 
-    // Esta función ahora solo actúa en SportsEvent para evitar "cross info"
-    if (type === 'SportsEvent' && leagueEl && teamAEl) {
-        const league = leagueEl.value;
-        const homeTeam = teamAEl.value;
+    if (!leagueEl || !teamAEl) return;
 
-        if (league !== 'Other' && teamData[league][homeTeam]) {
-            const info = teamData[league][homeTeam];
-            
-            // IDs específicos de la pestaña SportsEvent
-            document.getElementById('seStadium').value = info.stadium;
-            document.getElementById('seCity').value = info.city;
-            document.getElementById('seRegion').value = info.region;
-            document.getElementById('seCountry').value = (league === "NHL" && info.region === "ON") ? "CA" : "US";
+    const league = leagueEl.value;
+    const homeTeam = teamAEl.value;
+
+    // Solo entramos si hay datos en nuestra base de datos para ese equipo
+    if (league !== 'Other' && teamData[league] && teamData[league][homeTeam]) {
+        const info = teamData[league][homeTeam];
+
+        if (type === 'SportsEvent') {
+            // Rellenar campos de SportsEvent (Solo si existen)
+            const st = document.getElementById('seStadium');
+            const ci = document.getElementById('seCity');
+            const re = document.getElementById('seRegion');
+            const co = document.getElementById('seCountry');
+
+            if (st) st.value = info.stadium;
+            if (ci) ci.value = info.city;
+            if (re) re.value = info.region;
+            if (co) co.value = (league === "NHL" && info.region === "ON") ? "CA" : "US";
+        } 
+        else if (type === 'Parlay') {
+            // Rellenar campos de Parlay (Solo si les pusiste el prefijo p_)
+            const pst = document.getElementById('p_seStadium');
+            const pci = document.getElementById('p_seCity');
+            const pre = document.getElementById('p_seRegion');
+
+            if (pst) pst.value = info.stadium;
+            if (pci) pci.value = info.city;
+            if (pre) pre.value = info.region;
         }
     }
     updName();
 }
-
 function updName() {
     const type = document.getElementById('schemaTypeSelect').value;
     if (type !== 'SportsEvent') return; // El nombre auto-generado es solo para SportsEvent
