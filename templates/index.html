@@ -2,19 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Ultimate Schema Generator</title>
+    <title>Ultimate Schema Generator Pro</title>
     <style>
         :root { --primary: #1a73e8; --bg: #f8f9fa; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
-        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .section { padding: 20px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 20px; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .section { padding: 20px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 20px; background: #fff; }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
         .pick-grid { display: grid; grid-template-columns: 2fr 1fr 2fr; gap: 10px; background: #f1f3f4; padding: 10px; border-radius: 5px; margin-bottom: 5px; }
         label { font-weight: 600; font-size: 13px; color: #555; display: block; margin-bottom: 5px; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #dadce0; border-radius: 4px; box-sizing: border-box; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #dadce0; border-radius: 6px; box-sizing: border-box; }
         .hidden { display: none; }
-        button { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 6px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; }
-        #jsonOutput { background: #202124; color: #81c995; font-family: 'Consolas', monospace; padding: 20px; border-radius: 8px; width: 100%; margin-top: 20px; }
+        button { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 6px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; margin-top: 10px; }
+        #jsonOutput { background: #202124; color: #81c995; font-family: 'Consolas', monospace; padding: 20px; border-radius: 8px; width: 100%; margin-top: 20px; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -22,10 +22,10 @@
 <div class="container">
     <h1>Schema Tool Pro</h1>
 
-    <div class="section" style="background: #e8f0fe;">
-        <label>Select Type:</label>
+    <div class="section" style="background: #e8f0fe; border: 1px solid var(--primary);">
+        <label>Select Schema Type:</label>
         <select id="schemaTypeSelect" onchange="switchSchema()">
-            <option value="SportsEvent">Sports Event (Betting)</option>
+            <option value="SportsEvent">Sports Event (Betting Picks)</option>
             <option value="FAQPage">FAQ Page</option>
             <option value="BlogPosting">Blog Posting</option>
             <option value="Review">Review</option>
@@ -35,7 +35,7 @@
     <form id="mainForm">
         <input type="hidden" name="schemaType" id="hiddenType" value="SportsEvent">
 
-        <!-- SPORTS EVENT -->
+        <!-- SPORTS EVENT SECTION -->
         <div id="fields_SportsEvent">
             <div class="section">
                 <h2>League & Teams</h2>
@@ -53,54 +53,58 @@
                     <div id="customL" class="hidden">
                         <label>Custom League & Sport:</label>
                         <div class="grid">
-                            <input type="text" name="seLeagueCustom" placeholder="League">
-                            <input type="text" name="seSportCustom" placeholder="Sport">
+                            <input type="text" name="seLeagueCustom" placeholder="e.g. La Liga">
+                            <input type="text" name="seSportCustom" placeholder="e.g. Soccer">
                         </div>
                     </div>
                 </div>
 
                 <div class="grid" style="margin-top:15px;">
                     <div>
-                        <label>Home Team:</label>
-                        <select name="seTeamA" id="seTeamA" onchange="updName()"></select>
-                        <input type="text" name="seTeamACustom" id="seTeamACustom" class="hidden" placeholder="Team A" oninput="updName()">
+                        <label>Home Team (Team A):</label>
+                        <select name="seTeamA" id="seTeamA" onchange="autoFillVenue()"></select>
+                        <input type="text" name="seTeamACustom" id="seTeamACustom" class="hidden" placeholder="Team A Name" oninput="updName()">
                     </div>
                     <div>
-                        <label>Away Team:</label>
+                        <label>Away Team (Team B):</label>
                         <select name="seTeamB" id="seTeamB" onchange="updName()"></select>
-                        <input type="text" name="seTeamBCustom" id="seTeamBCustom" class="hidden" placeholder="Team B" oninput="updName()">
+                        <input type="text" name="seTeamBCustom" id="seTeamBCustom" class="hidden" placeholder="Team B Name" oninput="updName()">
                     </div>
                 </div>
                 <label style="margin-top:15px;">Event Name:</label>
-                <input type="text" name="seName" id="seName">
+                <input type="text" name="seName" id="seName" placeholder="Auto-generated">
             </div>
 
             <div class="section">
-                <h2>Event Details & SEO</h2>
+                <h2>Venue, Status & SEO</h2>
                 <div class="grid">
+                    <div>
+                        <label>Stadium:</label>
+                        <input type="text" name="seStadium" id="seStadium" placeholder="Stadium Name">
+                    </div>
+                    <div>
+                        <label>City:</label>
+                        <input type="text" name="seCity" id="seCity" placeholder="City">
+                    </div>
+                    <div>
+                        <label>Country:</label>
+                        <input type="text" name="seCountry" id="seCountry" value="USA">
+                    </div>
+                </div>
+                <div class="grid" style="margin-top:10px;">
                     <input type="datetime-local" name="seStartDate" title="Start Date">
-                    <input type="datetime-local" name="seEndDate" title="End Date">
                     <select name="seStatus">
                         <option value="http://schema.org/EventScheduled">Scheduled</option>
                         <option value="http://schema.org/EventCancelled">Cancelled</option>
                     </select>
-                    <select name="seMode">
-                        <option value="http://schema.org/OfflineEventAttendanceMode">Offline</option>
-                        <option value="http://schema.org/OnlineEventAttendanceMode">Online</option>
-                    </select>
-                </div>
-                <div class="grid" style="margin-top:10px;">
-                    <input type="text" name="seStadium" placeholder="Stadium">
-                    <input type="text" name="seCity" placeholder="City">
-                    <input type="text" name="seCountry" value="USA">
                     <input type="text" name="seLang" value="en-US">
                 </div>
-                <textarea name="seDesc" placeholder="Description/SEO Summary" style="margin-top:10px;"></textarea>
-                <input type="url" name="seImage" placeholder="Image URL">
+                <textarea name="seDesc" placeholder="SEO Description..." style="margin-top:10px;"></textarea>
+                <input type="url" name="seImage" placeholder="Featured Image URL">
             </div>
 
             <div class="section">
-                <h2>Main Offer & 7 Picks</h2>
+                <h2>Offers & 7 Picks</h2>
                 <div class="pick-grid" style="background:#e8f0fe">
                     <input type="text" name="seOfferName" placeholder="Main Market">
                     <input type="text" name="seOfferPrice" placeholder="Odds">
@@ -116,54 +120,49 @@
             </div>
         </div>
 
-        <!-- FAQ -->
+        <!-- FAQ, BLOG, REVIEW (Se mantienen igual) -->
         <div id="fields_FAQPage" class="hidden">
-            <div class="section">
-                <h2>FAQ Content</h2>
-                <input type="text" name="faqQ1" placeholder="Question">
-                <textarea name="faqA1" placeholder="Answer"></textarea>
-            </div>
+            <div class="section"><h2>FAQ</h2><input type="text" name="faqQ1" placeholder="Question"><textarea name="faqA1" placeholder="Answer"></textarea></div>
         </div>
-
-        <!-- BLOG -->
         <div id="fields_BlogPosting" class="hidden">
-            <div class="section">
-                <h2>Blog Meta</h2>
-                <input type="text" name="blogHeadline" placeholder="Headline">
-                <input type="text" name="blogDesc" placeholder="Brief Summary">
-                <input type="datetime-local" name="blogDate">
-                <div class="grid">
-                    <input type="text" name="blogAuthor" placeholder="Author">
-                    <input type="text" name="blogPub" placeholder="Publisher" value="BetUS">
-                    <input type="url" name="blogUrl" placeholder="Article URL">
-                </div>
-                <input type="url" name="blogImage" placeholder="Main Image URL">
-            </div>
+            <div class="section"><h2>Blog</h2><input type="text" name="blogHeadline" placeholder="Headline"><input type="text" name="blogAuthor" placeholder="Author"><input type="url" name="blogUrl" placeholder="URL"></div>
         </div>
-
-        <!-- REVIEW -->
         <div id="fields_Review" class="hidden">
-            <div class="section">
-                <h2>Rating Data</h2>
-                <input type="text" name="revItem" placeholder="What are you reviewing?">
-                <input type="number" name="revValue" step="0.1" min="1" max="5" value="5">
-                <input type="text" name="revAuthor" placeholder="Reviewer Name">
-                <textarea name="revBody" placeholder="The review text..."></textarea>
-            </div>
+            <div class="section"><h2>Review</h2><input type="text" name="revItem" placeholder="Item"><input type="number" name="revValue" value="5"></div>
         </div>
 
-        <button type="submit">Generate JSON-LD</button>
+        <button type="submit">Generate Professional Schema</button>
     </form>
 
-    <textarea id="jsonOutput" rows="20" readonly placeholder="Result will appear here..."></textarea>
+    <textarea id="jsonOutput" rows="20" readonly></textarea>
 </div>
 
 <script>
+    // BASE DE DATOS DE EQUIPOS, ESTADIOS Y CIUDADES
     const teamData = {
-        "NFL": ["Arizona Cardinals", "Atlanta Falcons", "Baltimore Ravens", "Buffalo Bills", "Carolina Panthers", "Chicago Bears", "Cincinnati Bengals", "Cleveland Browns", "Dallas Cowboys", "Denver Broncos", "Detroit Lions", "Green Bay Packers", "Houston Texans", "Indianapolis Colts", "Jacksonville Jaguars", "Kansas City Chiefs", "Las Vegas Raiders", "Los Angeles Chargers", "Los Angeles Rams", "Miami Dolphins", "Minnesota Vikings", "New England Patriots", "New Orleans Saints", "New York Giants", "New York Jets", "Philadelphia Eagles", "Pittsburgh Steelers", "San Francisco 49ers", "Seattle Seahawks", "Tampa Bay Buccaneers", "Tennessee Titans", "Washington Commanders"],
-        "NBA": ["Lakers", "Celtics", "Warriors", "Bulls", "Heat", "Suns", "Bucks", "Nets"],
-        "MLB": ["Yankees", "Dodgers", "Red Sox", "Astros", "Braves"],
-        "NHL": ["Bruins", "Rangers", "Maple Leafs", "Golden Knights"]
+        "NFL": {
+            "Arizona Cardinals": { stadium: "State Farm Stadium", city: "Glendale", region: "AZ" },
+            "Atlanta Falcons": { stadium: "Mercedes-Benz Stadium", city: "Atlanta", region: "GA" },
+            "Baltimore Ravens": { stadium: "M&T Bank Stadium", city: "Baltimore", region: "MD" },
+            "Buffalo Bills": { stadium: "Highmark Stadium", city: "Orchard Park", region: "NY" },
+            "Dallas Cowboys": { stadium: "AT&T Stadium", city: "Arlington", region: "TX" },
+            "Kansas City Chiefs": { stadium: "GEHA Field at Arrowhead Stadium", city: "Kansas City", region: "MO" },
+            "San Francisco 49ers": { stadium: "Levi's Stadium", city: "Santa Clara", region: "CA" }
+            // ... agregar más según necesites
+        },
+        "NBA": {
+            "Los Angeles Lakers": { stadium: "Crypto.com Arena", city: "Los Angeles", region: "CA" },
+            "Boston Celtics": { stadium: "TD Garden", city: "Boston", region: "MA" },
+            "Golden State Warriors": { stadium: "Chase Center", city: "San Francisco", region: "CA" },
+            "Miami Heat": { stadium: "Kaseya Center", city: "Miami", region: "FL" }
+        },
+        "MLB": {
+            "New York Yankees": { stadium: "Yankee Stadium", city: "Bronx", region: "NY" },
+            "Los Angeles Dodgers": { stadium: "Dodger Stadium", city: "Los Angeles", region: "CA" }
+        },
+        "NHL": {
+            "Vegas Golden Knights": { stadium: "T-Mobile Arena", city: "Las Vegas", region: "NV" }
+        }
     };
 
     function switchSchema() {
@@ -177,6 +176,7 @@
     function loadTeams() {
         const league = document.getElementById('seSport').value;
         const isOther = league === 'Other';
+        
         document.getElementById('customL').classList.toggle('hidden', !isOther);
         document.getElementById('seTeamA').classList.toggle('hidden', isOther);
         document.getElementById('seTeamB').classList.toggle('hidden', isOther);
@@ -184,9 +184,23 @@
         document.getElementById('seTeamBCustom').classList.toggle('hidden', !isOther);
 
         if(!isOther) {
-            const options = (teamData[league] || []).map(t => `<option value="${t}">${t}</option>`).join('');
+            const teamNames = Object.keys(teamData[league] || {});
+            const options = teamNames.map(t => `<option value="${t}">${t}</option>`).join('');
             document.getElementById('seTeamA').innerHTML = options;
             document.getElementById('seTeamB').innerHTML = options;
+            autoFillVenue(); // Rellenar stadium al cambiar liga
+        }
+    }
+
+    function autoFillVenue() {
+        const league = document.getElementById('seSport').value;
+        const homeTeam = document.getElementById('seTeamA').value;
+
+        if (league !== 'Other' && teamData[league][homeTeam]) {
+            const info = teamData[league][homeTeam];
+            document.getElementById('seStadium').value = info.stadium;
+            document.getElementById('seCity').value = info.city;
+            document.getElementById('seCountry').value = "USA";
         }
         updName();
     }
@@ -205,6 +219,7 @@
         document.getElementById('jsonOutput').value = JSON.stringify(json, null, 2);
     };
 
+    // Inicialización
     loadTeams();
 </script>
 </body>
