@@ -107,22 +107,21 @@ def gen_sports(data):
     
     return schema
 def gen_parlay(data):
-    # Estructura de Parlay basada en CreativeWork + ItemList
     schema = {
         "@context": "https://schema.org",
         "@type": "CreativeWork",
         "name": data.get("parlayName"),
         "description": data.get("parlayDesc"),
-        "author": {"@type": "Organization", "name": data.get("seOrganizer") or "BetUS"},
+        "startDate": data.get("seStartDate"), 
         "endDate": data.get("seEndDate"),
         "location": {
             "@type": "Place",
-            "name": data.get("seStadium"), # Captura del form independiente
+            "name": data.get("p_seStadium"), # Nota el prefijo p_
             "address": {
                 "@type": "PostalAddress",
-                "addressLocality": data.get("seCity"),
-                "addressRegion": data.get("seRegion"),
-                "addressCountry": data.get("seCountry") or "US"
+                "addressLocality": data.get("p_seCity"), # Nota el prefijo p_
+                "addressRegion": data.get("p_seRegion"), # Nota el prefijo p_
+                "addressCountry": "US"
             }
         },
         "offers": {
