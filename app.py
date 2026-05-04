@@ -4,13 +4,15 @@ from datetime import datetime
 
 app = Flask(__name__)
 
+# --- Limpiador de diccionarios (Elimina campos vacíos) ---
 def clean_nones(value):
     if isinstance(value, dict):
-        # Mantenemos valores como 0 o cuotas que podrían ser interpretadas como False
         return {k: v for k, v in ((k, clean_nones(v)) for k, v in value.items()) if v is not None and v != ""}
     if isinstance(value, list):
         return [v for v in (clean_nones(v) for v in value) if v is not None and v != ""]
     return value
+
+# --- GENERADORES ---
 
 def gen_faq(data):
     return {
@@ -53,13 +55,16 @@ def gen_review(data):
 def gen_sports(data):
     l_val = data.get("seSport")
     if l_val == "Other":
-        league, sport = data.get("seLeagueCustom"), data.get("seSportCustom")
-        t_a, t_b = data.get("seTeamACustom"), data.get("seTeamBCustom")
+        league = data.get("seLeagueCustom")
+        sport = data.get("seSportCustom")
+        t_a = data.get("seTeamACustom")
+        t_b = data.get("seTeamBCustom")
     else:
         league = l_val
         sport_map = {"NFL": "American Football", "NBA": "Basketball", "MLB": "Baseball", "NHL": "Ice Hockey"}
         sport = sport_map.get(l_val, "Sports")
-        t_a, t_b = data.get("seTeamA"), data.get("seTeamB")
+        t_a = data.get("seTeamA")
+        t_b = data.get("seTeamB")
 
     return {
         "@context": "https://schema.org",
@@ -67,14 +72,22 @@ def gen_sports(data):
         "name": data.get("seName"),
         "description": data.get("seDesc"),
         "sport": sport,
+        "league": league,
         "startDate": data.get("seStartDate"),
         "endDate": data.get("seEndDate"),
         "eventStatus": data.get("seStatus"),
         "image": [data.get("seImage")] if data.get("seImage") else [],
         "homeTeam": {"@type": "SportsTeam", "name": t_a},
         "awayTeam": {"@type": "SportsTeam", "name": t_b},
-        "performer": [{"@type": "SportsTeam", "name": t_a}, {"@type": "SportsTeam", "name": t_b}],
-        "organizer": {"@type": "Organization", "name": data.get("seOrganizer", "BetUS"), "url": "https://www.betus.com.pa"},
+        "performer": [
+            {"@type": "SportsTeam", "name": t_a},
+            {"@type": "SportsTeam", "name": t_b}
+        ],
+        "organizer": {
+            "@type": "Organization",
+            "name": data.get("seOrganizer") or "BetUS",
+            "url": "https://www.betus.com.pa"
+        },
         "location": {
             "@type": "Place",
             "name": data.get("seStadium"),
@@ -155,11 +168,16 @@ def generate_schema():
         stype = request.form.get('schemaType')
         data = request.form.to_dict()
         
-        if stype == 'FAQPage': res = gen_faq(data)
-        elif stype == 'BlogPosting': res = gen_blog(data)
-        elif stype == 'Review': res = gen_review(data)
-        elif stype == 'Parlay': res = gen_parlay(data)
-        else: res = gen_sports(data)
+        if stype == 'FAQPage': 
+            res = gen_faq(data)
+        elif stype == 'BlogPosting': 
+            res = gen_blog(data)
+        elif stype == 'Review': 
+            res = gen_review(data)
+        elif stype == 'Parlay': 
+            res = gen_parlay(data)
+        else: 
+            res = gen_sports(data)
         
         return jsonify(clean_nones(res))
     except Exception as e:
