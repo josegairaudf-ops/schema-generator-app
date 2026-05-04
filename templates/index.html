@@ -140,29 +140,138 @@
 <script>
     // BASE DE DATOS DE EQUIPOS, ESTADIOS Y CIUDADES
     const teamData = {
-        "NFL": {
-            "Arizona Cardinals": { stadium: "State Farm Stadium", city: "Glendale", region: "AZ" },
-            "Atlanta Falcons": { stadium: "Mercedes-Benz Stadium", city: "Atlanta", region: "GA" },
-            "Baltimore Ravens": { stadium: "M&T Bank Stadium", city: "Baltimore", region: "MD" },
-            "Buffalo Bills": { stadium: "Highmark Stadium", city: "Orchard Park", region: "NY" },
-            "Dallas Cowboys": { stadium: "AT&T Stadium", city: "Arlington", region: "TX" },
-            "Kansas City Chiefs": { stadium: "GEHA Field at Arrowhead Stadium", city: "Kansas City", region: "MO" },
-            "San Francisco 49ers": { stadium: "Levi's Stadium", city: "Santa Clara", region: "CA" }
-            // ... agregar más según necesites
-        },
-        "NBA": {
-            "Los Angeles Lakers": { stadium: "Crypto.com Arena", city: "Los Angeles", region: "CA" },
-            "Boston Celtics": { stadium: "TD Garden", city: "Boston", region: "MA" },
-            "Golden State Warriors": { stadium: "Chase Center", city: "San Francisco", region: "CA" },
-            "Miami Heat": { stadium: "Kaseya Center", city: "Miami", region: "FL" }
+       "NFL": {
+        "Arizona Cardinals": { stadium: "State Farm Stadium", city: "Glendale", region: "AZ" },
+        "Atlanta Falcons": { stadium: "Mercedes-Benz Stadium", city: "Atlanta", region: "GA" },
+        "Baltimore Ravens": { stadium: "M&T Bank Stadium", city: "Baltimore", region: "MD" },
+        "Buffalo Bills": { stadium: "Highmark Stadium", city: "Orchard Park", region: "NY" },
+        "Carolina Panthers": { stadium: "Bank of America Stadium", city: "Charlotte", region: "NC" },
+        "Chicago Bears": { stadium: "Soldier Field", city: "Chicago", region: "IL" },
+        "Cincinnati Bengals": { stadium: "Paycor Stadium", city: "Cincinnati", region: "OH" },
+        "Cleveland Browns": { stadium: "Cleveland Browns Stadium", city: "Cleveland", region: "OH" },
+        "Dallas Cowboys": { stadium: "AT&T Stadium", city: "Arlington", region: "TX" },
+        "Denver Broncos": { stadium: "Empower Field at Mile High", city: "Denver", region: "CO" },
+        "Detroit Lions": { stadium: "Ford Field", city: "Detroit", region: "MI" },
+        "Green Bay Packers": { stadium: "Lambeau Field", city: "Green Bay", region: "WI" },
+        "Houston Texans": { stadium: "NRG Stadium", city: "Houston", region: "TX" },
+        "Indianapolis Colts": { stadium: "Lucas Oil Stadium", city: "Indianapolis", region: "IN" },
+        "Jacksonville Jaguars": { stadium: "EverBank Stadium", city: "Jacksonville", region: "FL" },
+        "Kansas City Chiefs": { stadium: "Arrowhead Stadium", city: "Kansas City", region: "MO" },
+        "Las Vegas Raiders": { stadium: "Allegiant Stadium", city: "Las Vegas", region: "NV" },
+        "Los Angeles Chargers": { stadium: "SoFi Stadium", city: "Inglewood", region: "CA" },
+        "Los Angeles Rams": { stadium: "SoFi Stadium", city: "Inglewood", region: "CA" },
+        "Miami Dolphins": { stadium: "Hard Rock Stadium", city: "Miami Gardens", region: "FL" },
+        "Minnesota Vikings": { stadium: "U.S. Bank Stadium", city: "Minneapolis", region: "MN" },
+        "New England Patriots": { stadium: "Gillette Stadium", city: "Foxborough", region: "MA" },
+        "New Orleans Saints": { stadium: "Caesars Superdome", city: "New Orleans", region: "LA" },
+        "New York Giants": { stadium: "MetLife Stadium", city: "East Rutherford", region: "NJ" },
+        "New York Jets": { stadium: "MetLife Stadium", city: "East Rutherford", region: "NJ" },
+        "Philadelphia Eagles": { stadium: "Lincoln Financial Field", city: "Philadelphia", region: "PA" },
+        "Pittsburgh Steelers": { stadium: "Acrisure Stadium", city: "Pittsburgh", region: "PA" },
+        "San Francisco 49ers": { stadium: "Levi's Stadium", city: "Santa Clara", region: "CA" },
+        "Seattle Seahawks": { stadium: "Lumen Field", city: "Seattle", region: "WA" },
+        "Tampa Bay Buccaneers": { stadium: "Raymond James Stadium", city: "Tampa", region: "FL" },
+        "Tennessee Titans": { stadium: "Nissan Stadium", city: "Nashville", region: "TN" },
+        "Washington Commanders": { stadium: "Northwest Stadium", city: "Landover", region: "MD" }
+    },
+    "NBA": {
+        "Atlanta Hawks": { stadium: "State Farm Arena", city: "Atlanta", region: "GA" },
+        "Boston Celtics": { stadium: "TD Garden", city: "Boston", region: "MA" },
+        "Brooklyn Nets": { stadium: "Barclays Center", city: "Brooklyn", region: "NY" },
+        "Charlotte Hornets": { stadium: "Spectrum Center", city: "Charlotte", region: "NC" },
+        "Chicago Bulls": { stadium: "United Center", city: "Chicago", region: "IL" },
+        "Cleveland Cavaliers": { stadium: "Rocket Mortgage FieldHouse", city: "Cleveland", region: "OH" },
+        "Dallas Mavericks": { stadium: "American Airlines Center", city: "Dallas", region: "TX" },
+        "Denver Nuggets": { stadium: "Ball Arena", city: "Denver", region: "CO" },
+        "Detroit Pistons": { stadium: "Little Caesars Arena", city: "Detroit", region: "MI" },
+        "Golden State Warriors": { stadium: "Chase Center", city: "San Francisco", region: "CA" },
+        "Houston Rockets": { stadium: "Toyota Center", city: "Houston", region: "TX" },
+        "Indiana Pacers": { stadium: "Gainbridge Fieldhouse", city: "Indianapolis", region: "IN" },
+        "LA Clippers": { stadium: "Intuit Dome", city: "Inglewood", region: "CA" },
+        "Los Angeles Lakers": { stadium: "Crypto.com Arena", city: "Los Angeles", region: "CA" },
+        "Memphis Grizzlies": { stadium: "FedExForum", city: "Memphis", region: "TN" },
+        "Miami Heat": { stadium: "Kaseya Center", city: "Miami", region: "FL" },
+        "Milwaukee Bucks": { stadium: "Fiserv Forum", city: "Milwaukee", region: "WI" },
+        "Minnesota Timberwolves": { stadium: "Target Center", city: "Minneapolis", region: "MN" },
+        "New Orleans Pelicans": { stadium: "Smoothie King Center", city: "New Orleans", region: "LA" },
+        "New York Knicks": { stadium: "Madison Square Garden", city: "New York", region: "NY" },
+        "Oklahoma City Thunder": { stadium: "Paycom Center", city: "Oklahoma City", region: "OK" },
+        "Orlando Magic": { stadium: "Kia Center", city: "Orlando", region: "FL" },
+        "Philadelphia 76ers": { stadium: "Wells Fargo Center", city: "Philadelphia", region: "PA" },
+        "Phoenix Suns": { stadium: "Footprint Center", city: "Phoenix", region: "AZ" },
+        "Portland Trail Blazers": { stadium: "Moda Center", city: "Portland", region: "OR" },
+        "Sacramento Kings": { stadium: "Golden 1 Center", city: "Sacramento", region: "CA" },
+        "San Antonio Spurs": { stadium: "Frost Bank Center", city: "San Antonio", region: "TX" },
+        "Toronto Raptors": { stadium: "Scotiabank Arena", city: "Toronto", region: "ON" },
+        "Utah Jazz": { stadium: "Delta Center", city: "Salt Lake City", region: "UT" },
+        "Washington Wizards": { stadium: "Capital One Arena", city: "Washington", region: "DC" }
         },
         "MLB": {
-            "New York Yankees": { stadium: "Yankee Stadium", city: "Bronx", region: "NY" },
-            "Los Angeles Dodgers": { stadium: "Dodger Stadium", city: "Los Angeles", region: "CA" }
-        },
+        "Arizona Diamondbacks": { stadium: "Chase Field", city: "Phoenix", region: "AZ" },
+        "Atlanta Braves": { stadium: "Truist Park", city: "Atlanta", region: "GA" },
+        "Baltimore Orioles": { stadium: "Oriole Park at Camden Yards", city: "Baltimore", region: "MD" },
+        "Boston Red Sox": { stadium: "Fenway Park", city: "Boston", region: "MA" },
+        "Chicago White Sox": { stadium: "Guaranteed Rate Field", city: "Chicago", region: "IL" },
+        "Chicago Cubs": { stadium: "Wrigley Field", city: "Chicago", region: "IL" },
+        "Cincinnati Reds": { stadium: "Great American Ball Park", city: "Cincinnati", region: "OH" },
+        "Cleveland Guardians": { stadium: "Progressive Field", city: "Cleveland", region: "OH" },
+        "Colorado Rockies": { stadium: "Coors Field", city: "Denver", region: "CO" },
+        "Detroit Tigers": { stadium: "Comerica Park", city: "Detroit", region: "MI" },
+        "Houston Astros": { stadium: "Minute Maid Park", city: "Houston", region: "TX" },
+        "Kansas City Royals": { stadium: "Kauffman Stadium", city: "Kansas City", region: "MO" },
+        "Los Angeles Angels": { stadium: "Angel Stadium", city: "Anaheim", region: "CA" },
+        "Los Angeles Dodgers": { stadium: "Dodger Stadium", city: "Los Angeles", region: "CA" },
+        "Miami Marlins": { stadium: "LoanDepot Park", city: "Miami", region: "FL" },
+        "Milwaukee Brewers": { stadium: "American Family Field", city: "Milwaukee", region: "WI" },
+        "Minnesota Twins": { stadium: "Target Field", city: "Minneapolis", region: "MN" },
+        "New York Yankees": { stadium: "Yankee Stadium", city: "Bronx", region: "NY" },
+        "New York Mets": { stadium: "Citi Field", city: "Queens", region: "NY" },
+        "Oakland Athletics": { stadium: "Sutter Health Park", city: "Sacramento", region: "CA" },
+        "Philadelphia Phillies": { stadium: "Citizens Bank Park", city: "Philadelphia", region: "PA" },
+        "Pittsburgh Pirates": { stadium: "PNC Park", city: "Pittsburgh", region: "PA" },
+        "San Diego Padres": { stadium: "Petco Park", city: "San Diego", region: "CA" },
+        "San Francisco Giants": { stadium: "Oracle Park", city: "San Francisco", region: "CA" },
+        "Seattle Mariners": { stadium: "T-Mobile Park", city: "Seattle", region: "WA" },
+        "St. Louis Cardinals": { stadium: "Busch Stadium", city: "St. Louis", region: "MO" },
+        "Tampa Bay Rays": { stadium: "Tropicana Field", city: "St. Petersburg", region: "FL" },
+        "Texas Rangers": { stadium: "Globe Life Field", city: "Arlington", region: "TX" },
+        "Toronto Blue Jays": { stadium: "Rogers Centre", city: "Toronto", region: "ON" },
+        "Washington Nationals": { stadium: "Nationals Park", city: "Washington", region: "DC" }
+    },
         "NHL": {
-            "Vegas Golden Knights": { stadium: "T-Mobile Arena", city: "Las Vegas", region: "NV" }
-        }
+        "Anaheim Ducks": { stadium: "Honda Center", city: "Anaheim", region: "CA" },
+        "Boston Bruins": { stadium: "TD Garden", city: "Boston", region: "MA" },
+        "Buffalo Sabres": { stadium: "KeyBank Center", city: "Buffalo", region: "NY" },
+        "Calgary Flames": { stadium: "Scotiabank Saddledome", city: "Calgary", region: "AB" },
+        "Carolina Hurricanes": { stadium: "Lenovo Center", city: "Raleigh", region: "NC" },
+        "Chicago Blackhawks": { stadium: "United Center", city: "Chicago", region: "IL" },
+        "Colorado Avalanche": { stadium: "Ball Arena", city: "Denver", region: "CO" },
+        "Columbus Blue Jackets": { stadium: "Nationwide Arena", city: "Columbus", region: "OH" },
+        "Dallas Stars": { stadium: "American Airlines Center", city: "Dallas", region: "TX" },
+        "Detroit Red Wings": { stadium: "Little Caesars Arena", city: "Detroit", region: "MI" },
+        "Edmonton Oilers": { stadium: "Rogers Place", city: "Edmonton", region: "AB" },
+        "Florida Panthers": { stadium: "Amerant Bank Arena", city: "Sunrise", region: "FL" },
+        "Los Angeles Kings": { stadium: "Crypto.com Arena", city: "Los Angeles", region: "CA" },
+        "Minnesota Wild": { stadium: "Xcel Energy Center", city: "Saint Paul", region: "MN" },
+        "Montreal Canadiens": { stadium: "Bell Centre", city: "Montreal", region: "QC" },
+        "Nashville Predators": { stadium: "Bridgestone Arena", city: "Nashville", region: "TN" },
+        "New Jersey Devils": { stadium: "Prudential Center", city: "Newark", region: "NJ" },
+        "New York Islanders": { stadium: "UBS Arena", city: "Elmont", region: "NY" },
+        "New York Rangers": { stadium: "Madison Square Garden", city: "New York", region: "NY" },
+        "Ottawa Senators": { stadium: "Canadian Tire Centre", city: "Ottawa", region: "ON" },
+        "Philadelphia Flyers": { stadium: "Wells Fargo Center", city: "Philadelphia", region: "PA" },
+        "Pittsburgh Penguins": { stadium: "PPG Paints Arena", city: "Pittsburgh", region: "PA" },
+        "San Jose Sharks": { stadium: "SAP Center", city: "San Jose", region: "CA" },
+        "Seattle Kraken": { stadium: "Climate Pledge Arena", city: "Seattle", region: "WA" },
+        "St. Louis Blues": { stadium: "Enterprise Center", city: "St. Louis", region: "MO" },
+        "Tampa Bay Lightning": { stadium: "Amalie Arena", city: "Tampa", region: "FL" },
+        "Toronto Maple Leafs": { stadium: "Scotiabank Arena", city: "Toronto", region: "ON" },
+        "Utah Hockey Club": { stadium: "Delta Center", city: "Salt Lake City", region: "UT" },
+        "Vancouver Canucks": { stadium: "Rogers Arena", city: "Vancouver", region: "BC" },
+        "Vegas Golden Knights": { stadium: "T-Mobile Arena", city: "Las Vegas", region: "NV" },
+        "Washington Capitals": { stadium: "Capital One Arena", city: "Washington", region: "DC" },
+        "Winnipeg Jets": { stadium: "Canada Life Centre", city: "Winnipeg", region: "MB" }
+    }
     };
 
     function switchSchema() {
@@ -192,18 +301,19 @@
         }
     }
 
-    function autoFillVenue() {
-        const league = document.getElementById('seSport').value;
-        const homeTeam = document.getElementById('seTeamA').value;
+   function autoFillVenue() {
+    const league = document.getElementById('seSport').value;
+    const homeTeam = document.getElementById('seTeamA').value;
 
-        if (league !== 'Other' && teamData[league][homeTeam]) {
-            const info = teamData[league][homeTeam];
-            document.getElementById('seStadium').value = info.stadium;
-            document.getElementById('seCity').value = info.city;
-            document.getElementById('seCountry').value = "USA";
-        }
-        updName();
+    if (league !== 'Other' && teamData[league][homeTeam]) {
+        const info = teamData[league][homeTeam];
+        document.getElementById('seStadium').value = info.stadium;
+        document.getElementById('seCity').value = info.city;
+        document.getElementById('seRegion').value = info.region; // <--- ESTA LÍNEA ES NUEVA
+        document.getElementById('seCountry').value = (league === "NHL" && info.region === "ON") ? "CA" : "US";
     }
+    updName();
+}
 
     function updName() {
         const league = document.getElementById('seSport').value;
