@@ -1,12 +1,42 @@
 from flask import Flask, render_template, request, jsonify
 import json
+from datetime import datetime
 
 app = Flask(__name__)
 
+# --- Generadores de Esquemas Secundarios ---
+def generate_faq_schema(data):
+    return {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [{
+            "@type": "Question",
+            "name": data.get("faqQuestion"),
+            "acceptedAnswer": {"@type": "Answer", "text": data.get("faqAnswer")}
+        }]
+    }
+
+def generate_blog_schema(data):
+    return {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": data.get("blogHeadline"),
+        "datePublished": data.get("blogDatePublished") or datetime.now().isoformat(),
+        "author": {"@type": "Person", "name": data.get("blogAuthor", "Expert")}
+    }
+
+def generate_review_schema(data):
+    return {
+        "@context": "https://schema.org",
+        "@type": "Review",
+        "itemReviewed": {"@type": "Thing", "name": data.get("reviewItem")},
+        "reviewRating": {"@type": "Rating", "ratingValue": data.get("reviewRating", "5")},
+        "reviewBody": data.get("reviewBody")
+    }
+
+# --- Generador de SportsEvent (El que recuperamos) ---
 def generate_sportsevent_schema(data):
     league_val = data.get("seSport")
-    
-    # Lógica de Deporte/Liga
     if league_val == "Other":
         league = data.get("seLeagueCustom")
         sport = data.get("seSportCustom")
@@ -33,40 +63,27 @@ def generate_sportsevent_schema(data):
             "address": {
                 "@type": "PostalAddress",
                 "addressLocality": data.get("seCity"),
+                "addressRegion": data.get("seRegion"),
                 "addressCountry": data.get("seCountry")
             }
         } if data.get("seStadium") else None,
         "competitor": [
-            {"@type": "SportsTeam", "name": team_a},
-            {"@type": "SportsTeam", "name": team_b}
+            {"@type": "SportsTeam", "name": team_a} if team_a else None,
+            {"@type": "SportsTeam", "name": team_b} if team_b else None
         ],
         "image": data.get("seImage"),
-        "inLanguage": data.get("seLanguage"),
+        "description": data.get("seDescription"),
         "offers": []
     }
+    
+    # Ofertas y Picks
+    def add_off(n, p, u):
+        if n or p:
+            schema["offers"].append({"@type": "Offer", "name": n, "price": p, "priceCurrency": "USD", "url": u})
 
-    # Añadir Oferta Principal
-    if data.get("seOfferName") or data.get("seOfferPrice"):
-        schema["offers"].append({
-            "@type": "Offer",
-            "name": data.get("seOfferName"),
-            "price": data.get("seOfferPrice"),
-            "priceCurrency": "USD",
-            "url": data.get("seOfferUrl")
-        })
-
-    # Añadir Picks 1-7
+    add_off(data.get("seOfferName"), data.get("seOfferPrice"), data.get("seOfferUrl"))
     for i in range(1, 8):
-        name = data.get(f"pick{i}Name")
-        price = data.get(f"pick{i}Price")
-        if name or price:
-            schema["offers"].append({
-                "@type": "Offer",
-                "name": name,
-                "price": price,
-                "priceCurrency": "USD",
-                "url": data.get(f"pick{i}Url")
-            })
+        add_off(data.get(f"pick{i}Name"), data.get(f"pick{i}Price"), data.get(f"pick{i}Url"))
 
     return schema
 
@@ -76,7 +93,15 @@ def index():
 
 @app.route('/generate_schema', methods=['POST'])
 def generate_schema():
-    return jsonify(generate_sportsevent_schema(request.form.to_dict()))
+    stype = request.form.get('schemaType')
+    data = request.form.to_dict()
+    
+    if stype == 'FAQPage': res = generate_faq_schema(data)
+    elif stype == 'BlogPosting': res = generate_blog_schema(data)
+    elif stype == 'Review': res = generate_review_schema(data)
+    else: res = generate_sportsevent_schema(data)
+    
+    return jsonify(res)
 
 if __name__ == '__main__':
     app.run(debug=True)
