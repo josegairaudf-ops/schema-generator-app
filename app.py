@@ -114,6 +114,17 @@ def gen_parlay(data):
         "name": data.get("parlayName"),
         "description": data.get("parlayDesc"),
         "author": {"@type": "Organization", "name": data.get("seOrganizer") or "BetUS"},
+        "endDate": data.get("seEndDate"),
+        "location": {
+            "@type": "Place",
+            "name": data.get("seStadium"), # Captura del form independiente
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": data.get("seCity"),
+                "addressRegion": data.get("seRegion"),
+                "addressCountry": data.get("seCountry") or "US"
+            }
+        },
         "offers": {
             "@type": "Offer",
             "name": "Total Parlay Odds",
