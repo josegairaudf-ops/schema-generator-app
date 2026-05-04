@@ -54,7 +54,6 @@ def gen_review(data):
     }
 
 def gen_sports(data):
-    # Lógica de liga y equipos
     l_val = data.get("seSport")
     if l_val == "Other":
         league, sport = data.get("seLeagueCustom"), data.get("seSportCustom")
@@ -64,19 +63,28 @@ def gen_sports(data):
         sport = {"NFL": "American Football", "NBA": "Basketball", "MLB": "Baseball", "NHL": "Ice Hockey"}.get(l_val, "Sports")
         t_a, t_b = data.get("seTeamA"), data.get("seTeamB")
 
+    # Estructura completa para pasar el Rich Results Test
     schema = {
         "@context": "https://schema.org",
         "@type": "SportsEvent",
         "name": data.get("seName"),
         "description": data.get("seDesc"),
         "sport": sport,
-        "league": league,
         "startDate": data.get("seStartDate"),
-        "endDate": data.get("seEndDate"),
+        "endDate": data.get("seEndDate"), # REQUERIDO
         "eventStatus": data.get("seStatus"),
-        "eventAttendanceMode": data.get("seMode"),
-        "inLanguage": data.get("seLang"),
-        "image": data.get("seImage"),
+        "image": [data.get("seImage")] if data.get("seImage") else [],
+        "homeTeam": {"@type": "SportsTeam", "name": t_a},
+        "awayTeam": {"@type": "SportsTeam", "name": t_b},
+        "performer": [ # REQUERIDO
+            {"@type": "SportsTeam", "name": t_a},
+            {"@type": "SportsTeam", "name": t_b}
+        ],
+        "organizer": { # REQUERIDO
+            "@type": "Organization",
+            "name": data.get("seOrganizer") or "BetUS",
+            "url": "https://www.betus.com.pa"
+        },
         "location": {
             "@type": "Place",
             "name": data.get("seStadium"),
@@ -84,24 +92,18 @@ def gen_sports(data):
                 "@type": "PostalAddress",
                 "addressLocality": data.get("seCity"),
                 "addressRegion": data.get("seRegion"),
-                "addressCountry": data.get("seCountry")
+                "addressCountry": data.get("seCountry") or "US"
             }
         },
-        "competitor": [
-            {"@type": "SportsTeam", "name": t_a},
-            {"@type": "SportsTeam", "name": t_b}
-        ],
-        "offers": []
+        "offers": {
+            "@type": "Offer",
+            "url": data.get("seOfferUrl"),
+            "availability": "https://schema.org/InStock", # REQUERIDO
+            "price": data.get("seOfferPrice") or "0",
+            "priceCurrency": "USD",
+            "validFrom": data.get("seValidFrom") # REQUERIDO
+        }
     }
-
-    # Picks (Principal + 7 adicionales)
-    def add_o(prefix):
-        name, price, url = data.get(f"{prefix}Name"), data.get(f"{prefix}Price"), data.get(f"{prefix}Url")
-        if name or price:
-            schema["offers"].append({"@type": "Offer", "name": name, "price": price, "priceCurrency": "USD", "url": url})
-
-    add_o("seOffer")
-    for i in range(1, 8): add_o(f"pick{i}")
     
     return schema
 
