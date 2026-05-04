@@ -145,6 +145,9 @@
     </form>
 
     <textarea id="jsonOutput" rows="20" readonly></textarea>
+    <button type="button" id="copyBtn" onclick="copyToClipboard()" style="background-color: #34a853; margin-top: 10px;">
+    Copy Schema Code
+</button>
 </div>
 
 <script>
@@ -331,7 +334,31 @@
         let b = (league === 'Other') ? document.getElementById('seTeamBCustom').value : document.getElementById('seTeamB').value;
         document.getElementById('seName').value = a && b ? `${a} vs ${b}` : "";
     }
+    function copyToClipboard() {
+    const copyText = document.getElementById("jsonOutput");
+    const btn = document.getElementById("copyBtn");
 
+    // Seleccionamos el contenido del textarea
+    copyText.select();
+    copyText.setSelectionRange(0, 99999); // Para dispositivos móviles
+
+    // Copiamos al portapapeles
+    navigator.clipboard.writeText(copyText.value).then(() => {
+        // Feedback visual: Cambiamos el botón temporalmente
+        const originalText = btn.innerText;
+        btn.innerText = "Copied! ✅";
+        btn.style.backgroundColor = "#1d6634"; // Un verde más oscuro
+
+        // Regresamos al estado original después de 2 segundos
+        setTimeout(() => {
+            btn.innerText = originalText;
+            btn.style.backgroundColor = "#34a853";
+        }, 2000);
+    }).catch(err => {
+        console.error('Error al copiar: ', err);
+        alert("The code could not be copied. Please select it and copy it manually.");
+    });
+}
     document.getElementById('mainForm').onsubmit = async (e) => {
         e.preventDefault();
         const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
