@@ -106,7 +106,56 @@ def gen_sports(data):
     }
     
     return schema
+def gen_parlay(data):
+    # Estructura de Parlay basada en CreativeWork + ItemList
+    schema = {
+        "@context": "https://schema.org",
+        "@type": "CreativeWork",
+        "name": data.get("parlayName"),
+        "description": data.get("parlayDesc"),
+        "author": {"@type": "Organization", "name": data.get("seOrganizer") or "BetUS"},
+        "offers": {
+            "@type": "Offer",
+            "name": "Total Parlay Odds",
+            "price": data.get("parlayTotalOdds"),
+            "priceCurrency": "USD",
+            "url": data.get("parlayUrl"),
+            "availability": "https://schema.org/InStock",
+            "validFrom": data.get("seValidFrom")
+        },
+        "mainEntity": {
+            "@type": "ItemList",
+            "name": "Parlay Selection Details",
+            "numberOfItems": 0,
+            "itemListElement": []
+        }
+    }
 
+    legs = []
+    # Recorremos los 7 posibles picks del parlay
+    for i in range(1, 8):
+        p_event = data.get(f"pPick{i}Event")
+        p_name = data.get(f"pPick{i}Name")
+        p_odds = data.get(f"pPick{i}Price")
+        
+        if p_event and p_name:
+            legs.append({
+                "@type": "ListItem",
+                "position": len(legs) + 1,
+                "item": {
+                    "@type": "Offer",
+                    "name": p_name,
+                    "price": p_odds,
+                    "itemOffered": {
+                        "@type": "SportsEvent",
+                        "name": p_event
+                    }
+                }
+            })
+
+    schema["mainEntity"]["itemListElement"] = legs
+    schema["mainEntity"]["numberOfItems"] = len(legs)
+    return schema
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -120,7 +169,7 @@ def generate():
     elif stype == 'BlogPosting': res = gen_blog(data)
     elif stype == 'Review': res = gen_review(data)
     else: res = gen_sports(data)
-    
+    elif stype == 'Parlay': res = gen_parlay(data)
     return jsonify(clean_nones(res))
 
 if __name__ == '__main__':
