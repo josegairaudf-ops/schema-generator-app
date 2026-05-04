@@ -1,86 +1,73 @@
 from flask import Flask, render_template, request, jsonify
 import json
-from datetime import datetime
 
 app = Flask(__name__)
 
 def generate_sportsevent_schema(data):
-    is_free = bool(data.get('seFree'))
-    league_value = data.get("seSport")
+    league_val = data.get("seSport")
     
-    league_to_sport = {
-        "NFL": "American Football",
-        "NBA": "Basketball",
-        "MLB": "Baseball",
-        "NHL": "Ice Hockey",
-    }
-
-    league = league_value
-    sport_name = league_to_sport.get(league_value, "Sports")
-
-    if league_value == "Other":
-        league = data.get("seLeagueCustom") or "Other"
-        sport_name = data.get("seSportCustom") or "Sports"
-
-    home_team = data.get("seTeamA")
-    away_team = data.get("seTeamB")
+    # Lógica de Deporte/Liga
+    if league_val == "Other":
+        league = data.get("seLeagueCustom")
+        sport = data.get("seSportCustom")
+        team_a = data.get("seTeamACustom")
+        team_b = data.get("seTeamBCustom")
+    else:
+        league = league_val
+        sport_map = {"NFL": "American Football", "NBA": "Basketball", "MLB": "Baseball", "NHL": "Ice Hockey"}
+        sport = sport_map.get(league_val, "Sports")
+        team_a = data.get("seTeamA")
+        team_b = data.get("seTeamB")
 
     schema = {
         "@context": "https://schema.org",
         "@type": "SportsEvent",
         "name": data.get("seName"),
-        "sport": sport_name,
+        "sport": sport,
         "league": league,
         "startDate": data.get("seStartDate"),
-        "endDate": data.get("seEndDate"),
         "eventStatus": data.get("seEventStatus"),
-        "eventAttendanceMode": data.get("seEventAttendanceMode"),
         "location": {
             "@type": "Place",
             "name": data.get("seStadium"),
             "address": {
                 "@type": "PostalAddress",
                 "addressLocality": data.get("seCity"),
-                "addressRegion": data.get("seRegion"),
                 "addressCountry": data.get("seCountry")
             }
         } if data.get("seStadium") else None,
-        "url": data.get("seUrl"),
+        "competitor": [
+            {"@type": "SportsTeam", "name": team_a},
+            {"@type": "SportsTeam", "name": team_b}
+        ],
         "image": data.get("seImage"),
-        "description": data.get("seDescription"),
-        "isAccessibleForFree": is_free
+        "inLanguage": data.get("seLanguage"),
+        "offers": []
     }
 
-    # Limpieza de nulos
-    if schema.get("location") and not schema["location"].get("name"):
-        del schema["location"]
+    # Añadir Oferta Principal
+    if data.get("seOfferName") or data.get("seOfferPrice"):
+        schema["offers"].append({
+            "@type": "Offer",
+            "name": data.get("seOfferName"),
+            "price": data.get("seOfferPrice"),
+            "priceCurrency": "USD",
+            "url": data.get("seOfferUrl")
+        })
 
-    # Ofertas y Picks
-    offers = []
-    
-    # Función auxiliar para añadir ofertas
-    def add_offer(name, price, url):
+    # Añadir Picks 1-7
+    for i in range(1, 8):
+        name = data.get(f"pick{i}Name")
+        price = data.get(f"pick{i}Price")
         if name or price:
-            offers.append({
+            schema["offers"].append({
                 "@type": "Offer",
                 "name": name,
                 "price": price,
                 "priceCurrency": "USD",
-                "url": url
+                "url": data.get(f"pick{i}Url")
             })
 
-    # Oferta Principal
-    add_offer(data.get("seOfferName"), data.get("seOfferPrice"), data.get("seOfferUrl"))
-
-    # Picks 1 al 7
-    for i in range(1, 8):
-        add_offer(
-            data.get(f"pick{i}Name"), 
-            data.get(f"pick{i}Price"), 
-            data.get(f"pick{i}Url")
-        )
-
-    schema["offers"] = offers
     return schema
 
 @app.route('/')
@@ -89,10 +76,7 @@ def index():
 
 @app.route('/generate_schema', methods=['POST'])
 def generate_schema():
-    form_data = request.form.to_dict()
-    # Forzamos a SportsEvent ya que es la herramienta que funciona
-    generated_schema = generate_sportsevent_schema(form_data)
-    return jsonify(generated_schema)
+    return jsonify(generate_sportsevent_schema(request.form.to_dict()))
 
 if __name__ == '__main__':
     app.run(debug=True)
