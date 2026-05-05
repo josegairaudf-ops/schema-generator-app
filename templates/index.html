@@ -232,6 +232,35 @@
     <button type="button" id="copyBtn" onclick="copyToClipboard()" style="background-color: #34a853;">Copy Schema Code</button>
 </div>   
 <script>
+    // Función para formatear fechas al estilo del input (YYYY-MM-DDTHH:mm)
+function formatToDateTimeLocal(date) {
+    const offset = date.getTimezoneOffset() * 60000;
+    const localISOTime = (new Date(date - offset)).toISOString().slice(0, 16);
+    return localISOTime;
+}
+
+// Función que calcula 3 horas después
+function setupSmartDates() {
+    const datePairs = [
+        { start: 'seStartDate', end: 'seEndDate' },   // Para SportsEvent
+        { start: 'p_seStartDate', end: 'p_seEndDate' } // Para Parlay
+    ];
+
+    datePairs.forEach(pair => {
+        const startEl = document.getElementsByName(pair.start)[0];
+        const endEl = document.getElementsByName(pair.end)[0];
+
+        if (startEl && endEl) {
+            startEl.addEventListener('change', function() {
+                if (this.value) {
+                    let startDate = new Date(this.value);
+                    startDate.setHours(startDate.getHours() + 3); // Sumamos 3 horas
+                    endEl.value = formatToDateTimeLocal(startDate);
+                }
+            });
+        }
+    });
+}
     const teamData = {
         "NFL": {
             "Arizona Cardinals": { stadium: "State Farm Stadium", city: "Glendale", region: "AZ" },
@@ -523,11 +552,20 @@ function switchSchema() {
         addParlayLeg(); // Fila inicial
         addWidgetRow('ws_rowsContainer', 'single'); // Fila inicial Widget
         addWidgetRow('wm_rowsContainer', 'multi');  // Fila inicial Widget
-
+         setupSmartDates();
+        };
         document.getElementById('mainForm').onsubmit = async (e) => {
             e.preventDefault();
             const type = document.getElementById('schemaTypeSelect').value;
             const output = document.getElementById('jsonOutput');
+            const now = new Date();
+    const formattedNow = formatToDateTimeLocal(now);
+    
+    // Buscamos el campo Valid From según el formulario activo y le ponemos la hora actual
+    const validFromField = (type === 'Parlay') ? 
+        document.getElementsByName('p_seValidFrom')[0] : 
+        document.getElementsByName('seValidFrom')[0];
+    if (validFromField) validFromField.value = formattedNow;      
     if (type === 'WidgetSingle') {
                 output.value = buildSingleWidgetHTML();
                 return;
