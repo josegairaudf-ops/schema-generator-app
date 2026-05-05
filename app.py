@@ -109,11 +109,31 @@ def gen_sports(data):
     }
 
 def gen_parlay(data):
+    # Definimos la ubicación una sola vez para reutilizarla
+    location_data = {
+        "@type": "Place",
+        "name": data.get("p_seStadium"),
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": data.get("p_seCity"),
+            "addressRegion": data.get("p_seRegion"),
+            "addressCountry": "US"
+        }
+    }
+    
+    # Definimos el organizador
+    organizer_data = {
+        "@type": "Organization",
+        "name": "BetUS",
+        "url": "https://www.betus.com.pa"
+    }
+
     legs = []
     for i in range(1, 8):
         p_event = data.get(f"pPick{i}Event")
         p_name = data.get(f"pPick{i}Name")
         p_odds = data.get(f"pPick{i}Price")
+        
         if p_event and p_name:
             legs.append({
                 "@type": "ListItem",
@@ -122,7 +142,17 @@ def gen_parlay(data):
                     "@type": "Offer",
                     "name": p_name,
                     "price": p_odds,
-                    "itemOffered": {"@type": "SportsEvent", "name": p_event}
+                    "priceCurrency": "USD",
+                    "itemOffered": {
+                        "@type": "SportsEvent",
+                        "name": p_event,
+                        "startDate": data.get("seStartDate"), # Hereda del global
+                        "endDate": data.get("seEndDate"),     # Hereda del global
+                        "description": data.get("parlayDesc"), # Hereda del global
+                        "eventStatus": "https://schema.org/EventScheduled",
+                        "location": location_data,             # Hereda la ubicación
+                        "organizer": organizer_data            # Hereda el organizador
+                    }
                 }
             })
 
@@ -132,16 +162,7 @@ def gen_parlay(data):
         "name": data.get("parlayName"),
         "description": data.get("parlayDesc"),
         "startDate": data.get("seStartDate"),
-        "location": {
-            "@type": "Place",
-            "name": data.get("p_seStadium"),
-            "address": {
-                "@type": "PostalAddress",
-                "addressLocality": data.get("p_seCity"),
-                "addressRegion": data.get("p_seRegion"),
-                "addressCountry": "US"
-            }
-        },
+        "location": location_data,
         "offers": {
             "@type": "Offer",
             "name": "Total Parlay Odds",
@@ -157,7 +178,6 @@ def gen_parlay(data):
             "itemListElement": legs
         }
     }
-
 @app.route('/')
 def index():
     return render_template('index.html')
