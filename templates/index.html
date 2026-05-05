@@ -528,6 +528,14 @@ function switchSchema() {
             e.preventDefault();
             const type = document.getElementById('schemaTypeSelect').value;
             const output = document.getElementById('jsonOutput');
+    if (type === 'WidgetSingle') {
+                output.value = buildSingleWidgetHTML();
+                return;
+            } 
+            if (type === 'WidgetMulti') {
+                output.value = buildMultiWidgetHTML();
+                return;
+            }
 
             if (type.includes('Widget')) {
                 output.value = type === 'WidgetSingle' ? buildSingleWidget() : buildMultiWidget();
