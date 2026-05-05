@@ -15,6 +15,8 @@
         .hidden { display: none !important; }
         button { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 6px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; margin-top: 10px; }
         #jsonOutput { background: #202124; color: #81c995; font-family: 'Consolas', monospace; padding: 20px; border-radius: 8px; width: 100%; margin-top: 20px; font-size: 14px; }
+        .btn-widget { background-color: #6366f1 !important; }
+        .btn-widget:hover { background-color: #4f46e5 !important; }
     </style>
 </head>
 <body>
@@ -30,6 +32,8 @@
             <option value="FAQPage">FAQ Page</option>
             <option value="BlogPosting">Blog Posting</option>
             <option value="Review">Review</option>
+            <option value="WidgetSingle">Widget: Single Matchup</option>
+            <option value="WidgetMulti">Widget: Multi-Matchup</option>
         </select>
     </div>
 
@@ -182,8 +186,44 @@
 
     <textarea id="jsonOutput" rows="20" readonly placeholder="Result code..."></textarea>
     <button type="button" id="copyBtn" onclick="copyToClipboard()" style="background-color: #34a853;">Copy Schema Code</button>
+</div>   
+<!-- WIDGET: SINGLE MATCHUP -->
+<div id="fields_WidgetSingle" class="hidden">
+    <div class="section" style="background: #f0fdf4; border: 1px solid #22c55e;">
+        <h2>Promo Header (Yellow Box)</h2>
+        <div class="grid">
+            <input type="text" id="ws_promoTitle" placeholder="Promo Title (e.g. 200% Welcome Bonus)">
+            <input type="text" id="ws_promoText" placeholder="Promo Description">
+            <input type="url" id="ws_promoUrl" placeholder="Promo Link (Claim Now)">
+        </div>
+    </div>
+    <div class="section">
+        <h2>Matchup Picks</h2>
+        <input type="url" id="ws_mainBookieUrl" placeholder="Main Button URL (Place Your Bets)">
+        <div class="grid" style="margin-top:10px;">
+            <input type="text" id="ws_pick1" placeholder="Moneyline Pick"> <input type="url" id="ws_url1" placeholder="Link">
+            <input type="text" id="ws_pick2" placeholder="Spread Pick"> <input type="url" id="ws_url2" placeholder="Link">
+            <input type="text" id="ws_pick3" placeholder="Total Pick"> <input type="url" id="ws_url3" placeholder="Link">
+            <input type="text" id="ws_pick4" placeholder="Prop 1"> <input type="url" id="ws_url4" placeholder="Link">
+            <input type="text" id="ws_pick5" placeholder="Prop 2"> <input type="url" id="ws_url5" placeholder="Link">
+        </div>
+    </div>
 </div>
 
+<!-- WIDGET: MULTI MATCHUP -->
+<div id="fields_WidgetMulti" class="hidden">
+    <div class="section" style="background: #eff6ff; border: 1px solid #3b82f6;">
+        <h2>Multi-Matchup Widget</h2>
+        <div class="grid">
+            <input type="text" id="wm_promoTitle" placeholder="Promo Title">
+            <input type="text" id="wm_promoText" placeholder="Promo Text">
+            <input type="url" id="wm_promoUrl" placeholder="Promo Link">
+        </div>
+    </div>
+    <div id="multiWidgetContainer">
+    </div>
+    <button type="button" onclick="addMultiWidgetRow()">+ Add Matchup Row</button>
+</div>
 <script>
     const teamData = {
         "NFL": {
@@ -393,14 +433,53 @@
     }
 
     document.getElementById('mainForm').onsubmit = async (e) => {
-        e.preventDefault();
-        const output = document.getElementById('jsonOutput');
-        output.value = "Generating... Please wait.";
+    e.preventDefault();
+    const type = document.getElementById('schemaTypeSelect').value;
+    const output = document.getElementById('jsonOutput');
+
+    // SI ES UN WIDGET, GENERAMOS EL HTML LOCALMENTE
+    if (type === 'WidgetSingle' || type === 'WidgetMulti') {
+        const html = type === 'WidgetSingle' ? generateSingleWidgetHTML() : generateMultiWidgetHTML();
+        output.value = html;
+        return;
+    }
+
+    // SI ES UN SCHEMA, LLAMAMOS AL SERVIDOR (LO QUE YA TENÍAS)
+    output.value = "Generating Schema...";
+    try {
         const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
         const json = await res.json();
         output.value = `<script type="application/ld+json">\n${JSON.stringify(json, null, 2)}\n<\/script>`;
-    };
+    } catch (err) {
+        output.value = "Error: " + err.message;
+    }
+};
 
+function generateSingleWidgetHTML() {
+    // Aquí usamos los IDs del formulario para llenar el template que me pasaste
+    const title = document.getElementById('ws_promoTitle').value;
+    const text = document.getElementById('ws_promoText').value;
+    const pUrl = document.getElementById('ws_promoUrl').value;
+    const bookieUrl = document.getElementById('ws_mainBookieUrl').value;
+
+    return `<div style="font-family: 'Segoe UI', Arial, sans-serif; border: 1px solid #e0e6ed; border-radius: 12px; overflow: hidden; margin: 20px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.08); width: 100%; box-sizing: border-box; background-color: #fff;">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 15px 20px; background-color: #fffbeb; border-bottom: 2px solid #fef3c7; gap: 10px;">
+<div style="flex: 1 1 200px; text-align: left;">
+<div style="display: flex; align-items: center; margin-bottom: 2px;"><span style="font-size: 20px; margin-right: 8px; line-height: 1;">🎁</span><span style="font-size: 10px; color: #b45309; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">${title}</span></div>
+<div style="font-size: 15px; color: #92400e; font-weight: bold;"><p style="margin: 0;">${text}</p></div>
+</div>
+<a style="background-color: #d4af37; color: #1a1a1a; padding: 10px 30px; border-radius: 8px; font-size: 13px; font-weight: 800; text-decoration: none; text-transform: uppercase; text-align: center; flex-shrink: 0;" href="${pUrl}">Claim Now</a>
+</div>
+<div style="padding: 15px 20px; background-color: #ffffff;">
+<div style="font-size: 11px; color: #64748b; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; margin-bottom: 12px; text-align: center;">Today's Expert Predictions</div>
+<!-- AQUÍ VAN LAS FILAS DE PICKS -->
+<div style="padding: 0 20px 20px 20px; text-align: center;">
+<a style="display: block; background-color: #1e293b; color: white; padding: 14px; border-radius: 8px; font-size: 14px; font-weight: bold; text-decoration: none; text-transform: uppercase; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" href="${bookieUrl}">Place Your Bets at BetUS</a>
+<p style="font-size: 9px; color: #94a3b8; margin-top: 10px; line-height: 1.2;">18+ Only. Review T&Cs. <strong>Play Responsibly.</strong></p>
+</div>
+</div>
+</div>`;
+}
     function copyToClipboard() {
         const copyText = document.getElementById("jsonOutput");
         copyText.select();
