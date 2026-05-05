@@ -367,24 +367,30 @@
         }
     };
 
-    function switchSchema() {
+function switchSchema() {
         const typeSelect = document.getElementById('schemaTypeSelect');
         const hiddenType = document.getElementById('hiddenType');
+        
+        if (!typeSelect) return;
         const type = typeSelect.value;
-        hiddenType.value = type;
+        
+        // Evitamos el error si hiddenType no existe
+        if (hiddenType) hiddenType.value = type;
+
         const schemas = ["SportsEvent", "FAQPage", "BlogPosting", "Review", "Parlay", "WidgetSingle", "WidgetMulti"];
+        
         schemas.forEach(s => {
             const div = document.getElementById(`fields_${s}`);
             if (div) {
-                 if (s === type) {
-                div.classList.remove('hidden');
-                div.style.display = 'block';
-            } else {
-                div.classList.add('hidden');
-                div.style.display = 'none';
+                if (s === type) {
+                    div.classList.remove('hidden');
+                    div.style.display = 'block';
+                } else {
+                    div.classList.add('hidden');
+                    div.style.display = 'none';
+                }
             }
-        }
-    });
+        });
     
     if (type === 'SportsEvent') loadTeams();
 }
