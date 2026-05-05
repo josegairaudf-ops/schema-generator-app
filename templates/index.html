@@ -424,8 +424,10 @@ function switchSchema() {
             }
         });
         if (type === 'SportsEvent') loadTeams();
-    }
-
+    };
+     const previewSection = document.getElementById('previewSection');
+    if (previewSection) previewSection.classList.add('hidden');
+}
     function loadTeams() {
         const league = document.getElementById('seSport').value;
         const isOther = league === 'Other';
@@ -563,6 +565,29 @@ function switchSchema() {
             e.preventDefault();
             const type = document.getElementById('schemaTypeSelect').value;
             const output = document.getElementById('jsonOutput');
+             const previewSection = document.getElementById('previewSection');
+    const livePreview = document.getElementById('livePreview');
+             if (type === 'WidgetSingle' || type === 'WidgetMulti') {
+        const html = (type === 'WidgetSingle') ? buildSingleWidgetHTML() : buildMultiWidgetHTML();
+        
+        output.value = html; // Ponemos el código en el cuadro negro
+        livePreview.innerHTML = html; // ¡MAGIA! Inyectamos el HTML en la vista previa
+        previewSection.classList.remove('hidden'); // Mostramos la sección
+        return;
+    }
+
+    // SI ES UN SCHEMA, OCULTAMOS LA PREVIEW (porque el JSON no se puede "ver" visualmente)
+    previewSection.classList.add('hidden');
+    output.value = "Generating Schema...";
+    
+    try {
+        const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
+        const json = await res.json();
+        output.value = `<script type="application/ld+json">\n${JSON.stringify(json, null, 2)}\n<\/script>`;
+    } catch (err) {
+        output.value = "Error: " + err.message;
+    }
+};
             const now = new Date();
     const formattedNow = formatToDateTimeLocal(now);
     
