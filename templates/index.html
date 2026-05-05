@@ -427,7 +427,7 @@ function switchSchema() {
     };
      const previewSection = document.getElementById('previewSection');
     if (previewSection) previewSection.classList.add('hidden');
-}
+
     function loadTeams() {
         const league = document.getElementById('seSport').value;
         const isOther = league === 'Other';
@@ -569,6 +569,14 @@ function switchSchema() {
     const livePreview = document.getElementById('livePreview');
              if (type === 'WidgetSingle' || type === 'WidgetMulti') {
         const html = (type === 'WidgetSingle') ? buildSingleWidgetHTML() : buildMultiWidgetHTML();
+                  const now = formatToDateTimeLocal(new Date());
+    const validFromField = (type === 'Parlay') ? 
+        document.getElementsByName('p_seValidFrom')[0] : 
+        document.getElementsByName('seValidFrom')[0];
+    if (validFromField) validFromField.value = now;
+    // -------------------------------------------------------
+
+    if (type === 'WidgetSingle' || type === 'WidgetMulti') {
         
         output.value = html; // Ponemos el código en el cuadro negro
         livePreview.innerHTML = html; // ¡MAGIA! Inyectamos el HTML en la vista previa
@@ -588,34 +596,7 @@ function switchSchema() {
         output.value = "Error: " + err.message;
     }
 };
-            const now = new Date();
-    const formattedNow = formatToDateTimeLocal(now);
-    
-    // Buscamos el campo Valid From según el formulario activo y le ponemos la hora actual
-    const validFromField = (type === 'Parlay') ? 
-        document.getElementsByName('p_seValidFrom')[0] : 
-        document.getElementsByName('seValidFrom')[0];
-    if (validFromField) validFromField.value = formattedNow;      
-    if (type === 'WidgetSingle') {
-                output.value = buildSingleWidgetHTML();
-                return;
-            } 
-            if (type === 'WidgetMulti') {
-                output.value = buildMultiWidgetHTML();
-                return;
-            }
-
-            output.value = "Generating Schema...";
-            try {
-                const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
-                const json = await res.json();
-                output.value = `<script type="application/ld+json">\n${JSON.stringify(json, null, 2)}\n<\/script>`;
-            } catch (err) {
-                output.value = "Error: " + err.message;
-            }
-        };
-    };
-
+};
     function buildSingleWidgetHTML() {
     const title = document.getElementById('ws_promoTitle').value || "Welcome Bonus";
     const text = document.getElementById('ws_promoText').value || "Claim your exclusive offer.";
