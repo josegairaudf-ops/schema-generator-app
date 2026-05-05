@@ -181,39 +181,32 @@
                 <textarea name="revBody" placeholder="Write your detailed review here..."></textarea>
             </div>
         </div>
-        <button type="submit">Generate Professional Schema</button>
+        
         <!-- WIDGET: SINGLE MATCHUP -->
 <div id="fields_WidgetSingle" class="hidden">
     <div class="section" style="background: #fffbeb; border: 1px solid #fef3c7;">
-        <h2>Widget: Header & Promo</h2>
+        <h2>Widget Single: Promo Header</h2>
         <div class="grid">
             <input type="text" id="ws_promoTitle" placeholder="Promo Title (e.g. 200% Welcome Bonus)">
             <input type="text" id="ws_promoText" placeholder="Promo Description">
-            <input type="url" id="ws_promoUrl" placeholder="Promo URL (Claim Link)">
+            <input type="url" id="ws_promoUrl" placeholder="Promo URL">
         </div>
     </div>
     <div class="section">
-        <h2>Expert Picks for Widget</h2>
-        <input type="url" id="ws_bookieUrl" placeholder="Main Button URL (Place Your Bets)">
-        <p style="font-size: 11px; color: #666; margin-top: 10px;">Fill the picks you want to show (Moneyline, Spread, etc.):</p>
-        <div class="grid">
-            <input type="text" id="ws_p1_name" placeholder="Market (e.g. Moneyline)"> 
-            <input type="text" id="ws_p1_pick" placeholder="Pick & Odds (e.g. Lakers ML -230)">
-            <input type="url" id="ws_p1_url" placeholder="Deep Link">
+        <h2>Matchup Picks</h2>
+        <input type="url" id="ws_bookieUrl" placeholder="Main Button URL (Place Your Bets)" style="margin-bottom: 15px;">
+        
+        <div id="ws_rowsContainer">
+            <!-- Las filas se añadirán aquí -->
         </div>
-        <div class="grid">
-            <input type="text" id="ws_p2_name" placeholder="Market (e.g. Spread)"> 
-            <input type="text" id="ws_p2_pick" placeholder="Pick & Odds (e.g. Hornets -6 -110)">
-            <input type="url" id="ws_p2_url" placeholder="Deep Link">
-        </div>
-        <!-- Puedes añadir más filas de picks siguiendo el mismo patrón -->
+        <button type="button" onclick="addWidgetRow('ws_rowsContainer', 'single')" style="background: #64748b; font-size: 12px; width: auto; padding: 8px 20px;">+ Add Pick Row</button>
     </div>
 </div>
 
 <!-- WIDGET: MULTI MATCHUP -->
 <div id="fields_WidgetMulti" class="hidden">
     <div class="section" style="background: #f8fafc; border: 1px solid #cbd5e1;">
-        <h2>Widget Multi-Matchup: Promo Header</h2>
+        <h2>Widget Multi: Promo Header</h2>
         <div class="grid">
             <input type="text" id="wm_promoTitle" placeholder="Promo Title">
             <input type="text" id="wm_promoText" placeholder="Promo Text">
@@ -222,15 +215,16 @@
     </div>
     <div class="section">
         <h2>Matchups List</h2>
-        <div id="multiWidgetRows">
-            <div class="pick-grid">
-                <input type="text" class="wm_match" placeholder="Matchup (LAA vs NYY)">
-                <input type="text" class="wm_pick" placeholder="Pick (W. Warren +5.5 SO)">
-                <input type="url" class="wm_url" placeholder="Link">
-            </div>
+        <div id="wm_rowsContainer">
+            <!-- Las filas se añadirán aquí -->
         </div>
-        <button type="button" onclick="addMultiWidgetRow()" style="background: #64748b; font-size: 12px; width: auto; padding: 5px 15px;">+ Add Row</button>
+        <button type="button" onclick="addWidgetRow('wm_rowsContainer', 'multi')" style="background: #64748b; font-size: 12px; width: auto; padding: 8px 20px;">+ Add Matchup Row</button>
     </div>
+</div>
+
+<!-- EL BOTÓN AHORA ESTÁ AL FINAL DE TODAS LAS SECCIONES -->
+<div style="margin-top: 20px;">
+    <button type="submit" id="submitBtn" class="btn-widget">Generate Schema / Widget</button>
 </div>
     </form>
 
@@ -451,63 +445,73 @@
         if (nameField) nameField.value = (a && b) ? `${a} vs ${b}` : "";
     }
 
- document.getElementById('mainForm').onsubmit = async (e) => {
-    e.preventDefault();
-    const type = document.getElementById('schemaTypeSelect').value;
-    const output = document.getElementById('jsonOutput');
-
-    // SI ES UN WIDGET, GENERAMOS HTML DIRECTAMENTE
-    if (type.includes('Widget')) {
-        let htmlResult = "";
-        if (type === 'WidgetSingle') {
-            htmlResult = generateSingleMatchupWidget(); // Función que crearemos ahora
-        } else {
-            htmlResult = generateMultiMatchupWidget();
-        }
-        output.value = htmlResult;
-        return; 
+if (type.includes('Widget')) {
+        output.value = type === 'WidgetSingle' ? buildSingleWidget() : buildMultiWidget();
+        return;
     }
 
-    // SI ES UN SCHEMA, CONTINUA AL SERVIDOR (COMO ANTES)
+    // Lógica normal para Schemas (Python)
     output.value = "Generating Schema...";
-    try {
-        const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
-        const json = await res.json();
-        output.value = `<script type="application/ld+json">\n${JSON.stringify(json, null, 2)}\n<\/script>`;
-    } catch (err) {
-        output.value = "Error: " + err.message;
-    }
+    const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
+    const json = await res.json();
+    output.value = `<script type="application/ld+json">\n${JSON.stringify(json, null, 2)}\n<\/script>`;
 };
 
-// FUNCIÓN PARA GENERAR EL HTML DEL WIDGET SINGLE (Basado en tu diseño)
-function generateSingleMatchupWidget() {
+function buildSingleWidget() {
     const title = document.getElementById('ws_promoTitle').value;
     const text = document.getElementById('ws_promoText').value;
     const pUrl = document.getElementById('ws_promoUrl').value;
     const bUrl = document.getElementById('ws_bookieUrl').value;
+    
+    let picksHtml = '';
+    document.querySelectorAll('.widget-row-single').forEach(row => {
+        const market = row.querySelector('.ws_market').value;
+        const pick = row.querySelector('.ws_pick').value;
+        const url = row.querySelector('.ws_url').value;
+        picksHtml += `<div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: #1e293b; border-bottom: 1px dashed #f1f5f9; padding-bottom: 6px;"><span style="color: #64748b; font-size: 11px; text-transform: uppercase; font-weight: bold;">${market}</span><a href="${url}"><strong>${pick}</strong></a></div>`;
+    });
 
-    // Aquí capturamos los picks (simplificado para el ejemplo)
-    const p1_name = document.getElementById('ws_p1_name').value;
-    const p1_pick = document.getElementById('ws_p1_pick').value;
-    const p1_url = document.getElementById('ws_p1_url').value;
-
-    return `<div style="font-family: 'Segoe UI', Arial, sans-serif; border: 1px solid #e0e6ed; border-radius: 12px; overflow: hidden; margin: 20px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.08); width: 100%; box-sizing: border-box; background-color: #fff;">
+    return `<!-- WIDGET SINGLE MATCHUP -->
+<div style="font-family: 'Segoe UI', Arial, sans-serif; border: 1px solid #e0e6ed; border-radius: 12px; overflow: hidden; margin: 20px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.08); width: 100%; background-color: #fff;">
 <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 15px 20px; background-color: #fffbeb; border-bottom: 2px solid #fef3c7; gap: 10px;">
 <div style="flex: 1 1 200px; text-align: left;">
-<div style="display: flex; align-items: center; margin-bottom: 2px;"><span style="font-size: 20px; margin-right: 8px; line-height: 1;">🎁</span><span style="font-size: 10px; color: #b45309; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">${title}</span></div>
+<div style="display: flex; align-items: center; margin-bottom: 2px;"><span style="font-size: 20px; margin-right: 8px;">🎁</span><span style="font-size: 10px; color: #b45309; font-weight: bold; text-transform: uppercase;">${title}</span></div>
 <div style="font-size: 15px; color: #92400e; font-weight: bold;"><p style="margin: 0;">${text}</p></div>
 </div>
-<a style="background-color: #d4af37; color: #1a1a1a; padding: 10px 30px; border-radius: 8px; font-size: 13px; font-weight: 800; text-decoration: none; text-transform: uppercase; text-align: center; flex-shrink: 0;" href="${pUrl}">Claim Now</a>
+<a style="background-color: #d4af37; color: #1a1a1a; padding: 10px 30px; border-radius: 8px; font-size: 13px; font-weight: 800; text-decoration: none; text-transform: uppercase;" href="${pUrl}">Claim Now</a>
 </div>
-<div style="padding: 15px 20px; background-color: #ffffff;">
-<div style="font-size: 11px; color: #64748b; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; margin-bottom: 12px; text-align: center;">Today's Expert Predictions</div>
-<div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: #1e293b; border-bottom: 1px dashed #f1f5f9; padding-bottom: 6px;"><span style="color: #64748b; font-size: 11px; text-transform: uppercase; font-weight: bold;">${p1_name}</span><a href="${p1_url}"><strong>${p1_pick}</strong></a></div>
-<!-- Repetir para más picks... -->
+<div style="padding: 15px 20px;">
+${picksHtml}
 <div style="padding: 20px; text-align: center;">
 <a style="display: block; background-color: #1e293b; color: white; padding: 14px; border-radius: 8px; font-size: 14px; font-weight: bold; text-decoration: none; text-transform: uppercase;" href="${bUrl}">Place Your Bets at BetUS</a>
+<p style="font-size: 9px; color: #94a3b8; margin-top: 10px;">18+ Only. Play Responsibly.</p>
+</div></div></div>`;
+}
+
+function buildMultiWidget() {
+    const title = document.getElementById('wm_promoTitle').value;
+    const text = document.getElementById('wm_promoText').value;
+    const pUrl = document.getElementById('wm_promoUrl').value;
+    
+    let rowsHtml = '';
+    document.querySelectorAll('.widget-row-multi').forEach(row => {
+        const match = row.querySelector('.wm_match').value;
+        const pick = row.querySelector('.wm_pick').value;
+        const url = row.querySelector('.wm_url').value;
+        rowsHtml += `<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 12px 20px; border-bottom: 1px solid #f1f5f9; gap: 10px; text-align: center;">
+<div style="flex: 1 1 200px; text-align: left;"><div style="font-size: 9px; color: #94a3b8; font-weight: bold; text-transform: uppercase;">${match}</div><div style="font-size: 14px; color: #1e293b;">Bet on <strong>${pick}</strong></div></div>
+<div style="flex: 1 1 160px; display: flex; justify-content: center;"><a style="background-color: #1e293b; color: white; padding: 8px 15px; border-radius: 5px; font-size: 12px; font-weight: bold; text-decoration: none; text-transform: uppercase; min-width: 160px;" href="${url}">${pick}</a></div></div>`;
+    });
+
+    return `<!-- WIDGET MULTI MATCHUP -->
+<div style="background-color: #fffbeb; border: 1px solid #fef3c7; border-radius: 8px; overflow: hidden; font-family: sans-serif;">
+<div style="padding: 15px; text-align: center; border-bottom: 2px solid #fef3c7;">
+<div style="font-size: 10px; color: #b45309; font-weight: bold; text-transform: uppercase;">🎁 ${title}</div>
+<div style="font-size: 16px; color: #92400e; font-weight: bold; margin: 5px 0;">${text}</div>
+<a href="${pUrl}" style="background-color: #d4af37; color: #1a1a1a; padding: 8px 30px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 12px;">CLAIM NOW</a>
 </div>
-</div>
-</div>`;
+${rowsHtml}
+<div style="background-color: #f8fafc; padding: 10px; text-align: center; font-size: 9px; color: #cbd5e1;">18+ Only. Play Responsibly.</div></div>`;
 }
     function copyToClipboard() {
         const copyText = document.getElementById("jsonOutput");
@@ -581,6 +585,30 @@ function reindexParlayLegs() {
     });
 }
     window.onload = switchSchema;
+    function addWidgetRow(containerId, type) {
+    const container = document.getElementById(containerId);
+    const rowId = Date.now(); // ID único para borrar
+    let html = '';
+
+    if (type === 'single') {
+        html = `
+            <div class="pick-grid widget-row-single" id="row_${rowId}" style="border-bottom: 1px dashed #ddd; padding-bottom: 10px;">
+                <input type="text" class="ws_market" placeholder="Market (e.g. Spread)">
+                <input type="text" class="ws_pick" placeholder="Pick & Odds (e.g. Lakers -6 -110)">
+                <input type="url" class="ws_url" placeholder="Deep Link">
+                <button type="button" onclick="this.parentElement.remove()" style="background: #dc3545; width: 40px; padding: 5px;">X</button>
+            </div>`;
+    } else {
+        html = `
+            <div class="pick-grid widget-row-multi" id="row_${rowId}" style="border-bottom: 1px dashed #ddd; padding-bottom: 10px;">
+                <input type="text" class="wm_match" placeholder="Match (LAA vs NYY)">
+                <input type="text" class="wm_pick" placeholder="Bet on... (e.g. W. Warren +5.5 SO)">
+                <input type="url" class="wm_url" placeholder="Link">
+                <button type="button" onclick="this.parentElement.remove()" style="background: #dc3545; width: 40px; padding: 5px;">X</button>
+            </div>`;
+    }
+    container.insertAdjacentHTML('beforeend', html);
+}
 </script>
 </body>
 </html>
