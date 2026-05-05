@@ -108,8 +108,105 @@
                 {% endfor %}
             </div>
         </div>
+<!-- PARLAY SECTION (TOTALMENTE INDEPENDIENTE) -->
+        <div id="fields_Parlay" class="hidden">
+            <div class="section" style="background: #fff4e5; border: 1px solid #ff9800;">
+                <h2>1. Parlay Master Details (Global)</h2>
+                <div class="grid">
+                    <div>
+                        <label>Parlay Name / Title:</label>
+                        <input type="text" name="parlayName" placeholder="e.g. Monday Night Football Mega Parlay">
+                    </div>
+                    <div>
+                        <label>Total Parlay Odds:</label>
+                        <input type="text" name="parlayTotalOdds" placeholder="e.g. +450 or 5.50">
+                    </div>
+                    <div>
+                        <label>Parlay Offer URL:</label>
+                        <input type="url" name="parlayUrl" placeholder="https://betus.com.pa/...">
+                    </div>
+                </div>
+                
+                <label style="margin-top:15px;">Parlay Description (SEO Summary):</label>
+                <textarea name="parlayDesc" placeholder="Briefly describe why this parlay is a good bet..."></textarea>
+            </div>
 
-        <!-- El resto de las secciones Parlay, FAQ, etc. se mantienen igual -->
+            <div class="section" style="background: #fffcf9;">
+                <h2>2. Parlay Venue & Timing</h2>
+                <p style="font-size: 11px; color: #666;">Note: Use the main event's location and date for the parlay object.</p>
+                <div class="grid">
+                    <div><label>Stadium:</label><input type="text" name="p_seStadium" id="p_seStadium"></div>
+                    <div><label>City:</label><input type="text" name="p_seCity" id="p_seCity"></div>
+                    <div><label>Region:</label><input type="text" name="p_seRegion" id="p_seRegion"></div>
+                </div>
+                <div class="grid" style="margin-top:15px;">
+                    <div><label>1. Start Date & Time:</label><input type="datetime-local" name="seStartDate"></div>
+                    <div><label>2. End Date (Estimated):</label><input type="datetime-local" name="seEndDate"></div>
+                    <div><label>3. Offer Published On:</label><input type="datetime-local" name="seValidFrom"></div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>3. Parlay Legs (Individual Picks)</h2>
+                <p style="font-size: 11px; color: #777;">
+                    * <strong>SGP:</strong> Put the same Event Name in all legs.<br>
+                    * <strong>CGP:</strong> Put different Event Names (e.g. Leg 1: Lakers vs Suns, Leg 2: Chiefs vs Raiders).
+                </p>
+                {% for i in range(1, 8) %}
+                <div class="pick-grid">
+                    <input type="text" name="pPick{{i}}Event" placeholder="Event Name (e.g. Lakers vs Suns)">
+                    <input type="text" name="pPick{{i}}Name" placeholder="Pick (e.g. Lakers ML)">
+                    <input type="text" name="pPick{{i}}Price" placeholder="Odds (e.g. -110)">
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+         <!-- FAQ SECTION -->
+        <div id="fields_FAQPage" class="hidden">
+            <div class="section" style="background: #f9f9f9;">
+                <h2>FAQ Page Details</h2>
+                <label>Question:</label>
+                <input type="text" name="faqQ1" placeholder="e.g. What is a parlay bet?">
+                <label>Answer:</label>
+                <textarea name="faqA1" placeholder="Provide a detailed answer..."></textarea>
+            </div>
+        </div>
+
+        <!-- BLOG POSTING SECTION -->
+        <div id="fields_BlogPosting" class="hidden">
+            <div class="section" style="background: #f9f9f9;">
+                <h2>Blog Post Details</h2>
+                <label>Headline (Title):</label>
+                <input type="text" name="blogHeadline" placeholder="e.g. Top NFL Picks for Sunday">
+                <label>Description (Meta Desc):</label>
+                <textarea name="blogDesc" placeholder="Brief summary of the blog post..."></textarea>
+                <label>Publish Date:</label>
+                <input type="datetime-local" name="blogDate">
+                <label>Author Name:</label>
+                <input type="text" name="blogAuthor" placeholder="e.g. John Doe">
+                <label>Publisher Name:</label>
+                <input type="text" name="blogPub" value="BetUS" placeholder="e.g. Your Company Name">
+                <label>Article URL:</label>
+                <input type="url" name="blogUrl" placeholder="https://yourwebsite.com/blog/article">
+                <label>Featured Image URL:</label>
+                <input type="url" name="blogImage" placeholder="https://yourwebsite.com/images/blog_image.jpg">
+            </div>
+        </div>
+
+        <!-- REVIEW SECTION -->
+        <div id="fields_Review" class="hidden">
+            <div class="section" style="background: #f9f9f9;">
+                <h2>Product/Service Review Details</h2>
+                <label>Item Reviewed Name:</label>
+                <input type="text" name="revItem" placeholder="e.g. BetUS Sportsbook">
+                <label>Rating (1-5):</label>
+                <input type="number" name="revValue" step="0.1" min="1" max="5" value="5" placeholder="e.g. 4.5">
+                <label>Author Name:</label>
+                <input type="text" name="revAuthor" placeholder="e.g. Jane Smith">
+                <label>Review Body/Text:</label>
+                <textarea name="revBody" placeholder="Write your detailed review here..."></textarea>
+            </div>
+        </div>
         <button type="submit">Generate Professional Schema</button>
     </form>
 
