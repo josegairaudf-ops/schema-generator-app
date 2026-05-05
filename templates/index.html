@@ -415,10 +415,10 @@ function addParlayLeg() {
     const container = document.getElementById('parlayLegsContainer');
     
     const legHtml = `
-        <div class="section" id="leg_container_${parlayPickCount}" style="border-left: 4px solid #ff9800; background: #fffcf9; margin-bottom: 20px;">
+        <div class="section parlay-leg" id="leg_container_${parlayPickCount}" style="border-left: 4px solid #ff9800; background: #fffcf9; margin-bottom: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <strong>Pick #${parlayPickCount}</strong>
-                <button type="button" onclick="removeLeg(${parlayPickCount})" style="width: auto; padding: 5px 10px; background: #dc3545; font-size: 12px;">Remove</button>
+                <strong class="leg-number">Pick #${parlayPickCount}</strong>
+                <button type="button" onclick="removeLeg(this)" style="width: auto; padding: 5px 10px; background: #dc3545; font-size: 12px; border-radius: 4px; color: white; border: none; cursor: pointer;">Remove</button>
             </div>
             <div class="grid">
                 <input type="text" name="pPick${parlayPickCount}Event" placeholder="Event Name (e.g. Lakers vs Suns)">
@@ -440,16 +440,38 @@ function addParlayLeg() {
     container.insertAdjacentHTML('beforeend', legHtml);
 }
 
-function removeLeg(id) {
-    const leg = document.getElementById(`leg_container_${id}`);
-    if (leg) leg.remove();
+function removeLeg(button) {
+    // 1. Eliminar el elemento visualmente
+    button.closest('.parlay-leg').remove();
+    
+    // 2. Re-indexar todos los picks restantes
+    reindexParlayLegs();
 }
 
-// Inicializamos con un pick al cargar la página
-window.addEventListener('load', () => {
-    addParlayLeg(); 
-});   
+function reindexParlayLegs() {
+    const legs = document.querySelectorAll('.parlay-leg');
+    parlayPickCount = 0; // Reiniciamos el contador global
 
+    legs.forEach((leg, index) => {
+        const newIndex = index + 1;
+        parlayPickCount = newIndex;
+
+        // Actualizar el Título Visual (Pick #X)
+        leg.querySelector('.leg-number').innerText = `Pick #${newIndex}`;
+        
+        // Actualizar los Nombres (Names) de todos los inputs para el Python
+        const inputs = leg.querySelectorAll('input');
+        inputs.forEach(input => {
+            const oldName = input.name;
+            // Reemplazamos pPick seguido de cualquier número por el nuevo índice
+            const newName = oldName.replace(/pPick\d+/, `pPick${newIndex}`);
+            input.name = newName;
+        });
+        
+        // Actualizar el ID del contenedor
+        leg.id = `leg_container_${newIndex}`;
+    });
+}
     window.onload = switchSchema;
 </script>
 </body>
