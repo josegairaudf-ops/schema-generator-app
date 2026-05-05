@@ -110,57 +110,27 @@
         </div>
 <!-- PARLAY SECTION (TOTALMENTE INDEPENDIENTE) -->
         <div id="fields_Parlay" class="hidden">
-            <div class="section" style="background: #fff4e5; border: 1px solid #ff9800;">
-                <h2>1. Parlay Master Details (Global)</h2>
-                <div class="grid">
-                    <div>
-                        <label>Parlay Name / Title:</label>
-                        <input type="text" name="parlayName" placeholder="e.g. Monday Night Football Mega Parlay">
-                    </div>
-                    <div>
-                        <label>Total Parlay Odds:</label>
-                        <input type="text" name="parlayTotalOdds" placeholder="e.g. +450 or 5.50">
-                    </div>
-                    <div>
-                        <label>Parlay Offer URL:</label>
-                        <input type="url" name="parlayUrl" placeholder="https://betus.com.pa/...">
-                    </div>
-                </div>
-                
-                <label style="margin-top:15px;">Parlay Description (SEO Summary):</label>
-                <textarea name="parlayDesc" placeholder="Briefly describe why this parlay is a good bet..."></textarea>
-            </div>
-
-            <div class="section" style="background: #fffcf9;">
-                <h2>2. Parlay Venue & Timing</h2>
-                <p style="font-size: 11px; color: #666;">Note: Use the main event's location and date for the parlay object.</p>
-                <div class="grid">
-                    <div><label>Stadium:</label><input type="text" name="p_seStadium" id="p_seStadium"></div>
-                    <div><label>City:</label><input type="text" name="p_seCity" id="p_seCity"></div>
-                    <div><label>Region:</label><input type="text" name="p_seRegion" id="p_seRegion"></div>
-                </div>
-                <div class="grid" style="margin-top:15px;">
-                    <div><label>1. Start Date & Time:</label><input type="datetime-local" name="seStartDate"></div>
-                    <div><label>2. End Date (Estimated):</label><input type="datetime-local" name="seEndDate"></div>
-                    <div><label>3. Offer Published On:</label><input type="datetime-local" name="seValidFrom"></div>
-                </div>
-            </div>
-
-            <div class="section">
-                <h2>3. Parlay Legs (Individual Picks)</h2>
-                <p style="font-size: 11px; color: #777;">
-                    * <strong>SGP:</strong> Put the same Event Name in all legs.<br>
-                    * <strong>CGP:</strong> Put different Event Names (e.g. Leg 1: Lakers vs Suns, Leg 2: Chiefs vs Raiders).
-                </p>
-                {% for i in range(1, 8) %}
-                <div class="pick-grid">
-                    <input type="text" name="pPick{{i}}Event" placeholder="Event Name (e.g. Lakers vs Suns)">
-                    <input type="text" name="pPick{{i}}Name" placeholder="Pick (e.g. Lakers ML)">
-                    <input type="text" name="pPick{{i}}Price" placeholder="Odds (e.g. -110)">
-                </div>
-                {% endfor %}
-            </div>
+    <div class="section" style="background: #fff4e5; border: 1px solid #ff9800;">
+        <h2>1. Parlay Master Details (Global)</h2>
+        <div class="grid">
+            <input type="text" name="parlayName" placeholder="Parlay Title">
+            <input type="text" name="parlayTotalOdds" placeholder="Total Odds (e.g. +850)">
+            <input type="url" name="parlayUrl" placeholder="Betting URL">
         </div>
+        <textarea name="parlayDesc" placeholder="Global Parlay Description..." style="margin-top:10px;"></textarea>
+    </div>
+
+    <div class="section">
+        <h2>2. Parlay Legs (Picks)</h2>
+        <div id="parlayLegsContainer">
+            <!-- Aquí se irán añadiendo los picks dinámicamente -->
+        </div>
+        
+        <button type="button" onclick="addParlayLeg()" style="background-color: #ff9800; margin-top: 10px;">
+            + Add Another Pick to Parlay
+        </button>
+    </div>
+</div>
          <!-- FAQ SECTION -->
         <div id="fields_FAQPage" class="hidden">
             <div class="section" style="background: #f9f9f9;">
@@ -437,7 +407,48 @@
         navigator.clipboard.writeText(copyText.value);
         document.getElementById("copyBtn").innerText = "Copied! ✅";
         setTimeout(() => { document.getElementById("copyBtn").innerText = "Copy Schema Code"; }, 2000);
-    }
+    };
+    let parlayPickCount = 0;
+
+function addParlayLeg() {
+    parlayPickCount++;
+    const container = document.getElementById('parlayLegsContainer');
+    
+    const legHtml = `
+        <div class="section" id="leg_container_${parlayPickCount}" style="border-left: 4px solid #ff9800; background: #fffcf9; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <strong>Pick #${parlayPickCount}</strong>
+                <button type="button" onclick="removeLeg(${parlayPickCount})" style="width: auto; padding: 5px 10px; background: #dc3545; font-size: 12px;">Remove</button>
+            </div>
+            <div class="grid">
+                <input type="text" name="pPick${parlayPickCount}Event" placeholder="Event Name (e.g. Lakers vs Suns)">
+                <input type="text" name="pPick${parlayPickCount}Name" placeholder="Pick (e.g. LeBron Over 25.5)">
+                <input type="text" name="pPick${parlayPickCount}Price" placeholder="Odds (e.g. -110)">
+            </div>
+            <div class="grid" style="margin-top: 10px;">
+                <input type="text" name="pPick${parlayPickCount}Stadium" placeholder="Stadium">
+                <input type="text" name="pPick${parlayPickCount}City" placeholder="City">
+                <input type="text" name="pPick${parlayPickCount}Region" placeholder="Region (CA, TX...)">
+            </div>
+            <div class="grid" style="margin-top: 10px;">
+                <div><label>Start Date:</label><input type="datetime-local" name="pPick${parlayPickCount}Start"></div>
+                <div><label>End Date:</label><input type="datetime-local" name="pPick${parlayPickCount}End"></div>
+            </div>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', legHtml);
+}
+
+function removeLeg(id) {
+    const leg = document.getElementById(`leg_container_${id}`);
+    if (leg) leg.remove();
+}
+
+// Inicializamos con un pick al cargar la página
+window.addEventListener('load', () => {
+    addParlayLeg(); 
+});   
 
     window.onload = switchSchema;
 </script>
