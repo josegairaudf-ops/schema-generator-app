@@ -553,7 +553,7 @@ function switchSchema() {
         addWidgetRow('ws_rowsContainer', 'single'); // Fila inicial Widget
         addWidgetRow('wm_rowsContainer', 'multi');  // Fila inicial Widget
          setupSmartDates();
-        };
+        
         document.getElementById('mainForm').onsubmit = async (e) => {
             e.preventDefault();
             const type = document.getElementById('schemaTypeSelect').value;
@@ -572,11 +572,6 @@ function switchSchema() {
             } 
             if (type === 'WidgetMulti') {
                 output.value = buildMultiWidgetHTML();
-                return;
-            }
-
-            if (type.includes('Widget')) {
-                output.value = type === 'WidgetSingle' ? buildSingleWidget() : buildMultiWidget();
                 return;
             }
 
