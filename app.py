@@ -109,49 +109,50 @@ def gen_sports(data):
     }
 
 def gen_parlay(data):
-    # Definimos la ubicación una sola vez para reutilizarla
-    location_data = {
-        "@type": "Place",
-        "name": data.get("p_seStadium"),
-        "address": {
-            "@type": "PostalAddress",
-            "addressLocality": data.get("p_seCity"),
-            "addressRegion": data.get("p_seRegion"),
-            "addressCountry": "US"
-        }
-    }
-    
-    # Definimos el organizador
-    organizer_data = {
-        "@type": "Organization",
-        "name": "BetUS",
-        "url": "https://www.betus.com.pa"
-    }
-
     legs = []
-    for i in range(1, 8):
-        p_event = data.get(f"pPick{i}Event")
-        p_name = data.get(f"pPick{i}Name")
-        p_odds = data.get(f"pPick{i}Price")
+    # Buscamos hasta 20 picks dinámicos
+    for i in range(1, 21):
+        event = data.get(f"pPick{i}Event")
+        pick_name = data.get(f"pPick{i}Name")
+        odds = data.get(f"pPick{i}Price")
         
-        if p_event and p_name:
+        # Datos específicos por cada pick
+        stadium = data.get(f"pPick{i}Stadium")
+        city = data.get(f"pPick{i}City")
+        region = data.get(f"pPick{i}Region")
+        start = data.get(f"pPick{i}Start")
+        end = data.get(f"pPick{i}End")
+
+        if event and pick_name:
             legs.append({
                 "@type": "ListItem",
-                "position": i,
+                "position": len(legs) + 1,
                 "item": {
                     "@type": "Offer",
-                    "name": p_name,
-                    "price": p_odds,
+                    "name": pick_name,
+                    "price": odds,
                     "priceCurrency": "USD",
                     "itemOffered": {
                         "@type": "SportsEvent",
-                        "name": p_event,
-                        "startDate": data.get("seStartDate"), # Hereda del global
-                        "endDate": data.get("seEndDate"),     # Hereda del global
-                        "description": data.get("parlayDesc"), # Hereda del global
+                        "name": event,
+                        "startDate": start,
+                        "endDate": end,
                         "eventStatus": "https://schema.org/EventScheduled",
-                        "location": location_data,             # Hereda la ubicación
-                        "organizer": organizer_data            # Hereda el organizador
+                        "location": {
+                            "@type": "Place",
+                            "name": stadium,
+                            "address": {
+                                "@type": "PostalAddress",
+                                "addressLocality": city,
+                                "addressRegion": region,
+                                "addressCountry": "US"
+                            }
+                        },
+                        "organizer": {
+                            "@type": "Organization",
+                            "name": "BetUS",
+                            "url": "https://www.betus.com.pa"
+                        }
                     }
                 }
             })
@@ -161,16 +162,13 @@ def gen_parlay(data):
         "@type": "CreativeWork",
         "name": data.get("parlayName"),
         "description": data.get("parlayDesc"),
-        "startDate": data.get("seStartDate"),
-        "location": location_data,
         "offers": {
             "@type": "Offer",
             "name": "Total Parlay Odds",
             "price": data.get("parlayTotalOdds"),
             "priceCurrency": "USD",
             "url": data.get("parlayUrl"),
-            "availability": "https://schema.org/InStock",
-            "validFrom": data.get("seValidFrom")
+            "availability": "https://schema.org/InStock"
         },
         "mainEntity": {
             "@type": "ItemList",
