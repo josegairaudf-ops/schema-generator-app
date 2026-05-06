@@ -199,10 +199,9 @@
         <div id="ws_rowsContainer">
             <!-- Las filas se añadirán aquí -->
         </div>
-        <button type="button" onclick="addWidgetRow('ws_rowsContainer', 'single')" style="background: #64748b; font-size: 12px; width: auto; padding: 8px 20px;">+ Add Pick Row</button>
+       <button type="button" onclick="addWidgetRow('ws_rowsContainer', 'single')" style="background-color: #ff9800;">+ Add Another Pick Row</button>
     </div>
 </div>
-
 <!-- WIDGET: MULTI MATCHUP -->
 <div id="fields_WidgetMulti" class="hidden">
     <div class="section" style="background: #f8fafc; border: 1px solid #cbd5e1;">
@@ -218,7 +217,7 @@
         <div id="wm_rowsContainer">
             <!-- Las filas se añadirán aquí -->
         </div>
-        <button type="button" onclick="addWidgetRow('wm_rowsContainer', 'multi')" style="background: #64748b; font-size: 12px; width: auto; padding: 8px 20px;">+ Add Matchup Row</button>
+        <button type="button" onclick="addWidgetRow('wm_rowsContainer', 'multi')" style="background-color: #ff9800;">+ Add Another Matchup Row</button>
     </div>
 </div>
 
@@ -234,7 +233,9 @@
     </div>
 </div>
     <textarea id="jsonOutput" rows="20" readonly placeholder="Result code..."></textarea>
-    <button type="button" id="copyBtn" onclick="copyToClipboard()" style="background-color: #34a853;">Copy Schema Code</button>
+    <button type="button" onclick="addWidgetRow('wm_rowsContainer', 'multi')" style="background-color: #ff9800; margin-top: 10px;">
+    + Add Another Matchup Row
+</button>
 </div>   
 <script>
     const teamData = {
@@ -390,25 +391,54 @@
         parlayPickCount = legs.length;
     }
 
-    function addWidgetRow(containerId, type) {
-        const container = document.getElementById(containerId);
-        const rowId = Date.now();
-        let html = (type === 'single') ? 
-            `<div class="pick-grid widget-row-single" style="border-bottom: 1px dashed #ddd; margin-bottom:10px; padding-bottom:10px;">
-                <input type="text" class="ws_market" placeholder="Market">
-                <input type="text" class="ws_pick" placeholder="Pick">
-                <input type="url" class="ws_url" placeholder="Link">
-                <button type="button" onclick="this.parentElement.remove()" style="background:#dc3545; color:white; border:none; width:40px; cursor:pointer;">X</button>
-            </div>` :
-            `<div class="pick-grid widget-row-multi" style="border-bottom: 1px dashed #ddd; margin-bottom:10px; padding-bottom:10px;">
-                <input type="text" class="wm_match" placeholder="Match">
-                <input type="text" class="wm_pick" placeholder="Pick">
-                <input type="url" class="wm_url" placeholder="Link">
-                <button type="button" onclick="this.parentElement.remove()" style="background:#dc3545; color:white; border:none; width:40px; cursor:pointer;">X</button>
-            </div>`;
-        container.insertAdjacentHTML('beforeend', html);
-    }
+function addWidgetRow(containerId, type) {
+    const container = document.getElementById(containerId);
+    // Determinamos la clase para poder re-indexar después
+    const rowClass = type === 'single' ? 'widget-row-single-item' : 'widget-row-multi-item';
+    const rowId = Date.now();
+    
+    // Estructura visual idéntica al Parlay (Naranja y Crema)
+    const html = `
+        <div class="section ${rowClass}" id="row_${rowId}" style="border-left: 4px solid #ff9800; background: #fffcf9; margin-bottom: 20px; padding: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <strong class="widget-number" style="color: #ff9800;">${type === 'single' ? 'Pick' : 'Matchup'} #</strong>
+                <button type="button" onclick="removeWidgetRow(this, '${containerId}', '${type}')" style="width: auto; padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">Remove</button>
+            </div>
+            <div class="grid">
+                ${type === 'single' ? `
+                    <input type="text" class="ws_market" placeholder="Market (e.g. Moneyline)">
+                    <input type="text" class="ws_pick" placeholder="Pick & Odds (e.g. Lakers -230)">
+                    <input type="url" class="ws_url" placeholder="Deep Link">
+                ` : `
+                    <input type="text" class="wm_match" placeholder="Matchup (e.g. LAA vs NYY)">
+                    <input type="text" class="wm_pick" placeholder="Expert Pick (e.g. W. Warren +5.5 SO)">
+                    <input type="url" class="wm_url" placeholder="Link">
+                `}
+            </div>
+        </div>`;
+        
+    container.insertAdjacentHTML('beforeend', html);
+    reindexWidgets(containerId, type); // Re-indexamos al añadir
+}
 
+function removeWidgetRow(button, containerId, type) {
+    // Eliminamos la fila
+    button.closest('.section').remove();
+    // Re-indexamos las que quedan
+    reindexWidgets(containerId, type);
+}
+
+function reindexWidgets(containerId, type) {
+    const container = document.getElementById(containerId);
+    const rowClass = type === 'single' ? '.widget-row-single-item' : '.widget-row-multi-item';
+    const label = type === 'single' ? 'Pick' : 'Matchup';
+    
+    const rows = container.querySelectorAll(rowClass);
+    rows.forEach((row, index) => {
+        const num = index + 1;
+        row.querySelector('.widget-number').innerText = `${label} #${num}`;
+    });
+}
     function buildSingleWidgetHTML() {
         const title = document.getElementById('ws_promoTitle').value || "Bonus";
         const text = document.getElementById('ws_promoText').value || "Offer";
