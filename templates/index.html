@@ -390,32 +390,31 @@
 
 function addWidgetRow(containerId, type) {
     const container = document.getElementById(containerId);
-    // Determinamos la clase para poder re-indexar después
-    const rowClass = type === 'single' ? 'widget-row-single' : 'widget-row-multi';
     const rowId = Date.now();
+    const rowClass = type === 'single' ? 'widget-row-single' : 'widget-row-multi';
     
-    // Estructura visual idéntica al Parlay (Naranja y Crema)
-    const html = `
+    // Ponemos la clase 'rowClass' directamente en el div que envuelve los inputs
+    let html = `
         <div class="section ${rowClass}" id="row_${rowId}" style="border-left: 4px solid #ff9800; background: #fffcf9; margin-bottom: 20px; padding: 15px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <strong class="widget-number" style="color: #ff9800;">${type === 'single' ? 'Pick' : 'Matchup'} #</strong>
-                <button type="button" onclick="removeWidgetRow(this, '${containerId}', '${type}')" style="width: auto; padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">Remove</button>
+                <button type="button" onclick="this.closest('.section').remove(); reindexWidgets('${containerId}', '${type}')" style="width: auto; padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">Remove</button>
             </div>
             <div class="grid">
                 ${type === 'single' ? `
-                    <input type="text" class="ws_market" placeholder="Market (e.g. Moneyline)">
-                    <input type="text" class="ws_pick" placeholder="Pick & Odds (e.g. Lakers -230)">
+                    <input type="text" class="ws_market" placeholder="Market (e.g. Spread)">
+                    <input type="text" class="ws_pick" placeholder="Pick & Odds (e.g. Lakers -6)">
                     <input type="url" class="ws_url" placeholder="Deep Link">
                 ` : `
                     <input type="text" class="wm_match" placeholder="Matchup (e.g. LAA vs NYY)">
-                    <input type="text" class="wm_pick" placeholder="Expert Pick (e.g. W. Warren +5.5 SO)">
+                    <input type="text" class="wm_pick" placeholder="Expert Pick (e.g. Over 8.5)">
                     <input type="url" class="wm_url" placeholder="Link">
                 `}
             </div>
         </div>`;
         
     container.insertAdjacentHTML('beforeend', html);
-    reindexWidgets(containerId, type); // Re-indexamos al añadir
+    reindexWidgets(containerId, type);
 }
 
 function removeWidgetRow(button, containerId, type) {
@@ -437,33 +436,82 @@ function reindexWidgets(containerId, type) {
     });
 }
     function buildSingleWidgetHTML() {
-        const title = document.getElementById('ws_promoTitle').value || "Bonus";
-        const text = document.getElementById('ws_promoText').value || "Offer";
-        const pUrl = document.getElementById('ws_promoUrl').value || "#";
-        const bUrl = document.getElementById('ws_bookieUrl').value || "#";
-        let rowsHtml = '';
-        document.querySelectorAll('.widget-row-single').forEach(row => {
-            const m = row.querySelector('.ws_market').value;
-            const p = row.querySelector('.ws_pick').value;
-            const u = row.querySelector('.ws_url').value;
-            rowsHtml += `<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px dashed #e2e8f0;"><span style="color: #64748b; font-size: 11px; text-transform: uppercase; font-weight: 800;">${m}</span><a href="${u}" style="color: #1e293b; text-decoration: none; font-size: 14px; font-weight: 700;">${p} <span style="color: #3b82f6; margin-left: 4px;">→</span></a></div>`;
-        });
-        return `<div style="font-family: 'Segoe UI', Arial, sans-serif; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; background:#fff; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); max-width: 600px; margin: 20px auto;"><div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 20px; background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-bottom: 1px solid #fde68a; gap: 15px;"><div style="flex: 1 1 200px;"><div style="display: flex; align-items: center; margin-bottom: 4px;"><span style="font-size: 20px; margin-right: 8px;">🎁</span><span style="font-size: 10px; color: #b45309; font-weight: 800; text-transform: uppercase;">${title}</span></div><div style="font-size: 16px; color: #92400e; font-weight: 800;">${text}</div></div><a href="${pUrl}" style="background-color: #d4af37; color: #1a1a1a; padding: 10px 25px; border-radius: 8px; font-size: 12px; font-weight: 800; text-decoration: none; text-transform: uppercase;">Claim Now</a></div><div style="padding: 20px;"><div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; margin-bottom: 10px; text-align: center;">Expert Predictions</div>${rowsHtml}<div style="padding-top: 20px; text-align: center;"><a href="${bUrl}" style="display: block; background-color: #1e293b; color: #ffffff; padding: 14px; border-radius: 10px; font-size: 14px; font-weight: 700; text-decoration: none; text-transform: uppercase;">Place Your Bets at BetUS</a></div></div></div>`;
-    }
+    const title = document.getElementById('ws_promoTitle').value || "Welcome Bonus";
+    const text = document.getElementById('ws_promoText').value || "Offer";
+    const pUrl = document.getElementById('ws_promoUrl').value || "#";
+    const bUrl = document.getElementById('ws_bookieUrl').value || "#";
 
-    function buildMultiWidgetHTML() {
-        const title = document.getElementById('wm_promoTitle').value || "Bonus";
-        const text = document.getElementById('wm_promoText').value || "Offer";
-        const pUrl = document.getElementById('wm_promoUrl').value || "#";
-        let rowsHtml = '';
-        document.querySelectorAll('.widget-row-multi').forEach(row => {
-            const m = row.querySelector('.wm_match').value;
-            const p = row.querySelector('.wm_pick').value;
-            const u = row.querySelector('.wm_url').value;
-            rowsHtml += `<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #f1f5f9; gap: 12px; background-color: #ffffff;"><div style="flex: 1 1 250px; text-align: left;"><div style="font-size: 10px; color: #94a3b8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px;">${m}</div><div style="font-size: 15px; color: #1e293b; font-weight: 500;">Bet on: <strong style="color: #0f172a; font-weight: 800;">${p}</strong></div></div><div style="flex: 0 0 auto;"><a href="${u}" style="display: inline-block; background-color: #1e293b; color: #ffffff; padding: 10px 24px; border-radius: 8px; font-size: 12px; font-weight: 700; text-decoration: none; text-transform: uppercase;">Bet Now</a></div></div>`;
-        });
-        return `<div style="font-family: 'Segoe UI', Arial, sans-serif; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; background-color: #ffffff; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); max-width: 1000px; margin: 20px auto;"><div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-bottom: 1px solid #fde68a; text-align: center;"><div style="display: flex; align-items: center; margin-bottom: 6px;"><span style="font-size: 20px; margin-right: 8px;">🎁</span><span style="font-size: 11px; color: #b45309; font-weight: 800; text-transform: uppercase;">${title}</span></div><div style="font-size: 18px; color: #92400e; font-weight: 800; margin-bottom: 12px;">${text}</div><a href="${pUrl}" style="background-color: #d4af37; color: #1a1a1a; padding: 10px 40px; border-radius: 10px; font-size: 13px; font-weight: 800; text-decoration: none; text-transform: uppercase;">Claim Bonus</a></div><div style="background-color: #f8fafc; padding: 10px; text-align: center; border-bottom: 1px solid #f1f5f9;"><span style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">🔥 Today's Top Expert Picks</span></div>${rowsHtml}</div>`;
-    }
+    let rowsHtml = '';
+    // Buscamos los inputs directamente para no fallar
+    const markets = document.querySelectorAll('.ws_market');
+    const picks = document.querySelectorAll('.ws_pick');
+    const urls = document.querySelectorAll('.ws_url');
+
+    markets.forEach((m, index) => {
+        const marketVal = m.value;
+        const pickVal = picks[index].value;
+        const urlVal = urls[index].value;
+
+        if (marketVal || pickVal) {
+            rowsHtml += `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px dashed #e2e8f0;">
+                <span style="color: #64748b; font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">${marketVal}</span>
+                <a href="${urlVal}" style="color: #1e293b; text-decoration: none; font-size: 14px; font-weight: 700;">
+                    ${pickVal} <span style="color: #3b82f6; margin-left: 4px;">→</span>
+                </a>
+            </div>`;
+        }
+    });
+
+    return `<!-- WIDGET SINGLE -->
+<div style="font-family: 'Segoe UI', Arial, sans-serif; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; background-color: #ffffff; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); max-width: 600px; margin: 20px auto;">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 20px; background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-bottom: 1px solid #fde68a; gap: 15px;">
+        <div style="flex: 1 1 200px;">
+            <div style="display: flex; align-items: center; margin-bottom: 4px;"><span style="font-size: 20px; margin-right: 8px;">🎁</span><span style="font-size: 10px; color: #b45309; font-weight: 800; text-transform: uppercase;">${title}</span></div>
+            <div style="font-size: 16px; color: #92400e; font-weight: 800;">${text}</div>
+        </div><a href="${pUrl}" style="background-color: #d4af37; color: #1a1a1a; padding: 10px 25px; border-radius: 8px; font-size: 12px; font-weight: 800; text-decoration: none; text-transform: uppercase;">Claim Now</a>
+    </div><div style="padding: 20px;"><div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; margin-bottom: 10px; text-align: center;">Expert Predictions</div>
+    ${rowsHtml}
+    <div style="padding-top: 20px; text-align: center;"><a href="${bUrl}" style="display: block; background-color: #1e293b; color: #ffffff; padding: 14px; border-radius: 10px; font-size: 14px; font-weight: 700; text-decoration: none; text-transform: uppercase;">Place Your Bets at BetUS</a></div></div></div>`;
+}
+
+function buildMultiWidgetHTML() {
+    const title = document.getElementById('wm_promoTitle').value || "Bonus";
+    const text = document.getElementById('wm_promoText').value || "Offer";
+    const pUrl = document.getElementById('wm_promoUrl').value || "#";
+
+    let rowsHtml = '';
+    const matches = document.querySelectorAll('.wm_match');
+    const picks = document.querySelectorAll('.wm_pick');
+    const urls = document.querySelectorAll('.wm_url');
+
+    matches.forEach((m, index) => {
+        const matchVal = m.value;
+        const pickVal = picks[index].value;
+        const urlVal = urls[index].value;
+
+        if (matchVal || pickVal) {
+            rowsHtml += `
+            <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #f1f5f9; gap: 12px; background-color: #ffffff;">
+                <div style="flex: 1 1 250px; text-align: left;">
+                    <div style="font-size: 10px; color: #94a3b8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px;">${matchVal}</div>
+                    <div style="font-size: 15px; color: #1e293b; font-weight: 500;">Bet on: <strong style="color: #0f172a; font-weight: 800;">${pickVal}</strong></div>
+                </div>
+                <div style="flex: 0 0 auto;"><a href="${urlVal}" style="display: inline-block; background-color: #1e293b; color: #ffffff; padding: 10px 24px; border-radius: 8px; font-size: 12px; font-weight: 700; text-decoration: none; text-transform: uppercase;">Bet Now</a></div>
+            </div>`;
+        }
+    });
+
+    return `<div style="font-family: 'Segoe UI', Roboto, Arial, sans-serif; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; background-color: #ffffff; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); max-width: 1000px; margin: 20px auto;">
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-bottom: 1px solid #fde68a; text-align: center;">
+        <div style="display: flex; align-items: center; margin-bottom: 6px;"><span style="font-size: 20px; margin-right: 8px;">🎁</span><span style="font-size: 11px; color: #b45309; font-weight: 800; text-transform: uppercase;">${title}</span></div>
+        <div style="font-size: 18px; color: #92400e; font-weight: 800; margin-bottom: 12px;">${text}</div>
+        <a href="${pUrl}" style="background-color: #d4af37; color: #1a1a1a; padding: 10px 40px; border-radius: 10px; font-size: 13px; font-weight: 800; text-decoration: none; text-transform: uppercase;">Claim Bonus</a>
+    </div>
+    <div style="background-color: #f8fafc; padding: 10px; text-align: center; border-bottom: 1px solid #f1f5f9;"><span style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;">🔥 Today's Top Expert Picks</span></div>
+    ${rowsHtml}
+    <div style="background-color: #f8fafc; padding: 12px; text-align: center;"><p style="font-size: 10px; color: #94a3b8; margin: 0;"><strong>18+ Only.</strong> Please Gamble Responsibly.</p></div></div>`;
+}
 
     function copyToClipboard() {
         const copyText = document.getElementById("jsonOutput");
