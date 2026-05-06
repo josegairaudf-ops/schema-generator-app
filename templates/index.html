@@ -391,7 +391,7 @@
 function addWidgetRow(containerId, type) {
     const container = document.getElementById(containerId);
     // Determinamos la clase para poder re-indexar después
-    const rowClass = type === 'single' ? 'widget-row-single-item' : 'widget-row-multi-item';
+    const rowClass = type === 'single' ? 'widget-row-single' : 'widget-row-multi';
     const rowId = Date.now();
     
     // Estructura visual idéntica al Parlay (Naranja y Crema)
@@ -427,7 +427,7 @@ function removeWidgetRow(button, containerId, type) {
 
 function reindexWidgets(containerId, type) {
     const container = document.getElementById(containerId);
-    const rowClass = type === 'single' ? '.widget-row-single-item' : '.widget-row-multi-item';
+    const rowClass = type === 'single' ? '.widget-row-single' : '.widget-row-multi';
     const label = type === 'single' ? 'Pick' : 'Matchup';
     
     const rows = container.querySelectorAll(rowClass);
