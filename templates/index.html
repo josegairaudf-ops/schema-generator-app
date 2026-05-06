@@ -233,6 +233,15 @@
     </div>
 </div>
     <textarea id="jsonOutput" rows="20" readonly placeholder="Result code..."></textarea>
+
+<div style="display: flex; gap: 10px; margin-top: 10px;">
+    <button type="button" id="copyBtn" onclick="copyToClipboard()" style="background-color: #34a853; flex: 1; margin-top:0;">
+        Copy Code
+    </button>
+    <button type="button" id="clearBtn" onclick="clearForm()" style="background-color: #dc3545; flex: 1; margin-top:0;">
+        Clear All Fields
+    </button>
+</div>
 </div>   
 <script>
     const teamData = {
@@ -513,14 +522,6 @@ function buildMultiWidgetHTML() {
     <div style="background-color: #f8fafc; padding: 12px; text-align: center;"><p style="font-size: 10px; color: #94a3b8; margin: 0;"><strong>18+ Only.</strong> Please Gamble Responsibly.</p></div></div>`;
 }
 
-    function copyToClipboard() {
-        const copyText = document.getElementById("jsonOutput");
-        copyText.select();
-        navigator.clipboard.writeText(copyText.value);
-        document.getElementById("copyBtn").innerText = "Copied! ✅";
-        setTimeout(() => { document.getElementById("copyBtn").innerText = "Copy Schema Code"; }, 2000);
-    }
-
     window.onload = function() {
         switchSchema();
         setupSmartDates();
@@ -557,6 +558,41 @@ function buildMultiWidgetHTML() {
             } catch (err) {
                 output.value = "Error: " + err.message;
             }
+            // --- PEGA ESTO AQUÍ ---
+
+    function copyToClipboard() {
+        const copyText = document.getElementById("jsonOutput");
+        const btn = document.getElementById("copyBtn");
+        if (!copyText.value) return;
+
+        copyText.select();
+        navigator.clipboard.writeText(copyText.value).then(() => {
+            const originalText = btn.innerText;
+            btn.innerText = "Copied! ✅";
+            setTimeout(() => { btn.innerText = originalText; }, 2000);
+        });
+    }
+
+    function clearForm() {
+        if (confirm("Are you sure you want to clear everything?")) {
+            document.getElementById('mainForm').reset();
+            document.getElementById('jsonOutput').value = "";
+            document.getElementById('previewSection').classList.add('hidden');
+            document.getElementById('livePreview').innerHTML = "";
+
+            // Limpiar filas dinámicas
+            document.getElementById('parlayLegsContainer').innerHTML = "";
+            document.getElementById('ws_rowsContainer').innerHTML = "";
+            document.getElementById('wm_rowsContainer').innerHTML = "";
+
+            // Reiniciar con una fila limpia cada uno
+            addParlayLeg();
+            addWidgetRow('ws_rowsContainer', 'single');
+            addWidgetRow('wm_rowsContainer', 'multi');
+            
+            switchSchema();
+        }
+    }
         };
     };
 </script>
