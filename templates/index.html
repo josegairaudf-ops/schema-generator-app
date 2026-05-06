@@ -558,70 +558,55 @@ function buildMultiWidgetHTML() {
             } catch (err) {
                 output.value = "Error: " + err.message;
             }
+             };
+         };
             // --- PEGA ESTO AQUÍ ---
 
     // --- ESTO DEBE ESTAR FUERA DE CUALQUIER OTRA FUNCIÓN ---
 
 function copyToClipboard() {
-    const copyText = document.getElementById("jsonOutput");
-    const btn = document.getElementById("copyBtn");
-    
-    if (!copyText || !copyText.value) {
-        alert("Nothing to copy yet!");
-        return;
+        const copyText = document.getElementById("jsonOutput");
+        const btn = document.getElementById("copyBtn");
+        
+        if (!copyText || !copyText.value) {
+            alert("Nothing to copy yet!");
+            return;
+        }
+
+        copyText.select();
+        navigator.clipboard.writeText(copyText.value).then(() => {
+            const originalText = btn.innerText;
+            btn.innerText = "Copied! ✅";
+            btn.style.backgroundColor = "#1d6634";
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.style.backgroundColor = "#34a853";
+            }, 2000);
+        });
     }
 
-    // Seleccionar y copiar
-    copyText.select();
-    copyText.setSelectionRange(0, 99999); // Para móviles
-    
-    navigator.clipboard.writeText(copyText.value).then(() => {
-        const originalText = btn.innerText;
-        btn.innerText = "Copied! ✅";
-        btn.style.backgroundColor = "#1d6634";
-        
-        setTimeout(() => {
-            btn.innerText = originalText;
-            btn.style.backgroundColor = "#34a853";
-        }, 2000);
-    }).catch(err => {
-        console.error("Error al copiar:", err);
-        // Respaldo por si falla la API moderna
-        document.execCommand("copy");
-        btn.innerText = "Copied! ✅";
-        setTimeout(() => { btn.innerText = "Copy Code"; }, 2000);
-    });
-}
+    function clearForm() {
+        if (confirm("Are you sure you want to clear everything?")) {
+            const form = document.getElementById('mainForm');
+            if (form) form.reset();
+            
+            document.getElementById('jsonOutput').value = "";
+            const preview = document.getElementById('previewSection');
+            if (preview) preview.classList.add('hidden');
 
-function clearForm() {
-    if (confirm("Are you sure you want to clear everything?")) {
-        // Resetear form principal
-        const form = document.getElementById('mainForm');
-        if (form) form.reset();
-        
-        // Limpiar cuadro de texto y vista previa
-        document.getElementById('jsonOutput').value = "";
-        const preview = document.getElementById('previewSection');
-        if (preview) preview.classList.add('hidden');
-        const live = document.getElementById('livePreview');
-        if (live) live.innerHTML = "";
+            document.getElementById('parlayLegsContainer').innerHTML = "";
+            document.getElementById('ws_rowsContainer').innerHTML = "";
+            document.getElementById('wm_rowsContainer').innerHTML = "";
 
-        // Limpiar contenedores dinámicos
-        document.getElementById('parlayLegsContainer').innerHTML = "";
-        document.getElementById('ws_rowsContainer').innerHTML = "";
-        document.getElementById('wm_rowsContainer').innerHTML = "";
-
-        // Reiniciar contadores y poner fila inicial
-        parlayPickCount = 0;
-        addParlayLeg();
-        addWidgetRow('ws_rowsContainer', 'single');
-        addWidgetRow('wm_rowsContainer', 'multi');
-        
-        // Refrescar visibilidad
-        switchSchema();
+            parlayPickCount = 0;
+            addParlayLeg();
+            addWidgetRow('ws_rowsContainer', 'single');
+            addWidgetRow('wm_rowsContainer', 'multi');
+            
+            switchSchema();
+        }
     }
-}
-    };
+    // AQUÍ YA NO DEBE HABER NINGUNA LLAVE EXTRA
 </script>
 </body>
 </html>
