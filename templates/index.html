@@ -560,40 +560,67 @@ function buildMultiWidgetHTML() {
             }
             // --- PEGA ESTO AQUÍ ---
 
-    function copyToClipboard() {
-        const copyText = document.getElementById("jsonOutput");
-        const btn = document.getElementById("copyBtn");
-        if (!copyText.value) return;
+    // --- ESTO DEBE ESTAR FUERA DE CUALQUIER OTRA FUNCIÓN ---
 
-        copyText.select();
-        navigator.clipboard.writeText(copyText.value).then(() => {
-            const originalText = btn.innerText;
-            btn.innerText = "Copied! ✅";
-            setTimeout(() => { btn.innerText = originalText; }, 2000);
-        });
+function copyToClipboard() {
+    const copyText = document.getElementById("jsonOutput");
+    const btn = document.getElementById("copyBtn");
+    
+    if (!copyText || !copyText.value) {
+        alert("Nothing to copy yet!");
+        return;
     }
 
-    function clearForm() {
-        if (confirm("Are you sure you want to clear everything?")) {
-            document.getElementById('mainForm').reset();
-            document.getElementById('jsonOutput').value = "";
-            document.getElementById('previewSection').classList.add('hidden');
-            document.getElementById('livePreview').innerHTML = "";
+    // Seleccionar y copiar
+    copyText.select();
+    copyText.setSelectionRange(0, 99999); // Para móviles
+    
+    navigator.clipboard.writeText(copyText.value).then(() => {
+        const originalText = btn.innerText;
+        btn.innerText = "Copied! ✅";
+        btn.style.backgroundColor = "#1d6634";
+        
+        setTimeout(() => {
+            btn.innerText = originalText;
+            btn.style.backgroundColor = "#34a853";
+        }, 2000);
+    }).catch(err => {
+        console.error("Error al copiar:", err);
+        // Respaldo por si falla la API moderna
+        document.execCommand("copy");
+        btn.innerText = "Copied! ✅";
+        setTimeout(() => { btn.innerText = "Copy Code"; }, 2000);
+    });
+}
 
-            // Limpiar filas dinámicas
-            document.getElementById('parlayLegsContainer').innerHTML = "";
-            document.getElementById('ws_rowsContainer').innerHTML = "";
-            document.getElementById('wm_rowsContainer').innerHTML = "";
+function clearForm() {
+    if (confirm("Are you sure you want to clear everything?")) {
+        // Resetear form principal
+        const form = document.getElementById('mainForm');
+        if (form) form.reset();
+        
+        // Limpiar cuadro de texto y vista previa
+        document.getElementById('jsonOutput').value = "";
+        const preview = document.getElementById('previewSection');
+        if (preview) preview.classList.add('hidden');
+        const live = document.getElementById('livePreview');
+        if (live) live.innerHTML = "";
 
-            // Reiniciar con una fila limpia cada uno
-            addParlayLeg();
-            addWidgetRow('ws_rowsContainer', 'single');
-            addWidgetRow('wm_rowsContainer', 'multi');
-            
-            switchSchema();
-        }
+        // Limpiar contenedores dinámicos
+        document.getElementById('parlayLegsContainer').innerHTML = "";
+        document.getElementById('ws_rowsContainer').innerHTML = "";
+        document.getElementById('wm_rowsContainer').innerHTML = "";
+
+        // Reiniciar contadores y poner fila inicial
+        parlayPickCount = 0;
+        addParlayLeg();
+        addWidgetRow('ws_rowsContainer', 'single');
+        addWidgetRow('wm_rowsContainer', 'multi');
+        
+        // Refrescar visibilidad
+        switchSchema();
     }
-        };
+}
     };
 </script>
 </body>
