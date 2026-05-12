@@ -383,6 +383,7 @@
     function removeLeg(button) {
         button.closest('.parlay-leg').remove();
         reindexParlayLegs();
+        calculateParlayAutoOdds();
     }
 
     function reindexParlayLegs() {
