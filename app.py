@@ -65,8 +65,7 @@ def gen_sports(data):
         sport = sport_map.get(l_val, "Sports")
         t_a = data.get("seTeamA")
         t_b = data.get("seTeamB")
-
-    return {
+        schema = {
         "@context": "https://schema.org",
         "@type": "SportsEvent",
         "name": data.get("seName"),
@@ -75,7 +74,7 @@ def gen_sports(data):
         "league": league,
         "startDate": data.get("seStartDate"),
         "endDate": data.get("seEndDate"),
-        "eventStatus": data.get("seStatus"),
+        "eventStatus": "https://schema.org/EventScheduled",
         "image": [data.get("seImage")] if data.get("seImage") else [],
         "homeTeam": {"@type": "SportsTeam", "name": t_a},
         "awayTeam": {"@type": "SportsTeam", "name": t_b},
@@ -95,19 +94,41 @@ def gen_sports(data):
                 "@type": "PostalAddress",
                 "addressLocality": data.get("seCity"),
                 "addressRegion": data.get("seRegion"),
-                "addressCountry": data.get("seCountry") or "US"
+                "addressCountry": "US"
             }
-        },
-        "offers": {
-            "@type": "Offer",
-            "url": data.get("seOfferUrl"),
-            "availability": "https://schema.org/InStock",
-            "price": data.get("seOfferPrice") or "0",
-            "priceCurrency": "USD",
-            "validFrom": data.get("seValidFrom")
         }
     }
+ all_offers = []
+if data.get("seOfferName") or data.get("seOfferPrice"):
+        all_offers.append({
+            "@type": "Offer",
+            "name": data.get("seOfferName") or "Main Market",
+            "price": data.get("seOfferPrice") or "0",
+            "priceCurrency": "USD",
+            "url": data.get("seOfferUrl"),
+            "availability": "https://schema.org/InStock",
+            "validFrom": data.get("seValidFrom")
+        })
+     for i in range(1, 8):
+        p_name = data.get(f"pick{i}Name")
+        p_price = data.get(f"pick{i}Price")
+        p_url = data.get(f"pick{i}Url")
+        
+        if p_name or p_price:
+            all_offers.append({
+                "@type": "Offer",
+                "name": p_name or f"Pick {i}",
+                "price": p_price or "0",
+                "priceCurrency": "USD",
+                "url": p_url or data.get("seOfferUrl"),
+                "availability": "https://schema.org/InStock",
+                "validFrom": data.get("seValidFrom")
+            })
 
+
+     schema["offers"] = all_offers
+    
+    return schema
 def gen_parlay(data):
     legs = []
     # Buscamos hasta 20 picks dinámicos
