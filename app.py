@@ -65,7 +65,9 @@ def gen_sports(data):
         sport = sport_map.get(l_val, "Sports")
         t_a = data.get("seTeamA")
         t_b = data.get("seTeamB")
-        schema = {
+
+    # 1. Creamos la estructura base del evento
+    schema = {
         "@context": "https://schema.org",
         "@type": "SportsEvent",
         "name": data.get("seName"),
@@ -98,8 +100,12 @@ def gen_sports(data):
             }
         }
     }
- all_offers = []
-if data.get("seOfferName") or data.get("seOfferPrice"):
+
+    # 2. Lógica para agrupar todas las ofertas (Picks)
+    all_offers = []
+
+    # Agregar Oferta Principal (si existe)
+    if data.get("seOfferName") or data.get("seOfferPrice"):
         all_offers.append({
             "@type": "Offer",
             "name": data.get("seOfferName") or "Main Market",
@@ -109,7 +115,9 @@ if data.get("seOfferName") or data.get("seOfferPrice"):
             "availability": "https://schema.org/InStock",
             "validFrom": data.get("seValidFrom")
         })
-     for i in range(1, 8):
+
+    # Agregar los 7 Picks adicionales
+    for i in range(1, 8):
         p_name = data.get(f"pick{i}Name")
         p_price = data.get(f"pick{i}Price")
         p_url = data.get(f"pick{i}Url")
@@ -125,8 +133,8 @@ if data.get("seOfferName") or data.get("seOfferPrice"):
                 "validFrom": data.get("seValidFrom")
             })
 
-
-     schema["offers"] = all_offers
+    # Asignamos la lista de ofertas al schema
+    schema["offers"] = all_offers
     
     return schema
 def gen_parlay(data):
