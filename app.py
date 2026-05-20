@@ -263,10 +263,12 @@ def generate_schema():
         elif stype == 'Review': 
             res = gen_review(data)
         elif stype == 'Parlay': 
-        elif stype == 'Takeaways':
             res = gen_parlay(data)
+         elif stype == 'Takeaways':
+            res = gen_takeaways(data)
         else: 
             res = gen_sports(data)
+        
         
         return jsonify(clean_nones(res))
     except Exception as e:
