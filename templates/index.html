@@ -32,6 +32,7 @@
             <option value="FAQPage">FAQ Page</option>
             <option value="BlogPosting">Blog Posting</option>
             <option value="Review">Review</option>
+            <option value="Takeaways">Quick Takeaways (Widget + Schema)</option>
             <option value="WidgetSingle">Widget: Single Matchup</option>
             <option value="WidgetMulti">Widget: Multi-Matchup</option>
         </select>
@@ -220,29 +221,29 @@
         <button type="button" onclick="addWidgetRow('wm_rowsContainer', 'multi')" style="background-color: #ff9800;">+ Add Another Matchup Row</button>
     </div>
 </div>
-<div id="takeaways-section">
-    <h3>💡 Quick Takeaways Generator</h3>
-    
-    <!-- Selección de Icono -->
-    <label>Select Icon:</label>
-    <select id="tk-icon">
-        <option value="💡">💡 General Advice</option>
-        <option value="🏎️">🏎️ F1 / Racing</option>
-        <option value="🏀">🏀 NBA / Basketball</option>
-        <option value="🏈">🏈 NFL / Football</option>
-        <option value="⚽">⚽ Soccer</option>
-    </select>
+<!-- QUICK TAKEAWAYS SECTION -->
+<div id="fields_Takeaways" class="hidden">
+    <div class="section" style="background: #f8fafc; border: 1px solid #013369;">
+        <h2>💡 Quick Takeaways Generator</h2>
+        
+        <label>Select Icon:</label>
+        <select name="tkIcon" id="tk-icon">
+            <option value="💡">💡 General Advice</option>
+            <option value="🏎️">🏎️ F1 / Racing</option>
+            <option value="🏀">🏀 NBA / Basketball</option>
+            <option value="🏈">🏈 NFL / Football</option>
+            <option value="⚽">⚽ Soccer</option>
+        </select>
 
-    <!-- Título/Tema -->
-    <label>Article Theme:</label>
-    <input type="text" id="tk-theme" placeholder="e.g., Live F1 Betting Strategy">
+        <label style="margin-top:10px;">Article Theme:</label>
+        <input type="text" name="tkTheme" id="tk-theme" placeholder="e.g., Live F1 Betting Strategy">
 
-    <!-- Puntos Clave -->
-    <label>Key Takeaways (Leave empty if not used):</label>
-    <textarea id="tk-point-1" placeholder="Point 1: Describe the main idea..."></textarea>
-    <textarea id="tk-point-2" placeholder="Point 2: Describe the main idea..."></textarea>
-    <textarea id="tk-point-3" placeholder="Point 3: Describe the main idea..."></textarea>
-    <textarea id="tk-point-4" placeholder="Point 4: Describe the main idea..."></textarea>
+        <label style="margin-top:10px;">Key Takeaways:</label>
+        <textarea name="tkPoint1" id="tk-point-1" placeholder="Point 1: Describe the main idea..." style="margin-bottom:5px; height:60px;"></textarea>
+        <textarea name="tkPoint2" id="tk-point-2" placeholder="Point 2..." style="margin-bottom:5px; height:60px;"></textarea>
+        <textarea name="tkPoint3" id="tk-point-3" placeholder="Point 3..." style="margin-bottom:5px; height:60px;"></textarea>
+        <textarea name="tkPoint4" id="tk-point-4" placeholder="Point 4..." style="height:60px;"></textarea>
+    </div>
 </div>
 
 <!-- EL BOTÓN AHORA ESTÁ AL FINAL DE TODAS LAS SECCIONES -->
@@ -308,7 +309,7 @@
         const type = typeSelect.value;
         if (hiddenType) hiddenType.value = type;
 
-        const schemas = ["SportsEvent", "FAQPage", "BlogPosting", "Review", "Parlay", "WidgetSingle", "WidgetMulti"];
+        const schemas = ["SportsEvent", "FAQPage", "BlogPosting", "Review", "Parlay", "WidgetSingle", "WidgetMulti", "Takeaways"];
         
         schemas.forEach(s => {
             const div = document.getElementById(`fields_${s}`);
@@ -581,8 +582,19 @@ function buildMultiWidgetHTML() {
             output.value = "Generating Schema...";
             try {
                 const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
-                const json = await res.json();
-                output.value = `<script type="application/ld+json">\n${JSON.stringify(json, null, 2)}\n<\/script>`;
+               const json = await res.json();
+
+if (type === 'Takeaways') {
+    // Si es Takeaways, mostramos el HTML Visual + el Script del Schema
+    const finalResult = `${json.visual}\n\n<script type="application/ld+json">\n${JSON.stringify(json.schema, null, 2)}\n<\/script>`;
+    output.value = finalResult;
+    livePreview.innerHTML = json.visual; // Mostramos el diseño en la cajita de preview
+    previewSection.classList.remove('hidden');
+} else {
+    // Para los demás, seguimos mostrando solo el Script del Schema
+    output.value = `<script type="application/ld+json">\n${JSON.stringify(json, null, 2)}\n<\/script>`;
+    previewSection.classList.add('hidden');
+}
             } catch (err) {
                 output.value = "Error: " + err.message;
             }
