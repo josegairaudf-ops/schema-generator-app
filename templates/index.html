@@ -220,6 +220,30 @@
         <button type="button" onclick="addWidgetRow('wm_rowsContainer', 'multi')" style="background-color: #ff9800;">+ Add Another Matchup Row</button>
     </div>
 </div>
+<div id="takeaways-section">
+    <h3>💡 Quick Takeaways Generator</h3>
+    
+    <!-- Selección de Icono -->
+    <label>Select Icon:</label>
+    <select id="tk-icon">
+        <option value="💡">💡 General Advice</option>
+        <option value="🏎️">🏎️ F1 / Racing</option>
+        <option value="🏀">🏀 NBA / Basketball</option>
+        <option value="🏈">🏈 NFL / Football</option>
+        <option value="⚽">⚽ Soccer</option>
+    </select>
+
+    <!-- Título/Tema -->
+    <label>Article Theme:</label>
+    <input type="text" id="tk-theme" placeholder="e.g., Live F1 Betting Strategy">
+
+    <!-- Puntos Clave -->
+    <label>Key Takeaways (Leave empty if not used):</label>
+    <textarea id="tk-point-1" placeholder="Point 1: Describe the main idea..."></textarea>
+    <textarea id="tk-point-2" placeholder="Point 2: Describe the main idea..."></textarea>
+    <textarea id="tk-point-3" placeholder="Point 3: Describe the main idea..."></textarea>
+    <textarea id="tk-point-4" placeholder="Point 4: Describe the main idea..."></textarea>
+</div>
 
 <!-- EL BOTÓN AHORA ESTÁ AL FINAL DE TODAS LAS SECCIONES -->
 <div style="margin-top: 20px;">
