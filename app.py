@@ -205,6 +205,47 @@ def gen_parlay(data):
             "itemListElement": legs
         }
     }
+def gen_takeaways(data):
+    theme = data.get("tkTheme", "General")
+    icon = data.get("tkIcon", "💡")
+    
+    # Recolectamos los puntos (hasta 4)
+    points = []
+    for i in range(1, 5):
+        p = data.get(f"tkPoint{i}")
+        if p: points.append(p)
+
+    # 1. Generar Schema JSON-LD
+    schema = {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "name": f"Quick Takeaways: {theme}",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": idx + 1,
+                "name": p.split(':')[0][:70], # Toma el inicio del punto como nombre
+                "text": p
+            } for idx, p in enumerate(points)
+        ]
+    }
+
+    # 2. Generar el bloque HTML visual
+    list_items = "".join([f'<li style="margin-bottom: 8px;">{p}</li>' for p in points])
+    visual_html = f'''
+<div style="margin: 25px auto; max-width: 650px; background-color: #f8fafc; border-left: 4px solid #013369; border-top: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; border-radius: 0 8px 8px 0; padding: 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">
+    <h4 style="margin: 0 0 12px 0; font-size: 1.1rem; font-weight: 700; color: #013369; display: flex; align-items: center; gap: 8px;">
+        {icon} Quick Takeaways: {theme}
+    </h4>
+    <ul style="margin: 0; padding-left: 20px; color: #334155; font-size: 0.95rem; line-height: 1.6;">
+        {list_items}
+    </ul>
+</div>'''
+
+    return {
+        "visual": visual_html,
+        "schema": schema
+    }    
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -222,6 +263,7 @@ def generate_schema():
         elif stype == 'Review': 
             res = gen_review(data)
         elif stype == 'Parlay': 
+        elif stype == 'Takeaways':
             res = gen_parlay(data)
         else: 
             res = gen_sports(data)
