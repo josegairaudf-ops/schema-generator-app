@@ -257,17 +257,27 @@
         <!-- Aquí se inyectará el HTML del widget -->
     </div>
 </div>
-    <textarea id="jsonOutput" rows="20" readonly placeholder="Result code..."></textarea>
+    <!-- START: NEW DYNAMIC RESULT AREA -->
+<div id="result-container" style="margin-top: 20px;">
+    <!-- WIDGET AREA (Blue) -->
+    <div id="visual-result-box" class="hidden">
+        <label style="color: #1a73e8; font-weight: 800; font-size: 14px; display: block; margin-bottom: 5px;">📦 WIDGET CODE (Paste at the TOP of the article):</label>
+        <textarea id="visualOutput" rows="8" readonly style="background: #f1f8ff; border: 1px solid #1a73e8; border-radius: 8px; width: 100%; padding: 15px; font-family: monospace; font-size: 13px; box-sizing: border-box;"></textarea>
+        <button type="button" onclick="copyResult('visualOutput')" style="background-color: #1a73e8; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; margin: 10px 0 25px 0; font-weight: bold;">Copy Widget Code</button>
+    </div>
 
-<div style="display: flex; gap: 10px; margin-top: 10px;">
-    <button type="button" id="copyBtn" onclick="copyToClipboard()" style="background-color: #34a853; flex: 1; margin-top:0;">
-        Copy Code
-    </button>
-    <button type="button" id="clearBtn" onclick="clearForm()" style="background-color: #dc3545; flex: 1; margin-top:0;">
-        Clear All Fields
-    </button>
+    <!-- SCHEMA AREA (Green) -->
+    <div id="schema-result-box">
+        <label style="color: #34a853; font-weight: 800; font-size: 14px; display: block; margin-bottom: 5px;">📜 SEO SCHEMA (Paste at the BOTTOM of the article):</label>
+        <textarea id="jsonOutput" rows="10" readonly placeholder="Result code..." style="background: #202124; color: #81c995; border-radius: 8px; width: 100%; padding: 15px; font-family: monospace; font-size: 13px; box-sizing: border-box;"></textarea>
+        <button type="button" onclick="copyResult('jsonOutput')" style="background-color: #34a853; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; margin-top: 10px; font-weight: bold;">Copy Schema Code</button>
+    </div>
 </div>
-</div>   
+
+<div style="margin-top: 20px;">
+    <button type="button" onclick="clearForm()" style="background-color: #dc3545; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold;">Clear All Fields</button>
+</div>
+<!-- END: NEW DYNAMIC RESULT AREA -->   
 <script>
     const teamData = {
         "NFL": { "Arizona Cardinals": { stadium: "State Farm Stadium", city: "Glendale", region: "AZ" }, "Atlanta Falcons": { stadium: "Mercedes-Benz Stadium", city: "Atlanta", region: "GA" }, "Baltimore Ravens": { stadium: "M&T Bank Stadium", city: "Baltimore", region: "MD" }, "Buffalo Bills": { stadium: "New Highmark Stadium", city: "Orchard Park", region: "NY" }, "Carolina Panthers": { stadium: "Bank of America Stadium", city: "Charlotte", region: "NC" }, "Chicago Bears": { stadium: "Soldier Field", city: "Chicago", region: "IL" }, "Cincinnati Bengals": { stadium: "Paycor Stadium", city: "Cincinnati", region: "OH" }, "Cleveland Browns": { stadium: "Huntington Bank Field Stadium", city: "Cleveland", region: "OH" }, "Dallas Cowboys": { stadium: "AT&T Stadium", city: "Arlington", region: "TX" }, "Denver Broncos": { stadium: "Empower Field at Mile High", city: "Denver", region: "CO" }, "Detroit Lions": { stadium: "Ford Field", city: "Detroit", region: "MI" }, "Green Bay Packers": { stadium: "Lambeau Field", city: "Green Bay", region: "WI" }, "Houston Texans": { stadium: "NRG Stadium", city: "Houston", region: "TX" }, "Indianapolis Colts": { stadium: "Lucas Oil Stadium", city: "Indianapolis", region: "IN" }, "Jacksonville Jaguars": { stadium: "EverBank Stadium", city: "Jacksonville", region: "FL" }, "Kansas City Chiefs": { stadium: "Arrowhead Stadium", city: "Kansas City", region: "MO" }, "Las Vegas Raiders": { stadium: "Allegiant Stadium", city: "Las Vegas", region: "NV" }, "Los Angeles Chargers": { stadium: "SoFi Stadium", city: "Inglewood", region: "CA" }, "Los Angeles Rams": { stadium: "SoFi Stadium", city: "Inglewood", region: "CA" }, "Miami Dolphins": { stadium: "Hard Rock Stadium", city: "Miami Gardens", region: "FL" }, "Minnesota Vikings": { stadium: "U.S. Bank Stadium", city: "Minneapolis", region: "MN" }, "New England Patriots": { stadium: "Gillette Stadium", city: "Foxborough", region: "MA" }, "New Orleans Saints": { stadium: "Caesars Superdome", city: "New Orleans", region: "LA" }, "New York Giants": { stadium: "MetLife Stadium", city: "East Rutherford", region: "NJ" }, "New York Jets": { stadium: "MetLife Stadium", city: "East Rutherford", region: "NJ" }, "Philadelphia Eagles": { stadium: "Lincoln Financial Field", city: "Philadelphia", region: "PA" }, "Pittsburgh Steelers": { stadium: "Acrisure Stadium", city: "Pittsburgh", region: "PA" }, "San Francisco 49ers": { stadium: "Levi's Stadium", city: "Santa Clara", region: "CA" }, "Seattle Seahawks": { stadium: "Lumen Field", city: "Seattle", region: "WA" }, "Tampa Bay Buccaneers": { stadium: "Raymond James Stadium", city: "Tampa", region: "FL" }, "Tennessee Titans": { stadium: "Nissan Stadium", city: "Nashville", region: "TN" }, "Washington Commanders": { stadium: "Northwest Stadium", city: "Landover", region: "MD" } },
@@ -559,46 +569,51 @@ function buildMultiWidgetHTML() {
         addWidgetRow('wm_rowsContainer', 'multi');
 
         document.getElementById('mainForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const type = document.getElementById('schemaTypeSelect').value;
-            const output = document.getElementById('jsonOutput');
-            const previewSection = document.getElementById('previewSection');
-            const livePreview = document.getElementById('livePreview');
+    e.preventDefault();
+    const type = document.getElementById('schemaTypeSelect').value;
+    
+    // Referencias a los nuevos elementos UI
+    const visualBox = document.getElementById('visual-result-box');
+    const schemaBox = document.getElementById('schema-result-box');
+    const visualOutput = document.getElementById('visualOutput');
+    const jsonOutput = document.getElementById('jsonOutput');
+    const previewSection = document.getElementById('previewSection');
+    const livePreview = document.getElementById('livePreview');
 
-            // Automatización Fecha Live (ValidFrom)
-            const now = formatToDateTimeLocal(new Date());
-            const vField = (type === 'Parlay') ? document.getElementsByName('p_seValidFrom')[0] : document.getElementsByName('seValidFrom')[0];
-            if (vField) vField.value = now;
-
-            if (type.includes('Widget')) {
-                const html = (type === 'WidgetSingle') ? buildSingleWidgetHTML() : buildMultiWidgetHTML();
-                output.value = html;
-                livePreview.innerHTML = html;
-                previewSection.classList.remove('hidden');
-                return;
-            }
-
+    try {
+        if (type.includes('Widget')) {
+            // CASO: WIDGETS (Single/Multi) -> Solo Widget
+            const html = (type === 'WidgetSingle') ? buildSingleWidgetHTML() : buildMultiWidgetHTML();
+            visualOutput.value = html;
+            visualBox.classList.remove('hidden');
+            schemaBox.classList.add('hidden');
+            livePreview.innerHTML = html;
+            previewSection.classList.remove('hidden');
+        } 
+        else if (type === 'Takeaways') {
+            // CASO: TAKEAWAYS -> Widget Y Schema
+            const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
+            const data = await res.json();
+            visualOutput.value = data.visual;
+            jsonOutput.value = `<script type="application/ld+json">\n${JSON.stringify(data.schema, null, 2)}\n<\/script>`;
+            visualBox.classList.remove('hidden');
+            schemaBox.classList.remove('hidden');
+            livePreview.innerHTML = data.visual;
+            previewSection.classList.remove('hidden');
+        } 
+        else {
+            // CASO: SCHEMAS NORMALES -> Solo Schema
+            const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
+            const json = await res.json();
+            jsonOutput.value = `<script type="application/ld+json">\n${JSON.stringify(json, null, 2)}\n<\/script>`;
+            visualBox.classList.add('hidden');
+            schemaBox.classList.remove('hidden');
             previewSection.classList.add('hidden');
-            output.value = "Generating Schema...";
-            try {
-                const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
-               const json = await res.json();
-
-if (type === 'Takeaways') {
-    // Si es Takeaways, mostramos el HTML Visual + el Script del Schema
-    const finalResult = `${json.visual}\n\n<script type="application/ld+json">\n${JSON.stringify(json.schema, null, 2)}\n<\/script>`;
-    output.value = finalResult;
-    livePreview.innerHTML = json.visual; // Mostramos el diseño en la cajita de preview
-    previewSection.classList.remove('hidden');
-} else {
-    // Para los demás, seguimos mostrando solo el Script del Schema
-    output.value = `<script type="application/ld+json">\n${JSON.stringify(json, null, 2)}\n<\/script>`;
-    previewSection.classList.add('hidden');
-}
-            } catch (err) {
-                output.value = "Error: " + err.message;
-            }
-             };
+        }
+    } catch (err) {
+        alert("Error: " + err.message);
+    }
+};
          };
          function calculateParlayAutoOdds() {
     // Buscamos todos los campos de cuotas que terminen en "Price" dentro del parlay
@@ -623,15 +638,16 @@ if (type === 'Takeaways') {
     }
 }
 
-function copyToClipboard() {
-        const copyText = document.getElementById("jsonOutput");
-        const btn = document.getElementById("copyBtn");
-        
-        if (!copyText || !copyText.value) {
-            alert("Nothing to copy yet!");
-            return;
-        }
-
+function copyResult(targetId) {
+    const el = document.getElementById(targetId);
+    if (!el || !el.value) return;
+    el.select();
+    document.execCommand('copy');
+    
+    // Feedback visual rápido
+    const originalValue = el.value;
+    alert("Copied to clipboard! ✅");
+}
         copyText.select();
         navigator.clipboard.writeText(copyText.value).then(() => {
             const originalText = btn.innerText;
@@ -656,6 +672,8 @@ function copyToClipboard() {
             document.getElementById('parlayLegsContainer').innerHTML = "";
             document.getElementById('ws_rowsContainer').innerHTML = "";
             document.getElementById('wm_rowsContainer').innerHTML = "";
+            document.getElementById('visual-result-box').classList.add('hidden');
+            document.getElementById('schema-result-box').classList.remove('hidden');
 
             parlayPickCount = 0;
             addParlayLeg();
