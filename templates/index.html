@@ -638,27 +638,62 @@ function buildMultiWidgetHTML() {
     }
 }
 
-function copyResult(targetId) {
-    const el = document.getElementById(targetId);
-    if (!el || !el.value) return;
-    el.select();
-    document.execCommand('copy');
-    
-    // Feedback visual rápido
-    const originalValue = el.value;
-    alert("Copied to clipboard! ✅");
-}
-        copyText.select();
-        navigator.clipboard.writeText(copyText.value).then(() => {
-            const originalText = btn.innerText;
-            btn.innerText = "Copied! ✅";
-            btn.style.backgroundColor = "#1d6634";
-            setTimeout(() => {
-                btn.innerText = originalText;
-                btn.style.backgroundColor = "#34a853";
-            }, 2000);
-        });
+// Función única para copiar (Botón azul y botón verde)
+    function copyResult(targetId) {
+        const el = document.getElementById(targetId);
+        if (!el || !el.value) {
+            alert("Nothing to copy!");
+            return;
+        }
+        el.select();
+        document.execCommand('copy');
+        alert("Copied to clipboard! ✅");
     }
+
+    // El listener del botón Generate (Asegúrate de que esté dentro del script)
+    document.addEventListener('submit', async (e) => {
+        if (e.target.id !== 'mainForm') return;
+        e.preventDefault();
+        
+        const type = document.getElementById('schemaTypeSelect').value;
+        const visualBox = document.getElementById('visual-result-box');
+        const schemaBox = document.getElementById('schema-result-box');
+        const visualOutput = document.getElementById('visualOutput');
+        const jsonOutput = document.getElementById('jsonOutput');
+        const previewSection = document.getElementById('previewSection');
+        const livePreview = document.getElementById('livePreview');
+
+        try {
+            if (type.includes('Widget')) {
+                const html = (type === 'WidgetSingle') ? buildSingleWidgetHTML() : buildMultiWidgetHTML();
+                visualOutput.value = html;
+                visualBox.classList.remove('hidden');
+                schemaBox.classList.add('hidden');
+                livePreview.innerHTML = html;
+                previewSection.classList.remove('hidden');
+            } 
+            else if (type === 'Takeaways') {
+                const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
+                const data = await res.json();
+                visualOutput.value = data.visual;
+                jsonOutput.value = `<script type="application/ld+json">\n${JSON.stringify(data.schema, null, 2)}\n<\/script>`;
+                visualBox.classList.remove('hidden');
+                schemaBox.classList.remove('hidden');
+                livePreview.innerHTML = data.visual;
+                previewSection.classList.remove('hidden');
+            } 
+            else {
+                const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
+                const json = await res.json();
+                jsonOutput.value = `<script type="application/ld+json">\n${JSON.stringify(json, null, 2)}\n<\/script>`;
+                visualBox.classList.add('hidden');
+                schemaBox.classList.remove('hidden');
+                previewSection.classList.add('hidden');
+            }
+        } catch (err) {
+            alert("Error: " + err.message);
+        }
+    });
 
     function clearForm() {
         if (confirm("Are you sure you want to clear everything?")) {
