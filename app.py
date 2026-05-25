@@ -15,16 +15,29 @@ def clean_nones(value):
 # --- GENERADORES ---
 
 def gen_faq(data):
+    main_entity = []
+    
+    # Buscamos pares de Q y A del 1 al 20 para capturar todas las dinámicas
+    for i in range(1, 21):
+        question = data.get(f"faqQ{i}")
+        answer = data.get(f"faqA{i}")
+        
+        # Solo agregamos si ambos campos tienen contenido
+        if question and answer:
+            main_entity.append({
+                "@type": "Question",
+                "name": question,
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": answer
+                }
+            })
+            
     return {
         "@context": "https://schema.org",
         "@type": "FAQPage",
-        "mainEntity": [{
-            "@type": "Question",
-            "name": data.get("faqQ1"),
-            "acceptedAnswer": {"@type": "Answer", "text": data.get("faqA1")}
-        }]
+        "mainEntity": main_entity
     }
-
 def gen_blog(data):
     return {
         "@context": "https://schema.org",
