@@ -758,6 +758,29 @@ function calculateParlayAutoOdds() {
         totalField.value = hasValues ? decToAm(totalDecimal) : "";
     }
 }
+    let faqCount = 0;
+
+function addFAQ() {
+    faqCount++;
+    const container = document.getElementById('faqContainer');
+    const html = `
+        <div class="faq-item" style="border-bottom: 1px solid #ddd; padding: 15px 0; margin-bottom: 10px; position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <strong style="color: #555;">Question #${faqCount}</strong>
+                <button type="button" onclick="this.parentElement.parentElement.remove()" style="background: #dc3545; color: white; border: none; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;">Remove</button>
+            </div>
+            <label>Question:</label>
+            <input type="text" name="faqQ${faqCount}" placeholder="e.g. What is a parlay bet?" style="margin-bottom: 10px;">
+            <label>Answer:</label>
+            <textarea name="faqA${faqCount}" placeholder="Provide a detailed answer..." style="height: 80px;"></textarea>
+        </div>`;
+    container.insertAdjacentHTML('beforeend', html);
+}
+
+// Para que aparezca una pregunta vacía al cargar la página por primera vez
+window.addEventListener('load', () => {
+    if (faqCount === 0) addFAQ();
+});
 </script>
 </body>
 </html>
