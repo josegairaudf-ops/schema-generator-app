@@ -222,7 +222,7 @@ def gen_takeaways(data):
     theme = data.get("tkTheme", "General")
     icon = data.get("tkIcon", "💡")
     points = []
-    for i in range(1, 5):
+    for i in range(1, 6):
         p = data.get(f"tkPoint{i}")
         if p:
             points.append(p)
