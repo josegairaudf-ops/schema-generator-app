@@ -762,53 +762,47 @@ function calculateParlayAutoOdds() {
         totalField.value = hasValues ? decToAm(totalDecimal) : "";
     }
 }
+    // --- FUNCIONES DINÁMICAS (CORREGIDAS) ---
     let faqCount = 0;
-
-function addFAQ() {
-    faqCount++;
-    const container = document.getElementById('faqContainer');
-    const html = `
-        <div class="faq-item" style="border-bottom: 1px solid #ddd; padding: 15px 0; margin-bottom: 10px; position: relative;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <strong style="color: #555;">Question #${faqCount}</strong>
-                <button type="button" onclick="this.parentElement.parentElement.remove()" style="background: #dc3545; color: white; border: none; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;">Remove</button>
-            </div>
-            <label>Question:</label>
-            <input type="text" name="faqQ${faqCount}" placeholder="e.g. What is a parlay bet?" style="margin-bottom: 10px;">
-            <label>Answer:</label>
-            <textarea name="faqA${faqCount}" placeholder="Provide a detailed answer..." style="height: 80px;"></textarea>
-        </div>`;
-    container.insertAdjacentHTML('beforeend', html);
-}
-
-// Para que aparezca una pregunta vacía al cargar la página por primera vez
-window.addEventListener('load', () => {
-    if (faqCount === 0) addFAQ();
     let tkCount = 0;
 
-function addTakeaway() {
-    if (tkCount >= 6) {
-        alert("Maximum 6 takeaways allowed");
-        return;
+    function addFAQ() {
+        faqCount++;
+        const container = document.getElementById('faqContainer');
+        if (!container) return;
+        const html = `
+            <div class="faq-item" style="border-bottom: 1px solid #ddd; padding: 15px 0; margin-bottom: 10px; position: relative;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <strong style="color: #555;">Question #${faqCount}</strong>
+                    <button type="button" onclick="this.parentElement.parentElement.remove()" style="background: #dc3545; color: white; border: none; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;">Remove</button>
+                </div>
+                <label>Question:</label>
+                <input type="text" name="faqQ${faqCount}" placeholder="e.g. What is a parlay bet?" style="margin-bottom: 10px;">
+                <label>Answer:</label>
+                <textarea name="faqA${faqCount}" placeholder="Provide a detailed answer..." style="height: 80px;"></textarea>
+            </div>`;
+        container.insertAdjacentHTML('beforeend', html);
     }
-    tkCount++;
-    const container = document.getElementById('tkContainer');
-    const html = `
-        <div class="tk-item" style="margin-bottom: 10px; position: relative; display: flex; gap: 10px; align-items: flex-start;">
-            <div style="flex: 1;">
-                <textarea name="tkPoint${tkCount}" placeholder="Point ${tkCount}: Describe the main idea..." style="height: 60px;"></textarea>
-            </div>
-            <button type="button" onclick="this.parentElement.remove()" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; margin-top: 5px;">Remove</button>
-        </div>`;
-    container.insertAdjacentHTML('beforeend', html);
-}
 
-// Inicializar con 1 takeaway al cargar
-window.addEventListener('load', () => {
-    if (tkCount === 0) addTakeaway();
-});
-});
-    
-</script>
+    function addTakeaway() {
+        if (tkCount >= 6) { alert("Maximum 6 takeaways allowed"); return; }
+        tkCount++;
+        const container = document.getElementById('tkContainer');
+        if (!container) return;
+        const html = `
+            <div class="tk-item" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: flex-start;">
+                <div style="flex: 1;">
+                    <textarea name="tkPoint${tkCount}" placeholder="Point ${tkCount}: Describe the main idea..." style="height: 60px; width: 100%; padding: 10px; border: 1px solid #dadce0; border-radius: 6px;"></textarea>
+                </div>
+                <button type="button" onclick="this.parentElement.remove()" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; margin-top: 5px;">Remove</button>
+            </div>`;
+        container.insertAdjacentHTML('beforeend', html);
+    }
+
+    // --- INICIALIZACIÓN AL CARGAR ---
+    window.addEventListener('load', () => {
+        if (faqCount === 0) addFAQ();
+        if (tkCount === 0) addTakeaway();
+    });</script>
 </body>
 </html>
