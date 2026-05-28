@@ -227,7 +227,7 @@
 <!-- Key TAKEAWAYS SECTION -->
 <div id="fields_Takeaways" class="hidden">
     <div class="section" style="background: #f8fafc; border: 1px solid #013369;">
-        <h2>💡 Key Takeaways Generator</h2>
+        <h2>💡 Quick Takeaways Generator</h2>
         
         <label>Select Icon:</label>
         <select name="tkIcon" id="tk-icon">
@@ -241,12 +241,13 @@
         <label style="margin-top:10px;">Article Theme:</label>
         <input type="text" name="tkTheme" id="tk-theme" placeholder="e.g., Live F1 Betting Strategy">
 
-        <label style="margin-top:10px;">Key Takeaways:</label>
-        <textarea name="tkPoint1" id="tk-point-1" placeholder="Point 1: Describe the main idea..." style="margin-bottom:5px; height:60px;"></textarea>
-        <textarea name="tkPoint2" id="tk-point-2" placeholder="Point 2..." style="margin-bottom:5px; height:60px;"></textarea>
-        <textarea name="tkPoint3" id="tk-point-3" placeholder="Point 3..." style="margin-bottom:5px; height:60px;"></textarea>
-        <textarea name="tkPoint4" id="tk-point-4" placeholder="Point 4..." style="height:60px;"></textarea>
-        <textarea name="tkPoint5" id="tk-point-5" placeholder="Point 5..." style="margin-top:5px; height:60px;"></textarea>
+        <label style="margin-top:15px;">Key Takeaways Points:</label>
+        <!-- Contenedor donde se irán sumando los puntos -->
+        <div id="tkContainer"></div>
+
+        <button type="button" onclick="addTakeaway()" style="background-color: #013369; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; width: auto;">
+            + Add Another Takeaway
+        </button>
     </div>
 </div>
 
@@ -713,7 +714,9 @@ function buildMultiWidgetHTML() {
             document.getElementById('wm_rowsContainer').innerHTML = "";
             document.getElementById('visual-result-box').classList.add('hidden');
             document.getElementById('schema-result-box').classList.remove('hidden');
-
+document.getElementById('tkContainer').innerHTML = "";
+tkCount = 0;
+addTakeaway();
             parlayPickCount = 0;
             addParlayLeg();
             addWidgetRow('ws_rowsContainer', 'single');
@@ -781,7 +784,31 @@ function addFAQ() {
 // Para que aparezca una pregunta vacía al cargar la página por primera vez
 window.addEventListener('load', () => {
     if (faqCount === 0) addFAQ();
+    let tkCount = 0;
+
+function addTakeaway() {
+    if (tkCount >= 6) {
+        alert("Maximum 6 takeaways allowed");
+        return;
+    }
+    tkCount++;
+    const container = document.getElementById('tkContainer');
+    const html = `
+        <div class="tk-item" style="margin-bottom: 10px; position: relative; display: flex; gap: 10px; align-items: flex-start;">
+            <div style="flex: 1;">
+                <textarea name="tkPoint${tkCount}" placeholder="Point ${tkCount}: Describe the main idea..." style="height: 60px;"></textarea>
+            </div>
+            <button type="button" onclick="this.parentElement.remove()" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; margin-top: 5px;">Remove</button>
+        </div>`;
+    container.insertAdjacentHTML('beforeend', html);
+}
+
+// Inicializar con 1 takeaway al cargar
+window.addEventListener('load', () => {
+    if (tkCount === 0) addTakeaway();
 });
+});
+    
 </script>
 </body>
 </html>
