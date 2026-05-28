@@ -784,18 +784,23 @@ function calculateParlayAutoOdds() {
         container.insertAdjacentHTML('beforeend', html);
     }
 
-    function addTakeaway() {
+ function addTakeaway() {
         if (tkCount >= 6) { alert("Maximum 6 takeaways allowed"); return; }
         tkCount++;
         const container = document.getElementById('tkContainer');
         if (!container) return;
+
         const html = `
-            <div class="tk-item" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: flex-start;">
-                <div style="flex: 1;">
-                    <textarea name="tkPoint${tkCount}" placeholder="Point ${tkCount}: Describe the main idea..." style="height: 60px; width: 100%; padding: 10px; border: 1px solid #dadce0; border-radius: 6px;"></textarea>
+            <div class="tk-item" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); position: relative;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <strong style="color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Key Point #${tkCount}</strong>
+                    <button type="button" onclick="this.closest('.tk-item').remove()" style="background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; text-transform: uppercase; transition: 0.2s;">
+                        Remove
+                    </button>
                 </div>
-                <button type="button" onclick="this.parentElement.remove()" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; margin-top: 5px;">Remove</button>
+                <textarea name="tkPoint${tkCount}" placeholder="Point ${tkCount}: Describe the main idea..." style="height: 80px; width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-family: inherit; font-size: 14px; resize: vertical; outline: none;"></textarea>
             </div>`;
+            
         container.insertAdjacentHTML('beforeend', html);
     }
 
