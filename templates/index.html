@@ -345,26 +345,43 @@
         if (type === 'SportsEvent') loadTeams();
     }
 
-    function loadTeams() {
-        const league = document.getElementById('seSport').value;
-        const isOther = league === 'Other';
-        const customL = document.getElementById('customL');
-        if (customL) customL.classList.toggle('hidden', !isOther);
-        
-        const teamA = document.getElementById('seTeamA');
-        const teamB = document.getElementById('seTeamB');
-        if (teamA && teamB) {
-            teamA.classList.toggle('hidden', isOther);
-            teamB.classList.toggle('hidden', isOther);
-            if (!isOther && teamData[league]) {
-                const names = Object.keys(teamData[league]);
-                const options = names.map(t => `<option value="${t}">${t}</option>`).join('');
-                teamA.innerHTML = options;
-                teamB.innerHTML = options;
-            }
+   function loadTeams() {
+    const league = document.getElementById('seSport').value;
+    const isOther = (league === 'Other');
+    
+    // Contenedores
+    const customL = document.getElementById('customL');
+    const teamASelect = document.getElementById('seTeamA');
+    const teamBSelect = document.getElementById('seTeamB');
+    const teamACustom = document.getElementById('seTeamACustom');
+    const teamBCustom = document.getElementById('seTeamBCustom');
+
+    // Mostrar/Ocultar campos de Liga Personalizada
+    if (customL) customL.classList.toggle('hidden', !isOther);
+    
+    if (isOther) {
+        // Si es OTRO: Ocultamos desplegables y mostramos cuadros de texto
+        teamASelect.classList.add('hidden');
+        teamBSelect.classList.add('hidden');
+        teamACustom.classList.remove('hidden');
+        teamBCustom.classList.remove('hidden');
+    } else {
+        // Si es una liga conocida: Mostramos desplegables y ocultamos cuadros de texto
+        teamASelect.classList.remove('hidden');
+        teamBSelect.classList.remove('hidden');
+        teamACustom.classList.add('hidden');
+        teamBCustom.classList.add('hidden');
+
+        // Cargar los equipos de la liga seleccionada
+        if (teamData[league]) {
+            const names = Object.keys(teamData[league]);
+            const options = names.map(t => `<option value="${t}">${t}</option>`).join('');
+            teamASelect.innerHTML = options;
+            teamBSelect.innerHTML = options;
         }
-        autoFillVenue();
     }
+    autoFillVenue();
+}
 
     function autoFillVenue() {
         const type = document.getElementById('schemaTypeSelect').value;
@@ -382,16 +399,18 @@
         updName();
     }
 
-    function updName() {
-        const type = document.getElementById('schemaTypeSelect').value;
-        if (type !== 'SportsEvent') return;
-        const league = document.getElementById('seSport').value;
-        let a = (league === 'Other') ? document.getElementById('seTeamACustom').value : document.getElementById('seTeamA').value;
-        let b = (league === 'Other') ? document.getElementById('seTeamBCustom').value : document.getElementById('seTeamB').value;
-        const nameField = document.getElementById('seName');
-        if (nameField) nameField.value = (a && b) ? `${a} vs ${b}` : "";
+   function updName() {
+    const league = document.getElementById('seSport').value;
+    const isOther = (league === 'Other');
+    
+    let a = isOther ? document.getElementById('seTeamACustom').value : document.getElementById('seTeamA').value;
+    let b = isOther ? document.getElementById('seTeamBCustom').value : document.getElementById('seTeamB').value;
+    
+    const nameField = document.getElementById('seName');
+    if (nameField) {
+        nameField.value = (a && b) ? `${a} vs ${b}` : (a || b || "");
     }
-
+}
     let parlayPickCount = 0;
     function addParlayLeg() {
         parlayPickCount++;
