@@ -286,7 +286,7 @@
 </div>
 <!-- END: NEW DYNAMIC RESULT AREA -->   
 <script>
-    // 1. VARIABLES GLOBALES Y DATOS (Declaradas una sola vez)
+    // 1. VARIABLES GLOBALES (Declaradas solo una vez)
     let sportsPickCount = 0;
     let parlayPickCount = 0;
     let faqCount = 0;
@@ -299,7 +299,7 @@
         "NHL": { "Anaheim Ducks": { stadium: "Honda Center", city: "Anaheim", region: "CA" }, "Boston Bruins": { stadium: "TD Garden", city: "Boston", region: "MA" }, "Buffalo Sabres": { stadium: "KeyBank Center", city: "Buffalo", region: "NY" }, "Calgary Flames": { stadium: "Scotiabank Saddledome", city: "Calgary", region: "AB" }, "Carolina Hurricanes": { stadium: "Lenovo Center", city: "Raleigh", region: "NC" }, "Chicago Blackhawks": { stadium: "United Center", city: "Chicago", region: "IL" }, "Colorado Avalanche": { stadium: "Ball Arena", city: "Denver", region: "CO" }, "Columbus Blue Jackets": { stadium: "Nationwide Arena", city: "Columbus", region: "OH" }, "Dallas Stars": { stadium: "American Airlines Center", city: "Dallas", region: "TX" }, "Detroit Red Wings": { stadium: "Little Caesars Arena", city: "Detroit", region: "MI" }, "Edmonton Oilers": { stadium: "Rogers Place", city: "Edmonton", region: "AB" }, "Florida Panthers": { stadium: "Amerant Bank Arena", city: "Sunrise", region: "FL" }, "Los Angeles Kings": { stadium: "Crypto.com Arena", city: "Los Angeles", region: "CA" }, "Minnesota Wild": { stadium: "Xcel Energy Center", city: "Saint Paul", region: "MN" }, "Montreal Canadiens": { stadium: "Bell Centre", city: "Montreal", region: "QC" }, "Nashville Predators": { stadium: "Bridgestone Arena", city: "Nashville", region: "TN" }, "New Jersey Devils": { stadium: "Prudential Center", city: "Newark", region: "NJ" }, "New York Islanders": { stadium: "UBS Arena", city: "Elmont", region: "NY" }, "New York Rangers": { stadium: "Madison Square Garden", city: "New York", region: "NY" }, "Ottawa Senators": { stadium: "Canadian Tire Centre", city: "Ottawa", region: "ON" }, "Philadelphia Flyers": { stadium: "Wells Fargo Center", city: "Philadelphia", region: "PA" }, "Pittsburgh Penguins": { stadium: "PPG Paints Arena", city: "Pittsburgh", region: "PA" }, "San Jose Sharks": { stadium: "SAP Center", city: "San Jose", region: "CA" }, "Seattle Kraken": { stadium: "Climate Pledge Arena", city: "Seattle", region: "WA" }, "St. Louis Blues": { stadium: "Enterprise Center", city: "St. Louis", region: "MO" }, "Tampa Bay Lightning": { stadium: "Amalie Arena", city: "Tampa", region: "FL" }, "Toronto Maple Leafs": { stadium: "Scotiabank Arena", city: "Toronto", region: "ON" }, "Utah Hockey Club": { stadium: "Delta Center", city: "Salt Lake City", region: "UT" }, "Vancouver Canucks": { stadium: "Rogers Arena", city: "Vancouver", region: "BC" }, "Vegas Golden Knights": { stadium: "T-Mobile Arena", city: "Las Vegas", region: "NV" }, "Washington Capitals": { stadium: "Capital One Arena", city: "Washington", region: "DC" }, "Winnipeg Jets": { stadium: "Canada Life Centre", city: "Winnipeg", region: "MB" } }
     };
 
-    // 2. FUNCIONES DE INTERFAZ (Pestañas y Equipos)
+    // 2. FUNCIONES DE PESTAÑAS Y EQUIPOS
     function switchSchema() {
         const typeSelect = document.getElementById('schemaTypeSelect');
         if (!typeSelect) return;
@@ -345,11 +345,10 @@
         const isOther = document.getElementById('seSport').value === 'Other';
         const a = isOther ? document.getElementById('seTeamACustom').value : document.getElementById('seTeamA').value;
         const b = isOther ? document.getElementById('seTeamBCustom').value : document.getElementById('seTeamB').value;
-        const nameField = document.getElementById('seName');
-        if (nameField) nameField.value = (a && b) ? `${a} vs ${b}` : "";
+        document.getElementById('seName').value = (a && b) ? `${a} vs ${b}` : "";
     }
 
-    // 3. FUNCIONES DINÁMICAS (Add/Remove & Reindex)
+    // 3. FUNCIONES DINÁMICAS (Picks, FAQ, Takeaways)
     function addFAQ() {
         faqCount++;
         const html = `<div class="faq-item" style="border-bottom:1px solid #ddd; padding:10px 0;"><div style="display:flex; justify-content:space-between;"><strong>Question</strong><button type="button" onclick="this.parentElement.parentElement.remove(); reindexFAQ();" style="background:#dc3545; color:white; border:none; padding:2px 8px; border-radius:4px;">✕</button></div><input type="text" class="faq-q" name="faqQ${faqCount}" placeholder="Question"><textarea class="faq-a" name="faqA${faqCount}" placeholder="Answer" style="height:60px;"></textarea></div>`;
@@ -366,7 +365,7 @@
     }
 
     function addTakeaway() {
-        if (tkCount >= 6) return alert("Max reached");
+        if (tkCount >= 6) return alert("Max 6 reached");
         tkCount++;
         const html = `<div class="tk-item" style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:15px; margin-bottom:15px;"><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><strong>Key Point</strong><button type="button" onclick="this.closest('.tk-item').remove(); reindexTK();" style="background:#fee2e2; color:#dc2626; border:none; padding:4px 10px; border-radius:6px; cursor:pointer;">Remove</button></div><textarea class="tk-in" name="tkPoint${tkCount}" style="height:80px; width:100%;" placeholder="Point details..."></textarea></div>`;
         document.getElementById('tkContainer').insertAdjacentHTML('beforeend', html);
@@ -378,9 +377,9 @@
     }
 
     function addSportsPick() {
-        if (sportsPickCount >= 7) return alert("Max reached");
+        if (sportsPickCount >= 7) return alert("Max 7 reached");
         sportsPickCount++;
-        const html = `<div class="sp-row pick-grid" style="margin-bottom:10px; padding:10px; border-left:4px solid #34a853; background:#f8f9fa;"><input type="text" class="sp-n" name="pick${sportsPickCount}Name" placeholder="Name"><input type="text" class="sp-p" name="pick${sportsPickCount}Price" placeholder="Odds"><div style="display:flex; gap:8px;"><input type="url" class="sp-u" name="pick${sportsPickCount}Url" placeholder="URL" style="flex:1;"><button type="button" onclick="removeSportsPick(this)" style="background:#dc3545; color:white; border:none; padding:0 12px; border-radius:4px;">✕</button></div></div>`;
+        const html = `<div class="sp-row pick-grid" style="margin-bottom:10px; padding:10px; border-left:4px solid #34a853; background:#f8f9fa;"><input type="text" class="sp-n" name="pick${sportsPickCount}Name" placeholder="Pick Name"><input type="text" class="sp-p" name="pick${sportsPickCount}Price" placeholder="Odds"><div style="display:flex; gap:8px;"><input type="url" class="sp-u" name="pick${sportsPickCount}Url" placeholder="URL" style="flex:1;"><button type="button" onclick="removeSportsPick(this)" style="background:#dc3545; color:white; border:none; padding:0 12px; border-radius:4px;">✕</button></div></div>`;
         document.getElementById('sportsPicksContainer').insertAdjacentHTML('beforeend', html);
         reindexSP();
     }
@@ -402,7 +401,7 @@
     }
     function reindexPL() {
         document.querySelectorAll('.p-leg').forEach((leg, i) => {
-            const n = i+1;
+            const n = i + 1;
             leg.querySelector('strong').innerText = `Leg #${n}`;
             leg.querySelector('.pl-e').name = `pPick${n}Event`;
             leg.querySelector('.pl-n').name = `pPick${n}Name`;
@@ -419,7 +418,7 @@
         container.insertAdjacentHTML('beforeend', html);
     }
 
-    // 4. CONSTRUCCIÓN DE WIDGETS (HTML VISUAL)
+    // 4. CONSTRUCCIÓN DE WIDGETS
     function buildSingleWidgetHTML() {
         const title = document.getElementById('ws_promoTitle').value || "Bonus";
         const text = document.getElementById('ws_promoText').value || "Offer";
