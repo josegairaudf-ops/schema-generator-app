@@ -345,10 +345,10 @@
         document.getElementById('seName').value = (a && b) ? `${a} vs ${b}` : "";
     }
 
-    // 3. FUNCIONES DINÁMICAS (Add/Remove & Reindex)
+    // 3. FUNCIONES DINÁMICAS (Add/Remove & )
     function addFAQ() {
         faqCount++;
-        const html = `<div class="faq-item" style="border-bottom:1px solid #ddd; padding:10px 0;"><strong>Question</strong><button type="button" onclick="this.parentElement.remove(); reindexFAQ();" style="float:right; background:#dc3545; color:white; border:none; padding:2px 8px; border-radius:4px;">✕</button><input type="text" class="faq-q" name="faqQ${faqCount}" placeholder="Question"><textarea class="faq-a" name="faqA${faqCount}" placeholder="Answer" style="height:60px;"></textarea></div>`;
+        const html = `<div class="faq-item" style="border-bottom:1px solid #ddd; padding:10px 0;"><strong>Question</strong><button type="button" onclick="this.parentElement.remove(); FAQ();" style="float:right; background:#dc3545; color:white; border:none; padding:2px 8px; border-radius:4px;">✕</button><input type="text" class="faq-q" name="faqQ${faqCount}" placeholder="Question"><textarea class="faq-a" name="faqA${faqCount}" placeholder="Answer" style="height:60px;"></textarea></div>`;
         document.getElementById('faqContainer').insertAdjacentHTML('beforeend', html);
         reindexFAQ();
     }
@@ -368,10 +368,14 @@
         reindexTK();
     }
     function reindexTK() {
-        document.querySelectorAll('.tk-in').forEach((el, i) => { el.name = `tkPoint${i+1}`; });
-        tkCount = document.querySelectorAll('.tk-in').length;
-    }
-
+    const items = document.querySelectorAll('.tk-item');
+    items.forEach((item, i) => {
+        const n = i + 1;
+        item.querySelector('strong').innerText = `Key Point #${n}`;
+        item.querySelector('textarea').name = `tkPoint${n}`;
+    });
+    tkCount = items.length;
+}
     function addSportsPick() {
         if (sportsPickCount >= 7) return alert("Max 7 reached");
         sportsPickCount++;
@@ -407,12 +411,20 @@
         calculateParlayAutoOdds();
     }
 
-    function addWidgetRow(containerId, type) {
-        const container = document.getElementById(containerId);
-        const rowClass = type === 'single' ? 'widget-row-single' : 'widget-row-multi';
-        const html = `<div class="section ${rowClass}" style="border-left:4px solid #ff9800; background:#fffcf9; margin-bottom:15px; padding:10px;"><div style="display:flex; justify-content:space-between; margin-bottom:5px;"><strong>#</strong><button type="button" onclick="this.closest('.section').remove();" style="background:#dc3545; color:white; border:none; padding:2px 8px; border-radius:4px;">✕</button></div><div class="grid">${type === 'single' ? `<input type="text" class="ws_market" placeholder="Market"><input type="text" class="ws_pick" placeholder="Pick & Odds"><input type="url" class="ws_url" placeholder="Link">` : `<input type="text" class="wm_match" placeholder="Matchup"><input type="text" class="wm_pick" placeholder="Expert Pick"><input type="url" class="wm_url" placeholder="Link">`}</div></div>`;
-        container.insertAdjacentHTML('beforeend', html);
-    }
+   function addWidgetRow(containerId, type) {
+    const container = document.getElementById(containerId);
+    const rowClass = type === 'single' ? 'widget-row-single' : 'widget-row-multi';
+    // Agregamos la clase rowClass al div principal para que el generador lo encuentre
+    const html = `<div class="section ${rowClass}" style="border-left:4px solid #ff9800; background:#fffcf9; margin-bottom:15px; padding:10px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><strong>#</strong>
+        <button type="button" onclick="this.closest('.section').remove();" style="background:#dc3545; color:white; border:none; padding:2px 8px; border-radius:4px;">✕</button></div>
+        <div class="grid">
+            ${type === 'single' ? 
+            `<input type="text" class="ws_market" placeholder="Market"><input type="text" class="ws_pick" placeholder="Pick"><input type="url" class="ws_url" placeholder="Link">` : 
+            `<input type="text" class="wm_match" placeholder="Matchup"><input type="text" class="wm_pick" placeholder="Expert Pick"><input type="url" class="wm_url" placeholder="Link">`}
+        </div></div>`;
+    container.insertAdjacentHTML('beforeend', html);
+}
 
     // 4. CONSTRUCCIÓN DE WIDGETS VISUALES
     function buildSingleWidgetHTML() {
@@ -441,12 +453,10 @@
     }
 
     // 5. ENVÍO Y RESULTADOS
-    document.addEventListener('submit', async (e) => {
+   document.addEventListener('submit', async (e) => {
         if (e.target.id !== 'mainForm') return;
         e.preventDefault();
         const type = document.getElementById('schemaTypeSelect').value;
-        const vBox = document.getElementById('visual-result-box');
-        const sBox = document.getElementById('schema-result-box');
         const vOut = document.getElementById('visualOutput');
         const sOut = document.getElementById('jsonOutput');
 
@@ -454,26 +464,16 @@
             if (type.includes('Widget')) {
                 const html = (type === 'WidgetSingle') ? buildSingleWidgetHTML() : buildMultiWidgetHTML();
                 vOut.value = html;
-                vBox.classList.remove('hidden'); sBox.classList.add('hidden');
+                document.getElementById('visual-result-box').classList.remove('hidden');
+                document.getElementById('schema-result-box').classList.add('hidden');
                 document.getElementById('livePreview').innerHTML = html;
                 document.getElementById('previewSection').classList.remove('hidden');
             } else {
-                const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
-                const data = await res.json();
-                if (type === 'Takeaways') {
-                    vOut.value = data.visual;
-                    sOut.value = `<script type="application/ld+json">\n${JSON.stringify(data.schema, null, 2)}\n<\/script>`;
-                    vBox.classList.remove('hidden');
-                    document.getElementById('livePreview').innerHTML = data.visual;
-                    document.getElementById('previewSection').classList.remove('hidden');
-                } else {
-                    sOut.value = `<script type="application/ld+json">\n${JSON.stringify(data, null, 2)}\n<\/script>`;
-                    vBox.classList.add('hidden');
-                    document.getElementById('previewSection').classList.add('hidden');
-                }
-                sBox.classList.remove('hidden');
-            }
-        } catch (err) { alert("Error: " + err.message); }
+    // Si no es Takeaways, el JSON es el objeto directo (data)
+    sOut.value = `<script type="application/ld+json">\n${JSON.stringify(data.schema || data, null, 2)}\n<\/script>`;
+    vBox.classList.add('hidden');
+    document.getElementById('previewSection').classList.add('hidden');
+}
     });
 
     // 6. UTILIDADES
@@ -490,11 +490,14 @@
     }
 
     // 7. INICIALIZACIÓN
-    window.onload = () => {
-        switchSchema();
-        addFAQ(); addTakeaway(); addSportsPick(); addParlayLeg();
-        addWidgetRow('ws_rowsContainer', 'single'); addWidgetRow('wm_rowsContainer', 'multi');
-    };
+   window.onload = () => {
+    switchSchema(); // Primero mostramos la pestaña correcta
+    // Solo agregamos si el contenedor está vacío
+    if (faqCount === 0 && document.getElementById('faqContainer')) addFAQ();
+    if (tkCount === 0 && document.getElementById('tkContainer')) addTakeaway();
+    if (sportsPickCount === 0 && document.getElementById('sportsPicksContainer')) addSportsPick();
+    if (parlayPickCount === 0 && document.getElementById('parlayLegsContainer')) addParlayLeg();
+};
 </script>
 </body>
 </html>
