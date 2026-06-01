@@ -464,9 +464,8 @@
         return `<div style="border:1px solid #eee; border-radius:12px; padding:20px;"><h3>${title}</h3>${rows}</div>`;
     }
 
-    // 5. ENVÍO Y RESULTADOS
-document.addEventListener('submit', async (e) => {
-        if (e.target.id !== 'mainForm') return;
+  // --- 4. LÓGICA DE ENVÍO Y RESULTADOS (CORREGIDA) ---
+    document.getElementById('mainForm').onsubmit = async (e) => {
         e.preventDefault();
         const type = document.getElementById('schemaTypeSelect').value;
         const vBox = document.getElementById('visual-result-box');
@@ -478,7 +477,8 @@ document.addEventListener('submit', async (e) => {
             if (type.includes('Widget')) {
                 const html = (type === 'WidgetSingle') ? buildSingleWidgetHTML() : buildMultiWidgetHTML();
                 vOut.value = html;
-                vBox.classList.remove('hidden'); sBox.classList.add('hidden');
+                vBox.classList.remove('hidden'); 
+                sBox.classList.add('hidden');
                 document.getElementById('livePreview').innerHTML = html;
                 document.getElementById('previewSection').classList.remove('hidden');
             } else {
@@ -486,34 +486,42 @@ document.addEventListener('submit', async (e) => {
                 const data = await res.json();
                 
                 if (type === 'Takeaways') {
-    document.getElementById('visualOutput').value = data.visual;
-    document.getElementById('jsonOutput').value = `<script type="application/ld+json">\n${JSON.stringify(data.schema, null, 2)}\n<\/script>`;
-    vBox.classList.remove('hidden');
-    document.getElementById('livePreview').innerHTML = data.visual;
-    document.getElementById('previewSection').classList.remove('hidden');
-} else {
-    // AQUÍ ESTABA EL ERROR: data ya es el schema
-    document.getElementById('jsonOutput').value = `<script type="application/ld+json">\n${JSON.stringify(data, null, 2)}\n<\/script>`;
-    vBox.classList.add('hidden');
-    document.getElementById('previewSection').classList.add('hidden');
-}
+                    vOut.value = data.visual;
+                    sOut.value = `<script type="application/ld+json">\n${JSON.stringify(data.schema, null, 2)}\n<\/script>`;
+                    vBox.classList.remove('hidden');
+                    document.getElementById('livePreview').innerHTML = data.visual;
+                    document.getElementById('previewSection').classList.remove('hidden');
+                } else {
+                    // Para SportsEvent, FAQ, etc., data ya es el objeto JSON-LD
+                    sOut.value = `<script type="application/ld+json">\n${JSON.stringify(data, null, 2)}\n<\/script>`;
+                    vBox.classList.add('hidden');
+                    document.getElementById('previewSection').classList.add('hidden');
+                }
                 sBox.classList.remove('hidden');
             }
         } catch (err) { alert("Error: " + err.message); }
-    });
-    // 6. UTILIDADES
-    function copyResult(id) { const el = document.getElementById(id); el.select(); document.execCommand('copy'); alert("Copied! ✅"); }
-    function clearForm() { if (confirm("Clear all?")) location.reload(); }
-    
-    function amToDec(val) { val = parseFloat(val); if (isNaN(val)) return 1; return val >= 100 ? (val / 100) + 1 : (100 / Math.abs(val)) + 1; }
-    function decToAm(dec) { if (dec <= 1.001) return "+0"; return dec >= 2.0 ? "+" + Math.round((dec - 1) * 100) : Math.round(-100 / (dec - 1)); }
-    function calculateParlayAutoOdds() {
-        const odds = document.querySelectorAll('input[name$="Price"]');
-        let total = 1, has = false;
-        odds.forEach(o => { const v = parseFloat(o.value); if (!isNaN(v) && v !== 0) { total *= amToDec(v); has = true; } });
-        const field = document.getElementsByName('parlayTotalOdds')[0];
-        if (field) field.value = has ? decToAm(total) : "";
+    };
+
+    // --- 5. FUNCIONES DE APOYO Y LIMPIEZA ---
+    function copyResult(id) { 
+        const el = document.getElementById(id); 
+        el.select(); 
+        document.execCommand('copy'); 
+        alert("Copied! ✅"); 
     }
+    
+    function clearForm() { 
+        if (confirm("Clear all fields?")) location.reload(); 
+    }
+
+    // --- 6. INICIALIZACIÓN ÚNICA ---
+    window.onload = () => {
+        switchSchema();
+        // Solo agregamos filas si los contenedores existen y están vacíos
+        if (faqCount === 0 && document.getElementById('faqContainer')) addFAQ();
+        if (tkCount === 0 && document.getElementById('tkContainer')) addTakeaway();
+        if (sportsPickCount === 0 && document.getElementById('sportsPicksContainer')) addSportsPick();
+        if (typeof addParlayLeg === 'function' && parlayPickCount === 0) addParlayLeg();
     };
 </script>
 </body>
