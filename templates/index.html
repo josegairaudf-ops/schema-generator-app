@@ -348,17 +348,45 @@
     // 3. FUNCIONES DINÁMICAS (Picks, FAQ, Takeaways)
     function addFAQ() {
         faqCount++;
-        const html = `<div class="faq-item" style="border-bottom:1px solid #ddd; padding:10px 0;"><strong>Q#${faqCount}</strong><button type="button" onclick="this.parentElement.remove()" style="float:right; background:#dc3545; color:white; border:none; padding:2px 8px; border-radius:4px;">✕</button><input type="text" name="faqQ${faqCount}" placeholder="Question"><textarea name="faqA${faqCount}" placeholder="Answer" style="height:60px;"></textarea></div>`;
+        const html = `<div class="faq-item" style="border-bottom:1px solid #ddd; padding:10px 0;">
+            <div style="display:flex; justify-content:space-between;"><strong>Question</strong>
+            <button type="button" onclick="this.parentElement.parentElement.remove(); reindexFAQ();" style="background:#dc3545; color:white; border:none; padding:2px 8px; border-radius:4px;">✕</button></div>
+            <input type="text" class="faq-q" name="faqQ${faqCount}" placeholder="Question">
+            <textarea class="faq-a" name="faqA${faqCount}" placeholder="Answer" style="height:60px;"></textarea>
+        </div>`;
         document.getElementById('faqContainer').insertAdjacentHTML('beforeend', html);
+        reindexFAQ();
     }
 
-    function addTakeaway() {
+    function reindexFAQ() {
+        document.querySelectorAll('.faq-item').forEach((item, i) => {
+            item.querySelector('.faq-q').name = `faqQ${i + 1}`;
+            item.querySelector('.faq-a').name = `faqA${i + 1}`;
+        });
+        faqCount = document.querySelectorAll('.faq-item').length;
+    }
+
+ function addTakeaway() {
         if (tkCount >= 6) return alert("Max 6 reached");
         tkCount++;
-        const html = `<div class="tk-item" style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:15px; margin-bottom:15px;"><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><strong>Key Point</strong><button type="button" onclick="this.closest('.tk-item').remove(); tkCount--;" style="background:#fee2e2; color:#dc2626; border:none; padding:4px 10px; border-radius:6px; cursor:pointer;">Remove</button></div><textarea class="tk-input" name="tkPoint${tkCount}" style="height:80px; width:100%;" placeholder="Point details..."></textarea></div>`;
+        const html = `<div class="tk-item" style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:15px; margin-bottom:15px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <strong>Key Point</strong>
+                <button type="button" onclick="this.closest('.tk-item').remove(); reindexTakeaways();" style="background:#fee2e2; color:#dc2626; border:none; padding:4px 10px; border-radius:6px; cursor:pointer;">Remove</button>
+            </div>
+            <textarea class="tk-input" name="tkPoint${tkCount}" style="height:80px; width:100%; padding:10px; box-sizing:border-box;" placeholder="Point details..."></textarea>
+        </div>`;
         document.getElementById('tkContainer').insertAdjacentHTML('beforeend', html);
+        reindexTakeaways();
     }
 
+    function reindexTakeaways() {
+        document.querySelectorAll('.tk-input').forEach((input, i) => {
+            input.name = `tkPoint${i + 1}`;
+            input.placeholder = `Point ${i + 1}: Describe the main idea...`;
+        });
+        tkCount = document.querySelectorAll('.tk-input').length;
+    }
     function addSportsPick() {
         if (sportsPickCount >= 7) return alert("Max 7 reached");
         sportsPickCount++;
@@ -381,8 +409,27 @@
 
     function addParlayLeg() {
         parlayPickCount++;
-        const html = `<div class="section parlay-leg" style="border-left:4px solid #ff9800; background:#fffcf9; margin-bottom:15px; padding:10px;"><div style="display:flex; justify-content:space-between; margin-bottom:5px;"><strong>Leg #${parlayPickCount}</strong><button type="button" onclick="this.closest('.parlay-leg').remove(); calculateParlayAutoOdds();" style="background:#dc3545; color:white; border:none; padding:2px 8px; border-radius:4px;">✕</button></div><div class="grid"><input type="text" name="pPick${parlayPickCount}Event" placeholder="Event"><input type="text" name="pPick${parlayPickCount}Name" placeholder="Pick"><input type="text" name="pPick${parlayPickCount}Price" placeholder="Odds" oninput="calculateParlayAutoOdds()"></div></div>`;
+        const html = `<div class="section parlay-leg" style="border-left:4px solid #ff9800; background:#fffcf9; margin-bottom:15px; padding:10px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><strong class="leg-num">Leg #${parlayPickCount}</strong>
+            <button type="button" onclick="this.closest('.parlay-leg').remove(); reindexParlay();" style="background:#dc3545; color:white; border:none; padding:2px 8px; border-radius:4px;">✕</button></div>
+            <div class="grid">
+                <input type="text" class="p-ev" name="pPick${parlayPickCount}Event" placeholder="Event">
+                <input type="text" class="p-nm" name="pPick${parlayPickCount}Name" placeholder="Pick">
+                <input type="text" class="p-pr" name="pPick${parlayPickCount}Price" placeholder="Odds" oninput="calculateParlayAutoOdds()">
+            </div></div>`;
         document.getElementById('parlayLegsContainer').insertAdjacentHTML('beforeend', html);
+    }
+
+    function reindexParlay() {
+        document.querySelectorAll('.parlay-leg').forEach((leg, i) => {
+            const n = i + 1;
+            leg.querySelector('.leg-num').innerText = `Leg #${n}`;
+            leg.querySelector('.p-ev').name = `pPick${n}Event`;
+            leg.querySelector('.p-nm').name = `pPick${n}Name`;
+            leg.querySelector('.p-pr').name = `pPick${n}Price`;
+        });
+        parlayPickCount = document.querySelectorAll('.parlay-leg').length;
+        calculateParlayAutoOdds();
     }
 
     // 4. CONSTRUCCIÓN DE WIDGETS
