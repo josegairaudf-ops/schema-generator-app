@@ -463,41 +463,43 @@
     }
 
     // 5. ENVÍO Y RESULTADOS
-  document.addEventListener('submit', async (e) => {
-    if (e.target.id !== 'mainForm') return;
-    e.preventDefault();
-    const type = document.getElementById('schemaTypeSelect').value;
-    const vBox = document.getElementById('visual-result-box');
-    const sBox = document.getElementById('schema-result-box');
-    
-    try {
-        if (type.includes('Widget')) {
-            const html = (type === 'WidgetSingle') ? buildSingleWidgetHTML() : buildMultiWidgetHTML();
-            document.getElementById('visualOutput').value = html;
-            vBox.classList.remove('hidden'); sBox.classList.add('hidden');
-            document.getElementById('livePreview').innerHTML = html;
-            document.getElementById('previewSection').classList.remove('hidden');
-        } else {
-            const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
-            const data = await res.json();
-            
-            if (type === 'Takeaways') {
-                // CASO ESPECIAL: Takeaways tiene HTML y Schema
-                document.getElementById('visualOutput').value = data.visual;
-                document.getElementById('jsonOutput').value = `<script type="application/ld+json">\n${JSON.stringify(data.schema, null, 2)}\n<\/script>`;
-                vBox.classList.remove('hidden');
-                document.getElementById('livePreview').innerHTML = data.visual;
+document.addEventListener('submit', async (e) => {
+        if (e.target.id !== 'mainForm') return;
+        e.preventDefault();
+        const type = document.getElementById('schemaTypeSelect').value;
+        const vBox = document.getElementById('visual-result-box');
+        const sBox = document.getElementById('schema-result-box');
+        const vOut = document.getElementById('visualOutput');
+        const sOut = document.getElementById('jsonOutput');
+
+        try {
+            if (type.includes('Widget')) {
+                const html = (type === 'WidgetSingle') ? buildSingleWidgetHTML() : buildMultiWidgetHTML();
+                vOut.value = html;
+                vBox.classList.remove('hidden'); sBox.classList.add('hidden');
+                document.getElementById('livePreview').innerHTML = html;
                 document.getElementById('previewSection').classList.remove('hidden');
             } else {
-                // CASO NORMAL: Solo Schema
-                document.getElementById('jsonOutput').value = `<script type="application/ld+json">\n${JSON.stringify(data, null, 2)}\n<\/script>`;
-                vBox.classList.add('hidden');
-                document.getElementById('previewSection').classList.add('hidden');
+                const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
+                const data = await res.json();
+                
+                if (type === 'Takeaways') {
+                    // Si es Takeaways, el Python manda {visual: "...", schema: {...}}
+                    vOut.value = data.visual;
+                    sOut.value = `<script type="application/ld+json">\n${JSON.stringify(data.schema, null, 2)}\n<\/script>`;
+                    vBox.classList.remove('hidden');
+                    document.getElementById('livePreview').innerHTML = data.visual;
+                    document.getElementById('previewSection').classList.remove('hidden');
+                } else {
+                    // Si es otro Schema (Sports, FAQ), el Python manda el JSON directo
+                    sOut.value = `<script type="application/ld+json">\n${JSON.stringify(data, null, 2)}\n<\/script>`;
+                    vBox.classList.add('hidden');
+                    document.getElementById('previewSection').classList.add('hidden');
+                }
+                sBox.classList.remove('hidden');
             }
-            sBox.classList.remove('hidden');
-        }
-    } catch (err) { alert("Error: " + err.message); }
-});
+        } catch (err) { alert("Error: " + err.message); }
+    });
     // 6. UTILIDADES
     function copyResult(id) { const el = document.getElementById(id); el.select(); document.execCommand('copy'); alert("Copied! ✅"); }
     function clearForm() { if (confirm("Clear all?")) location.reload(); }
