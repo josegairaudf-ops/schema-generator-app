@@ -306,14 +306,33 @@ let parlayPickCount = 0;
 
     // 2. FUNCIONES DE PESTAÑAS Y EQUIPOS
     function switchSchema() {
-        const type = document.getElementById('schemaTypeSelect').value;
-        document.getElementById('hiddenType').value = type;
+        const typeSelect = document.getElementById('schemaTypeSelect');
+        const hiddenType = document.getElementById('hiddenType');
+        if (!typeSelect) return;
+        
+        const type = typeSelect.value;
+        if (hiddenType) hiddenType.value = type;
+
+        // Lista de todos los IDs de tus contenedores
         const schemas = ["SportsEvent", "FAQPage", "BlogPosting", "Review", "Parlay", "WidgetSingle", "WidgetMulti", "Takeaways"];
+        
         schemas.forEach(s => {
             const div = document.getElementById(`fields_${s}`);
-            if (div) div.classList.toggle('hidden', s !== type);
+            if (div) {
+                if (s === type) {
+                    div.classList.remove('hidden'); // Mostramos la elegida
+                } else {
+                    div.classList.add('hidden'); // Ocultamos las demás
+                }
+            }
         });
-        if (type === 'SportsEvent') loadTeams();
+
+        // Ocultar preview si cambias de pestaña
+        const previewSection = document.getElementById('previewSection');
+        if (previewSection) previewSection.classList.add('hidden');
+
+        // Cargar equipos si es SportsEvent
+        if (type === 'SportsEvent' && typeof loadTeams === 'function') loadTeams();
     }
 
     function loadTeams() {
@@ -518,14 +537,19 @@ let parlayPickCount = 0;
     }
 
     // --- 6. INICIALIZACIÓN ÚNICA ---
-    window.onload = () => {
+   // --- FUNCIÓN DE INICIO ÚNICA ---
+    window.onload = function() {
+        // 1. Ejecutar el switch inicial
         switchSchema();
-        // Solo agregamos filas si los contenedores existen y están vacíos
+        
+        // 2. Inicializar filas vacías si los contenedores existen
         if (faqCount === 0 && document.getElementById('faqContainer')) addFAQ();
         if (tkCount === 0 && document.getElementById('tkContainer')) addTakeaway();
         if (sportsPickCount === 0 && document.getElementById('sportsPicksContainer')) addSportsPick();
-        if (typeof addParlayLeg === 'function' && parlayPickCount === 0) addParlayLeg();
+        
+        // 3. Otros setups
+        if (typeof setupSmartDates === 'function') setupSmartDates();
     };
-</script>
-</body>
+// Fin del script
+</script></body>
 </html>
