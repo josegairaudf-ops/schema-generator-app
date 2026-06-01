@@ -304,57 +304,41 @@ let parlayPickCount = 0;
         "NHL": { "Anaheim Ducks": { stadium: "Honda Center", city: "Anaheim", region: "CA" }, "Boston Bruins": { stadium: "TD Garden", city: "Boston", region: "MA" }, "Buffalo Sabres": { stadium: "KeyBank Center", city: "Buffalo", region: "NY" }, "Calgary Flames": { stadium: "Scotiabank Saddledome", city: "Calgary", region: "AB" }, "Carolina Hurricanes": { stadium: "Lenovo Center", city: "Raleigh", region: "NC" }, "Chicago Blackhawks": { stadium: "United Center", city: "Chicago", region: "IL" }, "Colorado Avalanche": { stadium: "Ball Arena", city: "Denver", region: "CO" }, "Columbus Blue Jackets": { stadium: "Nationwide Arena", city: "Columbus", region: "OH" }, "Dallas Stars": { stadium: "American Airlines Center", city: "Dallas", region: "TX" }, "Detroit Red Wings": { stadium: "Little Caesars Arena", city: "Detroit", region: "MI" }, "Edmonton Oilers": { stadium: "Rogers Place", city: "Edmonton", region: "AB" }, "Florida Panthers": { stadium: "Amerant Bank Arena", city: "Sunrise", region: "FL" }, "Los Angeles Kings": { stadium: "Crypto.com Arena", city: "Los Angeles", region: "CA" }, "Minnesota Wild": { stadium: "Xcel Energy Center", city: "Saint Paul", region: "MN" }, "Montreal Canadiens": { stadium: "Bell Centre", city: "Montreal", region: "QC" }, "Nashville Predators": { stadium: "Bridgestone Arena", city: "Nashville", region: "TN" }, "New Jersey Devils": { stadium: "Prudential Center", city: "Newark", region: "NJ" }, "New York Islanders": { stadium: "UBS Arena", city: "Elmont", region: "NY" }, "New York Rangers": { stadium: "Madison Square Garden", city: "New York", region: "NY" }, "Ottawa Senators": { stadium: "Canadian Tire Centre", city: "Ottawa", region: "ON" }, "Philadelphia Flyers": { stadium: "Wells Fargo Center", city: "Philadelphia", region: "PA" }, "Pittsburgh Penguins": { stadium: "PPG Paints Arena", city: "Pittsburgh", region: "PA" }, "San Jose Sharks": { stadium: "SAP Center", city: "San Jose", region: "CA" }, "Seattle Kraken": { stadium: "Climate Pledge Arena", city: "Seattle", region: "WA" }, "St. Louis Blues": { stadium: "Enterprise Center", city: "St. Louis", region: "MO" }, "Tampa Bay Lightning": { stadium: "Amalie Arena", city: "Tampa", region: "FL" }, "Toronto Maple Leafs": { stadium: "Scotiabank Arena", city: "Toronto", region: "ON" }, "Utah Hockey Club": { stadium: "Delta Center", city: "Salt Lake City", region: "UT" }, "Vancouver Canucks": { stadium: "Rogers Arena", city: "Vancouver", region: "BC" }, "Vegas Golden Knights": { stadium: "T-Mobile Arena", city: "Las Vegas", region: "NV" }, "Washington Capitals": { stadium: "Capital One Arena", city: "Washington", region: "DC" }, "Winnipeg Jets": { stadium: "Canada Life Centre", city: "Winnipeg", region: "MB" } }
     };
 
-    // 2. FUNCIONES DE PESTAÑAS Y EQUIPOS
+  // 2. FUNCIONES DE INTERFAZ (Pestañas y Equipos)
     function switchSchema() {
-        const typeSelect = document.getElementById('schemaTypeSelect');
-        const hiddenType = document.getElementById('hiddenType');
-        if (!typeSelect) return;
-        
-        const type = typeSelect.value;
-        if (hiddenType) hiddenType.value = type;
-
-        // Lista de todos los IDs de tus contenedores
+        const type = document.getElementById('schemaTypeSelect').value;
+        document.getElementById('hiddenType').value = type;
         const schemas = ["SportsEvent", "FAQPage", "BlogPosting", "Review", "Parlay", "WidgetSingle", "WidgetMulti", "Takeaways"];
         
         schemas.forEach(s => {
             const div = document.getElementById(`fields_${s}`);
             if (div) {
                 if (s === type) {
-                    div.classList.remove('hidden'); // Mostramos la elegida
+                    div.classList.remove('hidden');
+                    div.style.display = 'block';
                 } else {
-                    div.classList.add('hidden'); // Ocultamos las demás
+                    div.classList.add('hidden');
+                    div.style.display = 'none';
                 }
             }
         });
-
-        // Ocultar preview si cambias de pestaña
-        const previewSection = document.getElementById('previewSection');
-        if (previewSection) previewSection.classList.add('hidden');
-
-        // Cargar equipos si es SportsEvent
-        if (type === 'SportsEvent' && typeof loadTeams === 'function') loadTeams();
+        if (type === 'SportsEvent') loadTeams();
     }
 
     function loadTeams() {
-    const league = document.getElementById('seSport').value;
-    const isOther = (league === 'Other');
-    
-    // Mostramos/Ocultamos la liga personalizada
-    document.getElementById('customL').classList.toggle('hidden', !isOther);
-
-    const sA = document.getElementById('seTeamA'); const sB = document.getElementById('seTeamB');
-    const cA = document.getElementById('seTeamACustom'); const cB = document.getElementById('seTeamBCustom');
-
-    // IMPORTANTE: Intercambiamos visibilidad
-    sA.classList.toggle('hidden', isOther); sB.classList.toggle('hidden', isOther);
-    cA.classList.toggle('hidden', !isOther); cB.classList.toggle('hidden', !isOther);
-
-    if (!isOther && teamData[league]) {
-        const opts = Object.keys(teamData[league]).map(t => `<option value="${t}">${t}</option>`).join('');
-        sA.innerHTML = opts; sB.innerHTML = opts;
+        const league = document.getElementById('seSport').value;
+        const isOther = (league === 'Other');
+        document.getElementById('customL').classList.toggle('hidden', !isOther);
+        const sA = document.getElementById('seTeamA'); const sB = document.getElementById('seTeamB');
+        const cA = document.getElementById('seTeamACustom'); const cB = document.getElementById('seTeamBCustom');
+        sA.classList.toggle('hidden', isOther); sB.classList.toggle('hidden', isOther);
+        cA.classList.toggle('hidden', !isOther); cB.classList.toggle('hidden', !isOther);
+        if (!isOther && teamData[league]) {
+            const opts = Object.keys(teamData[league]).map(t => `<option value="${t}">${t}</option>`).join('');
+            sA.innerHTML = opts; sB.innerHTML = opts;
+        }
+        autoFillVenue();
     }
-    autoFillVenue();
-}
 
     function autoFillVenue() {
         const league = document.getElementById('seSport').value;
@@ -378,45 +362,17 @@ let parlayPickCount = 0;
     // 3. FUNCIONES DINÁMICAS (Picks, FAQ, Takeaways)
     function addFAQ() {
         faqCount++;
-        const html = `<div class="faq-item" style="border-bottom:1px solid #ddd; padding:10px 0;">
-            <div style="display:flex; justify-content:space-between;"><strong>Question</strong>
-            <button type="button" onclick="this.parentElement.parentElement.remove(); reindexFAQ();" style="background:#dc3545; color:white; border:none; padding:2px 8px; border-radius:4px;">✕</button></div>
-            <input type="text" class="faq-q" name="faqQ${faqCount}" placeholder="Question">
-            <textarea class="faq-a" name="faqA${faqCount}" placeholder="Answer" style="height:60px;"></textarea>
-        </div>`;
+        const html = `<div class="faq-item" style="border-bottom:1px solid #ddd; padding:10px 0;"><strong>Q#${faqCount}</strong><button type="button" onclick="this.parentElement.remove()" style="float:right; background:#dc3545; color:white; border:none; padding:2px 8px; border-radius:4px;">✕</button><input type="text" name="faqQ${faqCount}" placeholder="Question"><textarea name="faqA${faqCount}" placeholder="Answer" style="height:60px;"></textarea></div>`;
         document.getElementById('faqContainer').insertAdjacentHTML('beforeend', html);
-        reindexFAQ();
     }
 
-    function reindexFAQ() {
-        document.querySelectorAll('.faq-item').forEach((item, i) => {
-            item.querySelector('.faq-q').name = `faqQ${i + 1}`;
-            item.querySelector('.faq-a').name = `faqA${i + 1}`;
-        });
-        faqCount = document.querySelectorAll('.faq-item').length;
-    }
-
- function addTakeaway() {
+    function addTakeaway() {
         if (tkCount >= 6) return alert("Max 6 reached");
         tkCount++;
-        const html = `<div class="tk-item" style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:15px; margin-bottom:15px;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                <strong>Key Point</strong>
-                <button type="button" onclick="this.closest('.tk-item').remove(); reindexTakeaways();" style="background:#fee2e2; color:#dc2626; border:none; padding:4px 10px; border-radius:6px; cursor:pointer;">Remove</button>
-            </div>
-            <textarea class="tk-input" name="tkPoint${tkCount}" style="height:80px; width:100%; padding:10px; box-sizing:border-box;" placeholder="Point details..."></textarea>
-        </div>`;
+        const html = `<div class="tk-item" style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:15px; margin-bottom:15px;"><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><strong>Key Point</strong><button type="button" onclick="this.closest('.tk-item').remove(); tkCount--;" style="background:#fee2e2; color:#dc2626; border:none; padding:4px 10px; border-radius:6px; cursor:pointer;">Remove</button></div><textarea class="tk-input" name="tkPoint${tkCount}" style="height:80px; width:100%;" placeholder="Point details..."></textarea></div>`;
         document.getElementById('tkContainer').insertAdjacentHTML('beforeend', html);
-        reindexTakeaways();
     }
 
-    function reindexTakeaways() {
-        document.querySelectorAll('.tk-input').forEach((input, i) => {
-            input.name = `tkPoint${i + 1}`;
-            input.placeholder = `Point ${i + 1}: Describe the main idea...`;
-        });
-        tkCount = document.querySelectorAll('.tk-input').length;
-    }
     function addSportsPick() {
         if (sportsPickCount >= 7) return alert("Max 7 reached");
         sportsPickCount++;
@@ -439,83 +395,35 @@ let parlayPickCount = 0;
 
     function addParlayLeg() {
         parlayPickCount++;
-        const html = `<div class="section parlay-leg" style="border-left:4px solid #ff9800; background:#fffcf9; margin-bottom:15px; padding:10px;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><strong class="leg-num">Leg #${parlayPickCount}</strong>
-            <button type="button" onclick="this.closest('.parlay-leg').remove(); reindexParlay();" style="background:#dc3545; color:white; border:none; padding:2px 8px; border-radius:4px;">✕</button></div>
-            <div class="grid">
-                <input type="text" class="p-ev" name="pPick${parlayPickCount}Event" placeholder="Event">
-                <input type="text" class="p-nm" name="pPick${parlayPickCount}Name" placeholder="Pick">
-                <input type="text" class="p-pr" name="pPick${parlayPickCount}Price" placeholder="Odds" oninput="calculateParlayAutoOdds()">
-            </div></div>`;
+        const html = `<div class="section parlay-leg" style="border-left:4px solid #ff9800; background:#fffcf9; margin-bottom:15px; padding:10px;"><div style="display:flex; justify-content:space-between; margin-bottom:5px;"><strong>Leg #${parlayPickCount}</strong><button type="button" onclick="this.closest('.parlay-leg').remove(); calculateParlayAutoOdds();" style="background:#dc3545; color:white; border:none; padding:2px 8px; border-radius:4px;">✕</button></div><div class="grid"><input type="text" name="pPick${parlayPickCount}Event" placeholder="Event"><input type="text" name="pPick${parlayPickCount}Name" placeholder="Pick"><input type="text" name="pPick${parlayPickCount}Price" placeholder="Odds" oninput="calculateParlayAutoOdds()"></div></div>`;
         document.getElementById('parlayLegsContainer').insertAdjacentHTML('beforeend', html);
     }
 
-    function reindexParlay() {
-        document.querySelectorAll('.parlay-leg').forEach((leg, i) => {
-            const n = i + 1;
-            leg.querySelector('.leg-num').innerText = `Leg #${n}`;
-            leg.querySelector('.p-ev').name = `pPick${n}Event`;
-            leg.querySelector('.p-nm').name = `pPick${n}Name`;
-            leg.querySelector('.p-pr').name = `pPick${n}Price`;
-        });
-        parlayPickCount = document.querySelectorAll('.parlay-leg').length;
-        calculateParlayAutoOdds();
-    }
-
-    // 4. CONSTRUCCIÓN DE WIDGETS
-    function buildSingleWidgetHTML() {
-        const title = document.getElementById('ws_promoTitle').value || "Bonus";
-        const text = document.getElementById('ws_promoText').value || "Offer";
-        const pUrl = document.getElementById('ws_promoUrl').value || "#";
-        const bUrl = document.getElementById('ws_bookieUrl').value || "#";
-        let rows = '';
-        document.querySelectorAll('.widget-row-single').forEach(r => {
-            const m = r.querySelector('.ws_market').value; const p = r.querySelector('.ws_pick').value; const u = r.querySelector('.ws_url').value;
-            rows += `<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px dashed #eee;"><span>${m}</span><a href="${u}">${p} →</a></div>`;
-        });
-        return `<div style="border:1px solid #eee; border-radius:12px; padding:20px; max-width:600px; margin:auto;"><h3>${title}: ${text}</h3>${rows}<a href="${bUrl}" style="display:block; background:#1e293b; color:#fff; text-align:center; padding:10px; margin-top:10px;">BET NOW</a></div>`;
-    }
-
-    function buildMultiWidgetHTML() {
-        const title = document.getElementById('wm_promoTitle').value || "Bonus";
-        let rows = '';
-        document.querySelectorAll('.widget-row-multi').forEach(r => {
-            const m = r.querySelector('.wm_match').value; const p = r.querySelector('.wm_pick').value; const u = r.querySelector('.wm_url').value;
-            rows += `<div style="padding:10px 0; border-bottom:1px solid #eee;"><strong>${m}</strong>: ${p} <a href="${u}">BET</a></div>`;
-        });
-        return `<div style="border:1px solid #eee; border-radius:12px; padding:20px;"><h3>${title}</h3>${rows}</div>`;
-    }
-
-  // --- 4. LÓGICA DE ENVÍO Y RESULTADOS (CORREGIDA) ---
+    // 4. ENVÍO Y RESULTADOS
     document.getElementById('mainForm').onsubmit = async (e) => {
         e.preventDefault();
         const type = document.getElementById('schemaTypeSelect').value;
         const vBox = document.getElementById('visual-result-box');
         const sBox = document.getElementById('schema-result-box');
-        const vOut = document.getElementById('visualOutput');
-        const sOut = document.getElementById('jsonOutput');
-
+        
         try {
             if (type.includes('Widget')) {
                 const html = (type === 'WidgetSingle') ? buildSingleWidgetHTML() : buildMultiWidgetHTML();
-                vOut.value = html;
-                vBox.classList.remove('hidden'); 
-                sBox.classList.add('hidden');
+                document.getElementById('visualOutput').value = html;
+                vBox.classList.remove('hidden'); sBox.classList.add('hidden');
                 document.getElementById('livePreview').innerHTML = html;
                 document.getElementById('previewSection').classList.remove('hidden');
             } else {
                 const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
                 const data = await res.json();
-                
                 if (type === 'Takeaways') {
-                    vOut.value = data.visual;
-                    sOut.value = `<script type="application/ld+json">\n${JSON.stringify(data.schema, null, 2)}\n<\/script>`;
+                    document.getElementById('visualOutput').value = data.visual;
+                    document.getElementById('jsonOutput').value = `<script type="application/ld+json">\n${JSON.stringify(data.schema, null, 2)}\n<\/script>`;
                     vBox.classList.remove('hidden');
                     document.getElementById('livePreview').innerHTML = data.visual;
                     document.getElementById('previewSection').classList.remove('hidden');
                 } else {
-                    // Para SportsEvent, FAQ, etc., data ya es el objeto JSON-LD
-                    sOut.value = `<script type="application/ld+json">\n${JSON.stringify(data, null, 2)}\n<\/script>`;
+                    document.getElementById('jsonOutput').value = `<script type="application/ld+json">\n${JSON.stringify(data, null, 2)}\n<\/script>`;
                     vBox.classList.add('hidden');
                     document.getElementById('previewSection').classList.add('hidden');
                 }
@@ -524,32 +432,26 @@ let parlayPickCount = 0;
         } catch (err) { alert("Error: " + err.message); }
     };
 
-    // --- 5. FUNCIONES DE APOYO Y LIMPIEZA ---
-    function copyResult(id) { 
-        const el = document.getElementById(id); 
-        el.select(); 
-        document.execCommand('copy'); 
-        alert("Copied! ✅"); 
-    }
-    
-    function clearForm() { 
-        if (confirm("Clear all fields?")) location.reload(); 
+    // 5. UTILIDADES
+    function copyResult(id) { const el = document.getElementById(id); el.select(); document.execCommand('copy'); alert("Copied! ✅"); }
+    function clearForm() { if (confirm("Clear all?")) location.reload(); }
+    function amToDec(val) { val = parseFloat(val); if (isNaN(val)) return 1; return val >= 100 ? (val / 100) + 1 : (100 / Math.abs(val)) + 1; }
+    function decToAm(dec) { if (dec <= 1.001) return "+0"; return dec >= 2.0 ? "+" + Math.round((dec - 1) * 100) : Math.round(-100 / (dec - 1)); }
+    function calculateParlayAutoOdds() {
+        const odds = document.querySelectorAll('input[name$="Price"]');
+        let total = 1, has = false;
+        odds.forEach(o => { const v = parseFloat(o.value); if (!isNaN(v) && v !== 0) { total *= amToDec(v); has = true; } });
+        const field = document.getElementsByName('parlayTotalOdds')[0];
+        if (field) field.value = has ? decToAm(total) : "";
     }
 
-    // --- 6. INICIALIZACIÓN ÚNICA ---
-   // --- FUNCIÓN DE INICIO ÚNICA ---
-    window.onload = function() {
-        // 1. Ejecutar el switch inicial
+    // INICIALIZACIÓN
+    window.onload = () => {
         switchSchema();
-        
-        // 2. Inicializar filas vacías si los contenedores existen
-        if (faqCount === 0 && document.getElementById('faqContainer')) addFAQ();
-        if (tkCount === 0 && document.getElementById('tkContainer')) addTakeaway();
-        if (sportsPickCount === 0 && document.getElementById('sportsPicksContainer')) addSportsPick();
-        
-        // 3. Otros setups
-        if (typeof setupSmartDates === 'function') setupSmartDates();
+        if (faqCount === 0) addFAQ();
+        if (tkCount === 0) addTakeaway();
+        if (sportsPickCount === 0) addSportsPick();
+        if (parlayPickCount === 0) addParlayLeg();
     };
-// Fin del script
 </script></body>
 </html>
