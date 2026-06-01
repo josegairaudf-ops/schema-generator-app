@@ -286,7 +286,7 @@
 </div>
 <!-- END: NEW DYNAMIC RESULT AREA -->   
 <script>
-    // 1. VARIABLES GLOBALES (Declaradas una sola vez)
+    // 1. VARIABLES GLOBALES Y DATOS (Declaradas una sola vez)
     let sportsPickCount = 0;
     let parlayPickCount = 0;
     let faqCount = 0;
@@ -299,10 +299,13 @@
         "NHL": { "Anaheim Ducks": { stadium: "Honda Center", city: "Anaheim", region: "CA" }, "Boston Bruins": { stadium: "TD Garden", city: "Boston", region: "MA" }, "Buffalo Sabres": { stadium: "KeyBank Center", city: "Buffalo", region: "NY" }, "Calgary Flames": { stadium: "Scotiabank Saddledome", city: "Calgary", region: "AB" }, "Carolina Hurricanes": { stadium: "Lenovo Center", city: "Raleigh", region: "NC" }, "Chicago Blackhawks": { stadium: "United Center", city: "Chicago", region: "IL" }, "Colorado Avalanche": { stadium: "Ball Arena", city: "Denver", region: "CO" }, "Columbus Blue Jackets": { stadium: "Nationwide Arena", city: "Columbus", region: "OH" }, "Dallas Stars": { stadium: "American Airlines Center", city: "Dallas", region: "TX" }, "Detroit Red Wings": { stadium: "Little Caesars Arena", city: "Detroit", region: "MI" }, "Edmonton Oilers": { stadium: "Rogers Place", city: "Edmonton", region: "AB" }, "Florida Panthers": { stadium: "Amerant Bank Arena", city: "Sunrise", region: "FL" }, "Los Angeles Kings": { stadium: "Crypto.com Arena", city: "Los Angeles", region: "CA" }, "Minnesota Wild": { stadium: "Xcel Energy Center", city: "Saint Paul", region: "MN" }, "Montreal Canadiens": { stadium: "Bell Centre", city: "Montreal", region: "QC" }, "Nashville Predators": { stadium: "Bridgestone Arena", city: "Nashville", region: "TN" }, "New Jersey Devils": { stadium: "Prudential Center", city: "Newark", region: "NJ" }, "New York Islanders": { stadium: "UBS Arena", city: "Elmont", region: "NY" }, "New York Rangers": { stadium: "Madison Square Garden", city: "New York", region: "NY" }, "Ottawa Senators": { stadium: "Canadian Tire Centre", city: "Ottawa", region: "ON" }, "Philadelphia Flyers": { stadium: "Wells Fargo Center", city: "Philadelphia", region: "PA" }, "Pittsburgh Penguins": { stadium: "PPG Paints Arena", city: "Pittsburgh", region: "PA" }, "San Jose Sharks": { stadium: "SAP Center", city: "San Jose", region: "CA" }, "Seattle Kraken": { stadium: "Climate Pledge Arena", city: "Seattle", region: "WA" }, "St. Louis Blues": { stadium: "Enterprise Center", city: "St. Louis", region: "MO" }, "Tampa Bay Lightning": { stadium: "Amalie Arena", city: "Tampa", region: "FL" }, "Toronto Maple Leafs": { stadium: "Scotiabank Arena", city: "Toronto", region: "ON" }, "Utah Hockey Club": { stadium: "Delta Center", city: "Salt Lake City", region: "UT" }, "Vancouver Canucks": { stadium: "Rogers Arena", city: "Vancouver", region: "BC" }, "Vegas Golden Knights": { stadium: "T-Mobile Arena", city: "Las Vegas", region: "NV" }, "Washington Capitals": { stadium: "Capital One Arena", city: "Washington", region: "DC" }, "Winnipeg Jets": { stadium: "Canada Life Centre", city: "Winnipeg", region: "MB" } }
     };
 
-    // 2. FUNCIONES DE INTERFAZ (Tabs & Teams)
+    // 2. FUNCIONES DE INTERFAZ (Pestañas y Equipos)
     function switchSchema() {
-        const type = document.getElementById('schemaTypeSelect').value;
+        const typeSelect = document.getElementById('schemaTypeSelect');
+        if (!typeSelect) return;
+        const type = typeSelect.value;
         document.getElementById('hiddenType').value = type;
+
         const schemas = ["SportsEvent", "FAQPage", "BlogPosting", "Review", "Parlay", "WidgetSingle", "WidgetMulti", "Takeaways"];
         schemas.forEach(s => {
             const div = document.getElementById(`fields_${s}`);
@@ -342,20 +345,22 @@
         const isOther = document.getElementById('seSport').value === 'Other';
         const a = isOther ? document.getElementById('seTeamACustom').value : document.getElementById('seTeamA').value;
         const b = isOther ? document.getElementById('seTeamBCustom').value : document.getElementById('seTeamB').value;
-        document.getElementById('seName').value = (a && b) ? `${a} vs ${b}` : "";
+        const nameField = document.getElementById('seName');
+        if (nameField) nameField.value = (a && b) ? `${a} vs ${b}` : "";
     }
 
     // 3. FUNCIONES DINÁMICAS (Add/Remove & Reindex)
     function addFAQ() {
         faqCount++;
-        const html = `<div class="faq-item" style="border-bottom:1px solid #ddd; padding:10px 0;"><strong>Question</strong><button type="button" onclick="this.parentElement.remove(); reindexFAQ();" style="float:right; background:#dc3545; color:white; border:none; padding:2px 8px; border-radius:4px;">✕</button><input type="text" class="faq-q" name="faqQ${faqCount}" placeholder="Question"><textarea class="faq-a" name="faqA${faqCount}" placeholder="Answer" style="height:60px;"></textarea></div>`;
+        const html = `<div class="faq-item" style="border-bottom:1px solid #ddd; padding:10px 0;"><div style="display:flex; justify-content:space-between;"><strong>Question</strong><button type="button" onclick="this.parentElement.parentElement.remove(); reindexFAQ();" style="background:#dc3545; color:white; border:none; padding:2px 8px; border-radius:4px;">✕</button></div><input type="text" class="faq-q" name="faqQ${faqCount}" placeholder="Question"><textarea class="faq-a" name="faqA${faqCount}" placeholder="Answer" style="height:60px;"></textarea></div>`;
         document.getElementById('faqContainer').insertAdjacentHTML('beforeend', html);
         reindexFAQ();
     }
     function reindexFAQ() {
         document.querySelectorAll('.faq-item').forEach((item, i) => {
-            item.querySelector('.faq-q').name = `faqQ${i+1}`;
-            item.querySelector('.faq-a').name = `faqA${i+1}`;
+            const n = i + 1;
+            item.querySelector('.faq-q').name = `faqQ${n}`;
+            item.querySelector('.faq-a').name = `faqA${n}`;
         });
         faqCount = document.querySelectorAll('.faq-item').length;
     }
@@ -375,10 +380,11 @@
     function addSportsPick() {
         if (sportsPickCount >= 7) return alert("Max reached");
         sportsPickCount++;
-        const html = `<div class="sp-row pick-grid" style="margin-bottom:10px; padding:10px; border-left:4px solid #34a853; background:#f8f9fa;"><input type="text" class="sp-n" name="pick${sportsPickCount}Name" placeholder="Name"><input type="text" class="sp-p" name="pick${sportsPickCount}Price" placeholder="Odds"><div style="display:flex; gap:8px;"><input type="url" class="sp-u" name="pick${sportsPickCount}Url" placeholder="URL" style="flex:1;"><button type="button" onclick="this.closest('.sp-row').remove(); reindexSP();" style="background:#dc3545; color:white; border:none; padding:0 12px; border-radius:4px;">✕</button></div></div>`;
+        const html = `<div class="sp-row pick-grid" style="margin-bottom:10px; padding:10px; border-left:4px solid #34a853; background:#f8f9fa;"><input type="text" class="sp-n" name="pick${sportsPickCount}Name" placeholder="Name"><input type="text" class="sp-p" name="pick${sportsPickCount}Price" placeholder="Odds"><div style="display:flex; gap:8px;"><input type="url" class="sp-u" name="pick${sportsPickCount}Url" placeholder="URL" style="flex:1;"><button type="button" onclick="removeSportsPick(this)" style="background:#dc3545; color:white; border:none; padding:0 12px; border-radius:4px;">✕</button></div></div>`;
         document.getElementById('sportsPicksContainer').insertAdjacentHTML('beforeend', html);
         reindexSP();
     }
+    function removeSportsPick(btn) { btn.closest('.sp-row').remove(); reindexSP(); }
     function reindexSP() {
         document.querySelectorAll('.sp-row').forEach((row, i) => {
             const n = i+1;
@@ -406,7 +412,40 @@
         calculateParlayAutoOdds();
     }
 
-    // 4. ENVÍO Y RESULTADOS
+    function addWidgetRow(containerId, type) {
+        const container = document.getElementById(containerId);
+        const rowClass = type === 'single' ? 'widget-row-single' : 'widget-row-multi';
+        const html = `<div class="section ${rowClass}" style="border-left:4px solid #ff9800; background:#fffcf9; margin-bottom:15px; padding:10px;"><div style="display:flex; justify-content:space-between; margin-bottom:5px;"><strong>#</strong><button type="button" onclick="this.closest('.section').remove();" style="background:#dc3545; color:white; border:none; padding:2px 8px; border-radius:4px;">✕</button></div><div class="grid">${type === 'single' ? `<input type="text" class="ws_market" placeholder="Market"><input type="text" class="ws_pick" placeholder="Pick & Odds"><input type="url" class="ws_url" placeholder="Link">` : `<input type="text" class="wm_match" placeholder="Matchup"><input type="text" class="wm_pick" placeholder="Expert Pick"><input type="url" class="wm_url" placeholder="Link">`}</div></div>`;
+        container.insertAdjacentHTML('beforeend', html);
+    }
+
+    // 4. CONSTRUCCIÓN DE WIDGETS (HTML VISUAL)
+    function buildSingleWidgetHTML() {
+        const title = document.getElementById('ws_promoTitle').value || "Bonus";
+        const text = document.getElementById('ws_promoText').value || "Offer";
+        const pUrl = document.getElementById('ws_promoUrl').value || "#";
+        const bUrl = document.getElementById('ws_bookieUrl').value || "#";
+        let rows = '';
+        document.querySelectorAll('.widget-row-single').forEach(r => {
+            const m = r.querySelector('.ws_market').value; const p = r.querySelector('.ws_pick').value; const u = r.querySelector('.ws_url').value;
+            if(m || p) rows += `<div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px dashed #eef2f7;"><span style="color:#64748b; font-size:11px; text-transform:uppercase; font-weight:800; flex:0 0 90px;">${m}</span><a href="${u}" style="color:#2563eb; text-decoration:none; font-size:14px; font-weight:700; text-align:right; flex:1;">${p}</a></div>`;
+        });
+        return `<div style="font-family:'Segoe UI',Arial,sans-serif; border:1px solid #e5e7eb; border-radius:14px; overflow:hidden; margin:20px 0; box-shadow:0 6px 18px rgba(15,23,42,0.08); width:100%; box-sizing:border-box; background-color:#fff;"><div style="padding:16px 18px; background:linear-gradient(180deg,#fff8db 0%,#fffdf4 100%); border-bottom:1px solid #f3e8a7; text-align:center;"><div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:8px;"><span style="font-size:20px; line-height:1;">🎁</span><span style="font-size:10px; color:#b45309; font-weight:800; text-transform:uppercase; letter-spacing:1px;">${title}</span></div><div style="font-size:15px; line-height:1.45; color:#7c2d12; font-weight:700; margin-bottom:14px;">${text}</div><a href="${pUrl}" style="display:flex; align-items:center; justify-content:center; background-color:#d4af37; color:#111827; padding:10px 16px; border-radius:8px; font-size:12px; font-weight:800; text-decoration:none; text-transform:uppercase; min-width:140px; margin:0 auto; line-height:1; min-height:36px;">ENTER NOW</a></div><div style="padding:14px 18px; background:#fff;"><div style="font-size:11px; color:#64748b; font-weight:800; text-transform:uppercase; letter-spacing:1.4px; text-align:center; padding-bottom:10px; margin-bottom:12px; border-bottom:1px solid #eef2f7;">Today's Expert Predictions</div>${rows}</div><div style="padding:12px 18px 18px 18px; text-align:center;"><a href="${bUrl}" style="display:flex; align-items:center; justify-content:center; background-color:#1e293b; color:#fff; padding:12px 16px; border-radius:10px; font-size:12px; font-weight:800; text-decoration:none; text-transform:uppercase; box-shadow:0 4px 10px rgba(15,23,42,0.15); max-width:240px; margin:0 auto; line-height:1; min-height:44px;">Place Your Bets at BetUS</a><p style="font-size:9px; color:#94a3b8; margin:10px 0 0 0; line-height:1.3;">18+ Only. Review T&Cs. <strong>Play Responsibly.</strong></p></div></div>`;
+    }
+
+    function buildMultiWidgetHTML() {
+        const title = document.getElementById('wm_promoTitle').value || "Bonus";
+        const text = document.getElementById('wm_promoText').value || "Offer";
+        const pUrl = document.getElementById('wm_promoUrl').value || "#";
+        let rows = '';
+        document.querySelectorAll('.widget-row-multi').forEach(r => {
+            const m = r.querySelector('.wm_match').value; const p = r.querySelector('.wm_pick').value; const u = r.querySelector('.wm_url').value;
+            if(m || p) rows += `<div style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid #eef2f7;"><div style="text-align:left; flex:1;"><div style="font-size:10px; color:#94a3b8; font-weight:800; text-transform:uppercase; letter-spacing:.8px; margin-bottom:4px;">${m}</div><div style="font-size:14px; color:#1e293b; font-weight:500;">Bet on: <strong style="color:#0f172a; font-weight:800;">${p}</strong></div></div><a href="${u}" style="display:inline-block; background-color:#1e293b; color:#fff; padding:10px 24px; border-radius:8px; font-size:12px; font-weight:700; text-decoration:none; text-transform:uppercase; white-space:nowrap;">Bet Now</a></div>`;
+        });
+        return `<div style="font-family:'Segoe UI',Arial,sans-serif; border:1px solid #e5e7eb; border-radius:16px; overflow:hidden; margin:20px 0; box-shadow:0 10px 25px -5px rgba(0,0,0,0.05); width:100%; box-sizing:border-box; background-color:#fff;"><div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; background:linear-gradient(135deg,#fffbeb 0%,#fef3c7 100%); border-bottom:1px solid #fde68a; text-align:center;"><div style="display:flex; align-items:center; margin-bottom:6px;"><span style="font-size:20px; margin-right:8px;">🎁</span><span style="font-size:11px; color:#b45309; font-weight:800; text-transform:uppercase;">${title}</span></div><div style="font-size:18px; color:#92400e; font-weight:800; margin-bottom:12px;">${text}</div><a href="${pUrl}" style="background-color:#d4af37; color:#1a1a1a; padding:10px 40px; border-radius:10px; font-size:13px; font-weight:800; text-decoration:none; text-transform:uppercase;">Claim Bonus</a></div><div style="background-color:#f8fafc; padding:10px; text-align:center; border-bottom:1px solid #f1f5f9;"><span style="font-size:11px; color:#64748b; font-weight:700; text-transform:uppercase; letter-spacing:1.5px;">🔥 Today's Top Expert Picks</span></div><div style="padding:0 20px;">${rows}</div><div style="background-color:#f8fafc; padding:12px; text-align:center;"><p style="font-size:10px; color:#94a3b8; margin:0; line-height:1.4;">18+ Only. Review T&Cs. <strong>Play Responsibly.</strong></p></div></div>`;
+    }
+
+    // 5. ENVÍO Y RESULTADOS
     document.addEventListener('submit', async (e) => {
         if (e.target.id !== 'mainForm') return;
         e.preventDefault();
@@ -418,8 +457,11 @@
 
         try {
             if (type.includes('Widget')) {
-                // Aquí irían tus funciones de Widget si las tienes definidas
-                alert("Widget generation logic required");
+                const html = (type === 'WidgetSingle') ? buildSingleWidgetHTML() : buildMultiWidgetHTML();
+                vOut.value = html;
+                vBox.classList.remove('hidden'); sBox.classList.add('hidden');
+                document.getElementById('livePreview').innerHTML = html;
+                document.getElementById('previewSection').classList.remove('hidden');
             } else {
                 const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
                 const data = await res.json();
@@ -427,16 +469,19 @@
                     vOut.value = data.visual;
                     sOut.value = `<script type="application/ld+json">\n${JSON.stringify(data.schema, null, 2)}\n<\/script>`;
                     vBox.classList.remove('hidden');
+                    document.getElementById('livePreview').innerHTML = data.visual;
+                    document.getElementById('previewSection').classList.remove('hidden');
                 } else {
                     sOut.value = `<script type="application/ld+json">\n${JSON.stringify(data, null, 2)}\n<\/script>`;
                     vBox.classList.add('hidden');
+                    document.getElementById('previewSection').classList.add('hidden');
                 }
                 sBox.classList.remove('hidden');
             }
         } catch (err) { alert("Error: " + err.message); }
     });
 
-    // 5. UTILIDADES
+    // 6. UTILIDADES
     function copyResult(id) { const el = document.getElementById(id); el.select(); document.execCommand('copy'); alert("Copied! ✅"); }
     function clearForm() { if (confirm("Clear all?")) location.reload(); }
     function amToDec(val) { val = parseFloat(val); if (isNaN(val)) return 1; return val >= 100 ? (val / 100) + 1 : (100 / Math.abs(val)) + 1; }
@@ -452,6 +497,7 @@
     window.onload = () => {
         switchSchema();
         addFAQ(); addTakeaway(); addSportsPick(); addParlayLeg();
+        addWidgetRow('ws_rowsContainer', 'single'); addWidgetRow('wm_rowsContainer', 'multi');
     };
 </script>
 </body>
