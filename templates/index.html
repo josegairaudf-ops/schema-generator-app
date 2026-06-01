@@ -286,7 +286,10 @@
 </div>
 <!-- END: NEW DYNAMIC RESULT AREA -->   
 <script>
-// --- INICIALIZACIÓN ÚNICA AL CARGAR ---
+    let faqCount = 0;
+let tkCount = 0;
+let sportsPickCount = 0;
+let parlayPickCount = 0;
     window.onload = () => {
         switchSchema();
         if (faqCount === 0) addFAQ();
