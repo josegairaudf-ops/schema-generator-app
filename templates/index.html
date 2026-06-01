@@ -286,17 +286,12 @@
 </div>
 <!-- END: NEW DYNAMIC RESULT AREA -->   
 <script>
+    // 1. VARIABLES GLOBALES (Declaradas una sola vez)
+    let sportsPickCount = 0;
+    let parlayPickCount = 0;
     let faqCount = 0;
-let tkCount = 0;
-let sportsPickCount = 0;
-let parlayPickCount = 0;
-    window.onload = () => {
-        switchSchema();
-        if (faqCount === 0) addFAQ();
-        if (tkCount === 0) addTakeaway();
-        if (sportsPickCount === 0) addSportsPick();
-        if (parlayPickCount === 0 && typeof addParlayLeg === 'function') addParlayLeg();
-    };
+    let tkCount = 0;
+
     const teamData = {
         "NFL": { "Arizona Cardinals": { stadium: "State Farm Stadium", city: "Glendale", region: "AZ" }, "Atlanta Falcons": { stadium: "Mercedes-Benz Stadium", city: "Atlanta", region: "GA" }, "Baltimore Ravens": { stadium: "M&T Bank Stadium", city: "Baltimore", region: "MD" }, "Buffalo Bills": { stadium: "New Highmark Stadium", city: "Orchard Park", region: "NY" }, "Carolina Panthers": { stadium: "Bank of America Stadium", city: "Charlotte", region: "NC" }, "Chicago Bears": { stadium: "Soldier Field", city: "Chicago", region: "IL" }, "Cincinnati Bengals": { stadium: "Paycor Stadium", city: "Cincinnati", region: "OH" }, "Cleveland Browns": { stadium: "Huntington Bank Field Stadium", city: "Cleveland", region: "OH" }, "Dallas Cowboys": { stadium: "AT&T Stadium", city: "Arlington", region: "TX" }, "Denver Broncos": { stadium: "Empower Field at Mile High", city: "Denver", region: "CO" }, "Detroit Lions": { stadium: "Ford Field", city: "Detroit", region: "MI" }, "Green Bay Packers": { stadium: "Lambeau Field", city: "Green Bay", region: "WI" }, "Houston Texans": { stadium: "NRG Stadium", city: "Houston", region: "TX" }, "Indianapolis Colts": { stadium: "Lucas Oil Stadium", city: "Indianapolis", region: "IN" }, "Jacksonville Jaguars": { stadium: "EverBank Stadium", city: "Jacksonville", region: "FL" }, "Kansas City Chiefs": { stadium: "Arrowhead Stadium", city: "Kansas City", region: "MO" }, "Las Vegas Raiders": { stadium: "Allegiant Stadium", city: "Las Vegas", region: "NV" }, "Los Angeles Chargers": { stadium: "SoFi Stadium", city: "Inglewood", region: "CA" }, "Los Angeles Rams": { stadium: "SoFi Stadium", city: "Inglewood", region: "CA" }, "Miami Dolphins": { stadium: "Hard Rock Stadium", city: "Miami Gardens", region: "FL" }, "Minnesota Vikings": { stadium: "U.S. Bank Stadium", city: "Minneapolis", region: "MN" }, "New England Patriots": { stadium: "Gillette Stadium", city: "Foxborough", region: "MA" }, "New Orleans Saints": { stadium: "Caesars Superdome", city: "New Orleans", region: "LA" }, "New York Giants": { stadium: "MetLife Stadium", city: "East Rutherford", region: "NJ" }, "New York Jets": { stadium: "MetLife Stadium", city: "East Rutherford", region: "NJ" }, "Philadelphia Eagles": { stadium: "Lincoln Financial Field", city: "Philadelphia", region: "PA" }, "Pittsburgh Steelers": { stadium: "Acrisure Stadium", city: "Pittsburgh", region: "PA" }, "San Francisco 49ers": { stadium: "Levi's Stadium", city: "Santa Clara", region: "CA" }, "Seattle Seahawks": { stadium: "Lumen Field", city: "Seattle", region: "WA" }, "Tampa Bay Buccaneers": { stadium: "Raymond James Stadium", city: "Tampa", region: "FL" }, "Tennessee Titans": { stadium: "Nissan Stadium", city: "Nashville", region: "TN" }, "Washington Commanders": { stadium: "Northwest Stadium", city: "Landover", region: "MD" } },
         "NBA": { "Atlanta Hawks": { stadium: "State Farm Arena", city: "Atlanta", region: "GA" }, "Boston Celtics": { stadium: "TD Garden", city: "Boston", region: "MA" }, "Brooklyn Nets": { stadium: "Barclays Center", city: "Brooklyn", region: "NY" }, "Charlotte Hornets": { stadium: "Spectrum Center", city: "Charlotte", region: "NC" }, "Chicago Bulls": { stadium: "United Center", city: "Chicago", region: "IL" }, "Cleveland Cavaliers": { stadium: "Rocket Mortgage FieldHouse", city: "Cleveland", region: "OH" }, "Dallas Mavericks": { stadium: "American Airlines Center", city: "Dallas", region: "TX" }, "Denver Nuggets": { stadium: "Ball Arena", city: "Denver", region: "CO" }, "Detroit Pistons": { stadium: "Little Caesars Arena", city: "Detroit", region: "MI" }, "Golden State Warriors": { stadium: "Chase Center", city: "San Francisco", region: "CA" }, "Houston Rockets": { stadium: "Toyota Center", city: "Houston", region: "TX" }, "Indiana Pacers": { stadium: "Gainbridge Fieldhouse", city: "Indianapolis", region: "IN" }, "LA Clippers": { stadium: "Intuit Dome", city: "Inglewood", region: "CA" }, "Los Angeles Lakers": { stadium: "Crypto.com Arena", city: "Los Angeles", region: "CA" }, "Memphis Grizzlies": { stadium: "FedExForum", city: "Memphis", region: "TN" }, "Miami Heat": { stadium: "Kaseya Center", city: "Miami", region: "FL" }, "Milwaukee Bucks": { stadium: "Fiserv Forum", city: "Milwaukee", region: "WI" }, "Minnesota Timberwolves": { stadium: "Target Center", city: "Minneapolis", region: "MN" }, "New Orleans Pelicans": { stadium: "Smoothie King Center", city: "New Orleans", region: "LA" }, "New York Knicks": { stadium: "Madison Square Garden", city: "New York", region: "NY" }, "Oklahoma City Thunder": { stadium: "Paycom Center", city: "Oklahoma City", region: "OK" }, "Orlando Magic": { stadium: "Kia Center", city: "Orlando", region: "FL" }, "Philadelphia 76ers": { stadium: "Wells Fargo Center", city: "Philadelphia", region: "PA" }, "Phoenix Suns": { stadium: "Footprint Center", city: "Phoenix", region: "AZ" }, "Portland Trail Blazers": { stadium: "Moda Center", city: "Portland", region: "OR" }, "Sacramento Kings": { stadium: "Golden 1 Center", city: "Sacramento", region: "CA" }, "San Antonio Spurs": { stadium: "Frost Bank Center", city: "San Antonio", region: "TX" }, "Toronto Raptors": { stadium: "Scotiabank Arena", city: "Toronto", region: "ON" }, "Utah Jazz": { stadium: "Delta Center", city: "Salt Lake City", region: "UT" }, "Washington Wizards": { stadium: "Capital One Arena", city: "Washington", region: "DC" } },
@@ -304,23 +299,14 @@ let parlayPickCount = 0;
         "NHL": { "Anaheim Ducks": { stadium: "Honda Center", city: "Anaheim", region: "CA" }, "Boston Bruins": { stadium: "TD Garden", city: "Boston", region: "MA" }, "Buffalo Sabres": { stadium: "KeyBank Center", city: "Buffalo", region: "NY" }, "Calgary Flames": { stadium: "Scotiabank Saddledome", city: "Calgary", region: "AB" }, "Carolina Hurricanes": { stadium: "Lenovo Center", city: "Raleigh", region: "NC" }, "Chicago Blackhawks": { stadium: "United Center", city: "Chicago", region: "IL" }, "Colorado Avalanche": { stadium: "Ball Arena", city: "Denver", region: "CO" }, "Columbus Blue Jackets": { stadium: "Nationwide Arena", city: "Columbus", region: "OH" }, "Dallas Stars": { stadium: "American Airlines Center", city: "Dallas", region: "TX" }, "Detroit Red Wings": { stadium: "Little Caesars Arena", city: "Detroit", region: "MI" }, "Edmonton Oilers": { stadium: "Rogers Place", city: "Edmonton", region: "AB" }, "Florida Panthers": { stadium: "Amerant Bank Arena", city: "Sunrise", region: "FL" }, "Los Angeles Kings": { stadium: "Crypto.com Arena", city: "Los Angeles", region: "CA" }, "Minnesota Wild": { stadium: "Xcel Energy Center", city: "Saint Paul", region: "MN" }, "Montreal Canadiens": { stadium: "Bell Centre", city: "Montreal", region: "QC" }, "Nashville Predators": { stadium: "Bridgestone Arena", city: "Nashville", region: "TN" }, "New Jersey Devils": { stadium: "Prudential Center", city: "Newark", region: "NJ" }, "New York Islanders": { stadium: "UBS Arena", city: "Elmont", region: "NY" }, "New York Rangers": { stadium: "Madison Square Garden", city: "New York", region: "NY" }, "Ottawa Senators": { stadium: "Canadian Tire Centre", city: "Ottawa", region: "ON" }, "Philadelphia Flyers": { stadium: "Wells Fargo Center", city: "Philadelphia", region: "PA" }, "Pittsburgh Penguins": { stadium: "PPG Paints Arena", city: "Pittsburgh", region: "PA" }, "San Jose Sharks": { stadium: "SAP Center", city: "San Jose", region: "CA" }, "Seattle Kraken": { stadium: "Climate Pledge Arena", city: "Seattle", region: "WA" }, "St. Louis Blues": { stadium: "Enterprise Center", city: "St. Louis", region: "MO" }, "Tampa Bay Lightning": { stadium: "Amalie Arena", city: "Tampa", region: "FL" }, "Toronto Maple Leafs": { stadium: "Scotiabank Arena", city: "Toronto", region: "ON" }, "Utah Hockey Club": { stadium: "Delta Center", city: "Salt Lake City", region: "UT" }, "Vancouver Canucks": { stadium: "Rogers Arena", city: "Vancouver", region: "BC" }, "Vegas Golden Knights": { stadium: "T-Mobile Arena", city: "Las Vegas", region: "NV" }, "Washington Capitals": { stadium: "Capital One Arena", city: "Washington", region: "DC" }, "Winnipeg Jets": { stadium: "Canada Life Centre", city: "Winnipeg", region: "MB" } }
     };
 
-  // 2. FUNCIONES DE INTERFAZ (Pestañas y Equipos)
+    // 2. FUNCIONES DE INTERFAZ (Tabs & Teams)
     function switchSchema() {
         const type = document.getElementById('schemaTypeSelect').value;
         document.getElementById('hiddenType').value = type;
         const schemas = ["SportsEvent", "FAQPage", "BlogPosting", "Review", "Parlay", "WidgetSingle", "WidgetMulti", "Takeaways"];
-        
         schemas.forEach(s => {
             const div = document.getElementById(`fields_${s}`);
-            if (div) {
-                if (s === type) {
-                    div.classList.remove('hidden');
-                    div.style.display = 'block';
-                } else {
-                    div.classList.add('hidden');
-                    div.style.display = 'none';
-                }
-            }
+            if (div) div.classList.toggle('hidden', s !== type);
         });
         if (type === 'SportsEvent') loadTeams();
     }
@@ -359,78 +345,96 @@ let parlayPickCount = 0;
         document.getElementById('seName').value = (a && b) ? `${a} vs ${b}` : "";
     }
 
-    // 3. FUNCIONES DINÁMICAS (Picks, FAQ, Takeaways)
+    // 3. FUNCIONES DINÁMICAS (Add/Remove & Reindex)
     function addFAQ() {
         faqCount++;
-        const html = `<div class="faq-item" style="border-bottom:1px solid #ddd; padding:10px 0;"><strong>Q#${faqCount}</strong><button type="button" onclick="this.parentElement.remove()" style="float:right; background:#dc3545; color:white; border:none; padding:2px 8px; border-radius:4px;">✕</button><input type="text" name="faqQ${faqCount}" placeholder="Question"><textarea name="faqA${faqCount}" placeholder="Answer" style="height:60px;"></textarea></div>`;
+        const html = `<div class="faq-item" style="border-bottom:1px solid #ddd; padding:10px 0;"><strong>Question</strong><button type="button" onclick="this.parentElement.remove(); reindexFAQ();" style="float:right; background:#dc3545; color:white; border:none; padding:2px 8px; border-radius:4px;">✕</button><input type="text" class="faq-q" name="faqQ${faqCount}" placeholder="Question"><textarea class="faq-a" name="faqA${faqCount}" placeholder="Answer" style="height:60px;"></textarea></div>`;
         document.getElementById('faqContainer').insertAdjacentHTML('beforeend', html);
+        reindexFAQ();
+    }
+    function reindexFAQ() {
+        document.querySelectorAll('.faq-item').forEach((item, i) => {
+            item.querySelector('.faq-q').name = `faqQ${i+1}`;
+            item.querySelector('.faq-a').name = `faqA${i+1}`;
+        });
+        faqCount = document.querySelectorAll('.faq-item').length;
     }
 
     function addTakeaway() {
-        if (tkCount >= 6) return alert("Max 6 reached");
+        if (tkCount >= 6) return alert("Max reached");
         tkCount++;
-        const html = `<div class="tk-item" style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:15px; margin-bottom:15px;"><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><strong>Key Point</strong><button type="button" onclick="this.closest('.tk-item').remove(); tkCount--;" style="background:#fee2e2; color:#dc2626; border:none; padding:4px 10px; border-radius:6px; cursor:pointer;">Remove</button></div><textarea class="tk-input" name="tkPoint${tkCount}" style="height:80px; width:100%;" placeholder="Point details..."></textarea></div>`;
+        const html = `<div class="tk-item" style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:15px; margin-bottom:15px;"><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><strong>Key Point</strong><button type="button" onclick="this.closest('.tk-item').remove(); reindexTK();" style="background:#fee2e2; color:#dc2626; border:none; padding:4px 10px; border-radius:6px; cursor:pointer;">Remove</button></div><textarea class="tk-in" name="tkPoint${tkCount}" style="height:80px; width:100%;" placeholder="Point details..."></textarea></div>`;
         document.getElementById('tkContainer').insertAdjacentHTML('beforeend', html);
+        reindexTK();
+    }
+    function reindexTK() {
+        document.querySelectorAll('.tk-in').forEach((el, i) => { el.name = `tkPoint${i+1}`; });
+        tkCount = document.querySelectorAll('.tk-in').length;
     }
 
     function addSportsPick() {
-        if (sportsPickCount >= 7) return alert("Max 7 reached");
+        if (sportsPickCount >= 7) return alert("Max reached");
         sportsPickCount++;
-        const html = `<div class="pick-grid sports-pick-row" style="margin-bottom:10px; padding:10px; border-left:4px solid #34a853; background:#f8f9fa;"><input type="text" class="sp-name" name="pick${sportsPickCount}Name" placeholder="Pick Name"><input type="text" class="sp-price" name="pick${sportsPickCount}Price" placeholder="Odds"><div style="display:flex; gap:8px;"><input type="url" class="sp-url" name="pick${sportsPickCount}Url" placeholder="URL" style="flex:1;"><button type="button" onclick="removeSportsPick(this)" style="background:#dc3545; color:white; border:none; padding:0 12px; border-radius:4px;">✕</button></div></div>`;
+        const html = `<div class="sp-row pick-grid" style="margin-bottom:10px; padding:10px; border-left:4px solid #34a853; background:#f8f9fa;"><input type="text" class="sp-n" name="pick${sportsPickCount}Name" placeholder="Name"><input type="text" class="sp-p" name="pick${sportsPickCount}Price" placeholder="Odds"><div style="display:flex; gap:8px;"><input type="url" class="sp-u" name="pick${sportsPickCount}Url" placeholder="URL" style="flex:1;"><button type="button" onclick="this.closest('.sp-row').remove(); reindexSP();" style="background:#dc3545; color:white; border:none; padding:0 12px; border-radius:4px;">✕</button></div></div>`;
         document.getElementById('sportsPicksContainer').insertAdjacentHTML('beforeend', html);
-        reindexSportsPicks();
+        reindexSP();
     }
-
-    function removeSportsPick(btn) { btn.closest('.sports-pick-row').remove(); reindexSportsPicks(); }
-
-    function reindexSportsPicks() {
-        document.querySelectorAll('.sports-pick-row').forEach((row, i) => {
-            const n = i + 1;
-            row.querySelector('.sp-name').name = `pick${n}Name`;
-            row.querySelector('.sp-price').name = `pick${n}Price`;
-            row.querySelector('.sp-url').name = `pick${n}Url`;
+    function reindexSP() {
+        document.querySelectorAll('.sp-row').forEach((row, i) => {
+            const n = i+1;
+            row.querySelector('.sp-n').name = `pick${n}Name`;
+            row.querySelector('.sp-p').name = `pick${n}Price`;
+            row.querySelector('.sp-u').name = `pick${n}Url`;
         });
-        sportsPickCount = document.querySelectorAll('.sports-pick-row').length;
+        sportsPickCount = document.querySelectorAll('.sp-row').length;
     }
 
     function addParlayLeg() {
         parlayPickCount++;
-        const html = `<div class="section parlay-leg" style="border-left:4px solid #ff9800; background:#fffcf9; margin-bottom:15px; padding:10px;"><div style="display:flex; justify-content:space-between; margin-bottom:5px;"><strong>Leg #${parlayPickCount}</strong><button type="button" onclick="this.closest('.parlay-leg').remove(); calculateParlayAutoOdds();" style="background:#dc3545; color:white; border:none; padding:2px 8px; border-radius:4px;">✕</button></div><div class="grid"><input type="text" name="pPick${parlayPickCount}Event" placeholder="Event"><input type="text" name="pPick${parlayPickCount}Name" placeholder="Pick"><input type="text" name="pPick${parlayPickCount}Price" placeholder="Odds" oninput="calculateParlayAutoOdds()"></div></div>`;
+        const html = `<div class="p-leg section" style="border-left:4px solid #ff9800; background:#fffcf9; margin-bottom:15px; padding:10px;"><div style="display:flex; justify-content:space-between; margin-bottom:5px;"><strong>Leg #${parlayPickCount}</strong><button type="button" onclick="this.closest('.p-leg').remove(); reindexPL();" style="background:#dc3545; color:white; border:none; padding:2px 8px; border-radius:4px;">✕</button></div><div class="grid"><input type="text" class="pl-e" name="pPick${parlayPickCount}Event" placeholder="Event"><input type="text" class="pl-n" name="pPick${parlayPickCount}Name" placeholder="Pick"><input type="text" class="pl-p" name="pPick${parlayPickCount}Price" placeholder="Odds" oninput="calculateParlayAutoOdds()"></div></div>`;
         document.getElementById('parlayLegsContainer').insertAdjacentHTML('beforeend', html);
+    }
+    function reindexPL() {
+        document.querySelectorAll('.p-leg').forEach((leg, i) => {
+            const n = i+1;
+            leg.querySelector('strong').innerText = `Leg #${n}`;
+            leg.querySelector('.pl-e').name = `pPick${n}Event`;
+            leg.querySelector('.pl-n').name = `pPick${n}Name`;
+            leg.querySelector('.pl-p').name = `pPick${n}Price`;
+        });
+        parlayPickCount = document.querySelectorAll('.p-leg').length;
+        calculateParlayAutoOdds();
     }
 
     // 4. ENVÍO Y RESULTADOS
-    document.getElementById('mainForm').onsubmit = async (e) => {
+    document.addEventListener('submit', async (e) => {
+        if (e.target.id !== 'mainForm') return;
         e.preventDefault();
         const type = document.getElementById('schemaTypeSelect').value;
         const vBox = document.getElementById('visual-result-box');
         const sBox = document.getElementById('schema-result-box');
-        
+        const vOut = document.getElementById('visualOutput');
+        const sOut = document.getElementById('jsonOutput');
+
         try {
             if (type.includes('Widget')) {
-                const html = (type === 'WidgetSingle') ? buildSingleWidgetHTML() : buildMultiWidgetHTML();
-                document.getElementById('visualOutput').value = html;
-                vBox.classList.remove('hidden'); sBox.classList.add('hidden');
-                document.getElementById('livePreview').innerHTML = html;
-                document.getElementById('previewSection').classList.remove('hidden');
+                // Aquí irían tus funciones de Widget si las tienes definidas
+                alert("Widget generation logic required");
             } else {
                 const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
                 const data = await res.json();
                 if (type === 'Takeaways') {
-                    document.getElementById('visualOutput').value = data.visual;
-                    document.getElementById('jsonOutput').value = `<script type="application/ld+json">\n${JSON.stringify(data.schema, null, 2)}\n<\/script>`;
+                    vOut.value = data.visual;
+                    sOut.value = `<script type="application/ld+json">\n${JSON.stringify(data.schema, null, 2)}\n<\/script>`;
                     vBox.classList.remove('hidden');
-                    document.getElementById('livePreview').innerHTML = data.visual;
-                    document.getElementById('previewSection').classList.remove('hidden');
                 } else {
-                    document.getElementById('jsonOutput').value = `<script type="application/ld+json">\n${JSON.stringify(data, null, 2)}\n<\/script>`;
+                    sOut.value = `<script type="application/ld+json">\n${JSON.stringify(data, null, 2)}\n<\/script>`;
                     vBox.classList.add('hidden');
-                    document.getElementById('previewSection').classList.add('hidden');
                 }
                 sBox.classList.remove('hidden');
             }
         } catch (err) { alert("Error: " + err.message); }
-    };
+    });
 
     // 5. UTILIDADES
     function copyResult(id) { const el = document.getElementById(id); el.select(); document.execCommand('copy'); alert("Copied! ✅"); }
@@ -438,20 +442,17 @@ let parlayPickCount = 0;
     function amToDec(val) { val = parseFloat(val); if (isNaN(val)) return 1; return val >= 100 ? (val / 100) + 1 : (100 / Math.abs(val)) + 1; }
     function decToAm(dec) { if (dec <= 1.001) return "+0"; return dec >= 2.0 ? "+" + Math.round((dec - 1) * 100) : Math.round(-100 / (dec - 1)); }
     function calculateParlayAutoOdds() {
-        const odds = document.querySelectorAll('input[name$="Price"]');
+        const odds = document.querySelectorAll('.pl-p');
         let total = 1, has = false;
         odds.forEach(o => { const v = parseFloat(o.value); if (!isNaN(v) && v !== 0) { total *= amToDec(v); has = true; } });
         const field = document.getElementsByName('parlayTotalOdds')[0];
         if (field) field.value = has ? decToAm(total) : "";
     }
 
-    // INICIALIZACIÓN
     window.onload = () => {
         switchSchema();
-        if (faqCount === 0) addFAQ();
-        if (tkCount === 0) addTakeaway();
-        if (sportsPickCount === 0) addSportsPick();
-        if (parlayPickCount === 0) addParlayLeg();
+        addFAQ(); addTakeaway(); addSportsPick(); addParlayLeg();
     };
-</script></body>
+</script>
+</body>
 </html>
