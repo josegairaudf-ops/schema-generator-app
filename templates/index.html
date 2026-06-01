@@ -286,12 +286,14 @@
 </div>
 <!-- END: NEW DYNAMIC RESULT AREA -->   
 <script>
-    // 1. VARIABLES GLOBALES
-    let sportsPickCount = 0;
-    let parlayPickCount = 0;
-    let faqCount = 0;
-    let tkCount = 0;
-
+// --- INICIALIZACIÓN ÚNICA AL CARGAR ---
+    window.onload = () => {
+        switchSchema();
+        if (faqCount === 0) addFAQ();
+        if (tkCount === 0) addTakeaway();
+        if (sportsPickCount === 0) addSportsPick();
+        if (parlayPickCount === 0 && typeof addParlayLeg === 'function') addParlayLeg();
+    };
     const teamData = {
         "NFL": { "Arizona Cardinals": { stadium: "State Farm Stadium", city: "Glendale", region: "AZ" }, "Atlanta Falcons": { stadium: "Mercedes-Benz Stadium", city: "Atlanta", region: "GA" }, "Baltimore Ravens": { stadium: "M&T Bank Stadium", city: "Baltimore", region: "MD" }, "Buffalo Bills": { stadium: "New Highmark Stadium", city: "Orchard Park", region: "NY" }, "Carolina Panthers": { stadium: "Bank of America Stadium", city: "Charlotte", region: "NC" }, "Chicago Bears": { stadium: "Soldier Field", city: "Chicago", region: "IL" }, "Cincinnati Bengals": { stadium: "Paycor Stadium", city: "Cincinnati", region: "OH" }, "Cleveland Browns": { stadium: "Huntington Bank Field Stadium", city: "Cleveland", region: "OH" }, "Dallas Cowboys": { stadium: "AT&T Stadium", city: "Arlington", region: "TX" }, "Denver Broncos": { stadium: "Empower Field at Mile High", city: "Denver", region: "CO" }, "Detroit Lions": { stadium: "Ford Field", city: "Detroit", region: "MI" }, "Green Bay Packers": { stadium: "Lambeau Field", city: "Green Bay", region: "WI" }, "Houston Texans": { stadium: "NRG Stadium", city: "Houston", region: "TX" }, "Indianapolis Colts": { stadium: "Lucas Oil Stadium", city: "Indianapolis", region: "IN" }, "Jacksonville Jaguars": { stadium: "EverBank Stadium", city: "Jacksonville", region: "FL" }, "Kansas City Chiefs": { stadium: "Arrowhead Stadium", city: "Kansas City", region: "MO" }, "Las Vegas Raiders": { stadium: "Allegiant Stadium", city: "Las Vegas", region: "NV" }, "Los Angeles Chargers": { stadium: "SoFi Stadium", city: "Inglewood", region: "CA" }, "Los Angeles Rams": { stadium: "SoFi Stadium", city: "Inglewood", region: "CA" }, "Miami Dolphins": { stadium: "Hard Rock Stadium", city: "Miami Gardens", region: "FL" }, "Minnesota Vikings": { stadium: "U.S. Bank Stadium", city: "Minneapolis", region: "MN" }, "New England Patriots": { stadium: "Gillette Stadium", city: "Foxborough", region: "MA" }, "New Orleans Saints": { stadium: "Caesars Superdome", city: "New Orleans", region: "LA" }, "New York Giants": { stadium: "MetLife Stadium", city: "East Rutherford", region: "NJ" }, "New York Jets": { stadium: "MetLife Stadium", city: "East Rutherford", region: "NJ" }, "Philadelphia Eagles": { stadium: "Lincoln Financial Field", city: "Philadelphia", region: "PA" }, "Pittsburgh Steelers": { stadium: "Acrisure Stadium", city: "Pittsburgh", region: "PA" }, "San Francisco 49ers": { stadium: "Levi's Stadium", city: "Santa Clara", region: "CA" }, "Seattle Seahawks": { stadium: "Lumen Field", city: "Seattle", region: "WA" }, "Tampa Bay Buccaneers": { stadium: "Raymond James Stadium", city: "Tampa", region: "FL" }, "Tennessee Titans": { stadium: "Nissan Stadium", city: "Nashville", region: "TN" }, "Washington Commanders": { stadium: "Northwest Stadium", city: "Landover", region: "MD" } },
         "NBA": { "Atlanta Hawks": { stadium: "State Farm Arena", city: "Atlanta", region: "GA" }, "Boston Celtics": { stadium: "TD Garden", city: "Boston", region: "MA" }, "Brooklyn Nets": { stadium: "Barclays Center", city: "Brooklyn", region: "NY" }, "Charlotte Hornets": { stadium: "Spectrum Center", city: "Charlotte", region: "NC" }, "Chicago Bulls": { stadium: "United Center", city: "Chicago", region: "IL" }, "Cleveland Cavaliers": { stadium: "Rocket Mortgage FieldHouse", city: "Cleveland", region: "OH" }, "Dallas Mavericks": { stadium: "American Airlines Center", city: "Dallas", region: "TX" }, "Denver Nuggets": { stadium: "Ball Arena", city: "Denver", region: "CO" }, "Detroit Pistons": { stadium: "Little Caesars Arena", city: "Detroit", region: "MI" }, "Golden State Warriors": { stadium: "Chase Center", city: "San Francisco", region: "CA" }, "Houston Rockets": { stadium: "Toyota Center", city: "Houston", region: "TX" }, "Indiana Pacers": { stadium: "Gainbridge Fieldhouse", city: "Indianapolis", region: "IN" }, "LA Clippers": { stadium: "Intuit Dome", city: "Inglewood", region: "CA" }, "Los Angeles Lakers": { stadium: "Crypto.com Arena", city: "Los Angeles", region: "CA" }, "Memphis Grizzlies": { stadium: "FedExForum", city: "Memphis", region: "TN" }, "Miami Heat": { stadium: "Kaseya Center", city: "Miami", region: "FL" }, "Milwaukee Bucks": { stadium: "Fiserv Forum", city: "Milwaukee", region: "WI" }, "Minnesota Timberwolves": { stadium: "Target Center", city: "Minneapolis", region: "MN" }, "New Orleans Pelicans": { stadium: "Smoothie King Center", city: "New Orleans", region: "LA" }, "New York Knicks": { stadium: "Madison Square Garden", city: "New York", region: "NY" }, "Oklahoma City Thunder": { stadium: "Paycom Center", city: "Oklahoma City", region: "OK" }, "Orlando Magic": { stadium: "Kia Center", city: "Orlando", region: "FL" }, "Philadelphia 76ers": { stadium: "Wells Fargo Center", city: "Philadelphia", region: "PA" }, "Phoenix Suns": { stadium: "Footprint Center", city: "Phoenix", region: "AZ" }, "Portland Trail Blazers": { stadium: "Moda Center", city: "Portland", region: "OR" }, "Sacramento Kings": { stadium: "Golden 1 Center", city: "Sacramento", region: "CA" }, "San Antonio Spurs": { stadium: "Frost Bank Center", city: "San Antonio", region: "TX" }, "Toronto Raptors": { stadium: "Scotiabank Arena", city: "Toronto", region: "ON" }, "Utah Jazz": { stadium: "Delta Center", city: "Salt Lake City", region: "UT" }, "Washington Wizards": { stadium: "Capital One Arena", city: "Washington", region: "DC" } },
@@ -484,18 +486,17 @@ document.addEventListener('submit', async (e) => {
                 const data = await res.json();
                 
                 if (type === 'Takeaways') {
-                    // Si es Takeaways, el Python manda {visual: "...", schema: {...}}
-                    vOut.value = data.visual;
-                    sOut.value = `<script type="application/ld+json">\n${JSON.stringify(data.schema, null, 2)}\n<\/script>`;
-                    vBox.classList.remove('hidden');
-                    document.getElementById('livePreview').innerHTML = data.visual;
-                    document.getElementById('previewSection').classList.remove('hidden');
-                } else {
-                    // Si es otro Schema (Sports, FAQ), el Python manda el JSON directo
-                    sOut.value = `<script type="application/ld+json">\n${JSON.stringify(data, null, 2)}\n<\/script>`;
-                    vBox.classList.add('hidden');
-                    document.getElementById('previewSection').classList.add('hidden');
-                }
+    document.getElementById('visualOutput').value = data.visual;
+    document.getElementById('jsonOutput').value = `<script type="application/ld+json">\n${JSON.stringify(data.schema, null, 2)}\n<\/script>`;
+    vBox.classList.remove('hidden');
+    document.getElementById('livePreview').innerHTML = data.visual;
+    document.getElementById('previewSection').classList.remove('hidden');
+} else {
+    // AQUÍ ESTABA EL ERROR: data ya es el schema
+    document.getElementById('jsonOutput').value = `<script type="application/ld+json">\n${JSON.stringify(data, null, 2)}\n<\/script>`;
+    vBox.classList.add('hidden');
+    document.getElementById('previewSection').classList.add('hidden');
+}
                 sBox.classList.remove('hidden');
             }
         } catch (err) { alert("Error: " + err.message); }
@@ -513,10 +514,6 @@ document.addEventListener('submit', async (e) => {
         const field = document.getElementsByName('parlayTotalOdds')[0];
         if (field) field.value = has ? decToAm(total) : "";
     }
-
-    window.onload = () => {
-        switchSchema();
-        addFAQ(); addTakeaway(); addSportsPick(); addParlayLeg();
     };
 </script>
 </body>
