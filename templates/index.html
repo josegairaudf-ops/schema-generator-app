@@ -312,19 +312,25 @@
     }
 
     function loadTeams() {
-        const league = document.getElementById('seSport').value;
-        const isOther = (league === 'Other');
-        document.getElementById('customL').classList.toggle('hidden', !isOther);
-        const sA = document.getElementById('seTeamA'); const sB = document.getElementById('seTeamB');
-        const cA = document.getElementById('seTeamACustom'); const cB = document.getElementById('seTeamBCustom');
-        sA.classList.toggle('hidden', isOther); sB.classList.toggle('hidden', isOther);
-        cA.classList.toggle('hidden', !isOther); cB.classList.toggle('hidden', !isOther);
-        if (!isOther && teamData[league]) {
-            const opts = Object.keys(teamData[league]).map(t => `<option value="${t}">${t}</option>`).join('');
-            sA.innerHTML = opts; sB.innerHTML = opts;
-        }
-        autoFillVenue();
+    const league = document.getElementById('seSport').value;
+    const isOther = (league === 'Other');
+    
+    // Mostramos/Ocultamos la liga personalizada
+    document.getElementById('customL').classList.toggle('hidden', !isOther);
+
+    const sA = document.getElementById('seTeamA'); const sB = document.getElementById('seTeamB');
+    const cA = document.getElementById('seTeamACustom'); const cB = document.getElementById('seTeamBCustom');
+
+    // IMPORTANTE: Intercambiamos visibilidad
+    sA.classList.toggle('hidden', isOther); sB.classList.toggle('hidden', isOther);
+    cA.classList.toggle('hidden', !isOther); cB.classList.toggle('hidden', !isOther);
+
+    if (!isOther && teamData[league]) {
+        const opts = Object.keys(teamData[league]).map(t => `<option value="${t}">${t}</option>`).join('');
+        sA.innerHTML = opts; sB.innerHTML = opts;
     }
+    autoFillVenue();
+}
 
     function autoFillVenue() {
         const league = document.getElementById('seSport').value;
@@ -457,36 +463,41 @@
     }
 
     // 5. ENVÍO Y RESULTADOS
-    document.addEventListener('submit', async (e) => {
-        if (e.target.id !== 'mainForm') return;
-        e.preventDefault();
-        const type = document.getElementById('schemaTypeSelect').value;
-        const vBox = document.getElementById('visual-result-box');
-        const sBox = document.getElementById('schema-result-box');
-        
-        try {
-            if (type.includes('Widget')) {
-                const html = (type === 'WidgetSingle') ? buildSingleWidgetHTML() : buildMultiWidgetHTML();
-                document.getElementById('visualOutput').value = html;
-                vBox.classList.remove('hidden'); sBox.classList.add('hidden');
-                document.getElementById('livePreview').innerHTML = html;
+  document.addEventListener('submit', async (e) => {
+    if (e.target.id !== 'mainForm') return;
+    e.preventDefault();
+    const type = document.getElementById('schemaTypeSelect').value;
+    const vBox = document.getElementById('visual-result-box');
+    const sBox = document.getElementById('schema-result-box');
+    
+    try {
+        if (type.includes('Widget')) {
+            const html = (type === 'WidgetSingle') ? buildSingleWidgetHTML() : buildMultiWidgetHTML();
+            document.getElementById('visualOutput').value = html;
+            vBox.classList.remove('hidden'); sBox.classList.add('hidden');
+            document.getElementById('livePreview').innerHTML = html;
+            document.getElementById('previewSection').classList.remove('hidden');
+        } else {
+            const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
+            const data = await res.json();
+            
+            if (type === 'Takeaways') {
+                // CASO ESPECIAL: Takeaways tiene HTML y Schema
+                document.getElementById('visualOutput').value = data.visual;
+                document.getElementById('jsonOutput').value = `<script type="application/ld+json">\n${JSON.stringify(data.schema, null, 2)}\n<\/script>`;
+                vBox.classList.remove('hidden');
+                document.getElementById('livePreview').innerHTML = data.visual;
                 document.getElementById('previewSection').classList.remove('hidden');
             } else {
-                const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
-                const data = await res.json();
-                if (type === 'Takeaways') {
-                    document.getElementById('visualOutput').value = data.visual;
-                    document.getElementById('jsonOutput').value = `<script type="application/ld+json">\n${JSON.stringify(data.schema, null, 2)}\n<\/script>`;
-                    vBox.classList.remove('hidden');
-                } else {
-                    document.getElementById('jsonOutput').value = `<script type="application/ld+json">\n${JSON.stringify(data, null, 2)}\n<\/script>`;
-                    vBox.classList.add('hidden');
-                }
-                sBox.classList.remove('hidden');
+                // CASO NORMAL: Solo Schema
+                document.getElementById('jsonOutput').value = `<script type="application/ld+json">\n${JSON.stringify(data, null, 2)}\n<\/script>`;
+                vBox.classList.add('hidden');
+                document.getElementById('previewSection').classList.add('hidden');
             }
-        } catch (err) { alert("Error: " + err.message); }
-    });
-
+            sBox.classList.remove('hidden');
+        }
+    } catch (err) { alert("Error: " + err.message); }
+});
     // 6. UTILIDADES
     function copyResult(id) { const el = document.getElementById(id); el.select(); document.execCommand('copy'); alert("Copied! ✅"); }
     function clearForm() { if (confirm("Clear all?")) location.reload(); }
