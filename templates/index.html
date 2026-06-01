@@ -286,7 +286,7 @@
 </div>
 <!-- END: NEW DYNAMIC RESULT AREA -->   
 <script>
-    // 1. VARIABLES GLOBALES (Solo una vez aquí arriba)
+    // 1. VARIABLES GLOBALES
     let faqCount = 0;
     let tkCount = 0;
     let sportsPickCount = 0;
@@ -357,8 +357,13 @@
     function addTakeaway() {
         if (tkCount >= 6) return alert("Max 6 reached");
         tkCount++;
-        const html = `<div class="tk-item" style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:15px; margin-bottom:15px;"><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><strong>Key Point #${tkCount}</strong><button type="button" onclick="this.closest('.tk-item').remove()" style="background:#fee2e2; color:#dc2626; border:none; padding:4px 10px; border-radius:6px; cursor:pointer;">Remove</button></div><textarea name="tkPoint${tkCount}" style="height:80px; width:100%;" placeholder="Point details..."></textarea></div>`;
+        const html = `<div class="tk-item" style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:15px; margin-bottom:15px;"><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><strong>Key Point</strong><button type="button" onclick="this.closest('.tk-item').remove(); reindexTakeaways();" style="background:#fee2e2; color:#dc2626; border:none; padding:4px 10px; border-radius:6px; cursor:pointer;">Remove</button></div><textarea class="tk-input" name="tkPoint${tkCount}" style="height:80px; width:100%;" placeholder="Point details..."></textarea></div>`;
         document.getElementById('tkContainer').insertAdjacentHTML('beforeend', html);
+    }
+
+    function reindexTakeaways() {
+        document.querySelectorAll('.tk-input').forEach((input, i) => { input.name = `tkPoint${i+1}`; });
+        tkCount = document.querySelectorAll('.tk-input').length;
     }
 
     function addSportsPick() {
@@ -381,13 +386,15 @@
         sportsPickCount = document.querySelectorAll('.sports-pick-row').length;
     }
 
-    // 4. ENVÍO Y RESULTADOS
+    // 4. ENVÍO Y RESULTADOS (Lógica Corregida para Schema vs Widget)
     document.addEventListener('submit', async (e) => {
         if (e.target.id !== 'mainForm') return;
         e.preventDefault();
         const type = document.getElementById('schemaTypeSelect').value;
+        
         try {
             if (type.includes('Widget')) {
+                // CASO: WIDGETS PUROS
                 const html = (type === 'WidgetSingle') ? buildSingleWidgetHTML() : buildMultiWidgetHTML();
                 document.getElementById('visualOutput').value = html;
                 document.getElementById('visual-result-box').classList.remove('hidden');
@@ -395,15 +402,19 @@
                 document.getElementById('livePreview').innerHTML = html;
                 document.getElementById('previewSection').classList.remove('hidden');
             } else {
+                // CASO: SCHEMAS (Incluyendo Takeaways)
                 const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
                 const data = await res.json();
+                
                 if (type === 'Takeaways') {
+                    // Takeaways tiene objeto {visual, schema}
                     document.getElementById('visualOutput').value = data.visual;
                     document.getElementById('jsonOutput').value = `<script type="application/ld+json">\n${JSON.stringify(data.schema, null, 2)}\n<\/script>`;
                     document.getElementById('visual-result-box').classList.remove('hidden');
                     document.getElementById('livePreview').innerHTML = data.visual;
                     document.getElementById('previewSection').classList.remove('hidden');
                 } else {
+                    // Los demás Schemas devuelven el JSON directo
                     document.getElementById('jsonOutput').value = `<script type="application/ld+json">\n${JSON.stringify(data, null, 2)}\n<\/script>`;
                     document.getElementById('visual-result-box').classList.add('hidden');
                     document.getElementById('previewSection').classList.add('hidden');
@@ -415,18 +426,18 @@
 
     // 5. UTILIDADES
     function copyResult(id) { const el = document.getElementById(id); el.select(); document.execCommand('copy'); alert("Copied! ✅"); }
+    function clearForm() { if (confirm("Clear all?")) location.reload(); }
     
-    function clearForm() { 
-        if (confirm("Clear all?")) location.reload(); // Forma más segura de limpiar todo
-    }
+    // Funciones Parlay / Widget Dummy (Para que no de error si faltan)
+    function addParlayLeg() {} 
+    function buildSingleWidgetHTML() { return "Single Widget Placeholder"; }
+    function buildMultiWidgetHTML() { return "Multi Widget Placeholder"; }
 
-    // INICIALIZACIÓN ÚNICA
     window.onload = () => {
         switchSchema();
         if (faqCount === 0) addFAQ();
         if (tkCount === 0) addTakeaway();
         if (sportsPickCount === 0) addSportsPick();
-        addParlayLeg(); // Si tienes esta función
     };
 </script>
 </body>
