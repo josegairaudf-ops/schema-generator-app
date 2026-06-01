@@ -286,6 +286,12 @@
 </div>
 <!-- END: NEW DYNAMIC RESULT AREA -->   
 <script>
+    // 1. VARIABLES GLOBALES (Solo una vez aquí arriba)
+    let faqCount = 0;
+    let tkCount = 0;
+    let sportsPickCount = 0;
+    let parlayPickCount = 0;
+
     const teamData = {
         "NFL": { "Arizona Cardinals": { stadium: "State Farm Stadium", city: "Glendale", region: "AZ" }, "Atlanta Falcons": { stadium: "Mercedes-Benz Stadium", city: "Atlanta", region: "GA" }, "Baltimore Ravens": { stadium: "M&T Bank Stadium", city: "Baltimore", region: "MD" }, "Buffalo Bills": { stadium: "New Highmark Stadium", city: "Orchard Park", region: "NY" }, "Carolina Panthers": { stadium: "Bank of America Stadium", city: "Charlotte", region: "NC" }, "Chicago Bears": { stadium: "Soldier Field", city: "Chicago", region: "IL" }, "Cincinnati Bengals": { stadium: "Paycor Stadium", city: "Cincinnati", region: "OH" }, "Cleveland Browns": { stadium: "Huntington Bank Field Stadium", city: "Cleveland", region: "OH" }, "Dallas Cowboys": { stadium: "AT&T Stadium", city: "Arlington", region: "TX" }, "Denver Broncos": { stadium: "Empower Field at Mile High", city: "Denver", region: "CO" }, "Detroit Lions": { stadium: "Ford Field", city: "Detroit", region: "MI" }, "Green Bay Packers": { stadium: "Lambeau Field", city: "Green Bay", region: "WI" }, "Houston Texans": { stadium: "NRG Stadium", city: "Houston", region: "TX" }, "Indianapolis Colts": { stadium: "Lucas Oil Stadium", city: "Indianapolis", region: "IN" }, "Jacksonville Jaguars": { stadium: "EverBank Stadium", city: "Jacksonville", region: "FL" }, "Kansas City Chiefs": { stadium: "Arrowhead Stadium", city: "Kansas City", region: "MO" }, "Las Vegas Raiders": { stadium: "Allegiant Stadium", city: "Las Vegas", region: "NV" }, "Los Angeles Chargers": { stadium: "SoFi Stadium", city: "Inglewood", region: "CA" }, "Los Angeles Rams": { stadium: "SoFi Stadium", city: "Inglewood", region: "CA" }, "Miami Dolphins": { stadium: "Hard Rock Stadium", city: "Miami Gardens", region: "FL" }, "Minnesota Vikings": { stadium: "U.S. Bank Stadium", city: "Minneapolis", region: "MN" }, "New England Patriots": { stadium: "Gillette Stadium", city: "Foxborough", region: "MA" }, "New Orleans Saints": { stadium: "Caesars Superdome", city: "New Orleans", region: "LA" }, "New York Giants": { stadium: "MetLife Stadium", city: "East Rutherford", region: "NJ" }, "New York Jets": { stadium: "MetLife Stadium", city: "East Rutherford", region: "NJ" }, "Philadelphia Eagles": { stadium: "Lincoln Financial Field", city: "Philadelphia", region: "PA" }, "Pittsburgh Steelers": { stadium: "Acrisure Stadium", city: "Pittsburgh", region: "PA" }, "San Francisco 49ers": { stadium: "Levi's Stadium", city: "Santa Clara", region: "CA" }, "Seattle Seahawks": { stadium: "Lumen Field", city: "Seattle", region: "WA" }, "Tampa Bay Buccaneers": { stadium: "Raymond James Stadium", city: "Tampa", region: "FL" }, "Tennessee Titans": { stadium: "Nissan Stadium", city: "Nashville", region: "TN" }, "Washington Commanders": { stadium: "Northwest Stadium", city: "Landover", region: "MD" } },
         "NBA": { "Atlanta Hawks": { stadium: "State Farm Arena", city: "Atlanta", region: "GA" }, "Boston Celtics": { stadium: "TD Garden", city: "Boston", region: "MA" }, "Brooklyn Nets": { stadium: "Barclays Center", city: "Brooklyn", region: "NY" }, "Charlotte Hornets": { stadium: "Spectrum Center", city: "Charlotte", region: "NC" }, "Chicago Bulls": { stadium: "United Center", city: "Chicago", region: "IL" }, "Cleveland Cavaliers": { stadium: "Rocket Mortgage FieldHouse", city: "Cleveland", region: "OH" }, "Dallas Mavericks": { stadium: "American Airlines Center", city: "Dallas", region: "TX" }, "Denver Nuggets": { stadium: "Ball Arena", city: "Denver", region: "CO" }, "Detroit Pistons": { stadium: "Little Caesars Arena", city: "Detroit", region: "MI" }, "Golden State Warriors": { stadium: "Chase Center", city: "San Francisco", region: "CA" }, "Houston Rockets": { stadium: "Toyota Center", city: "Houston", region: "TX" }, "Indiana Pacers": { stadium: "Gainbridge Fieldhouse", city: "Indianapolis", region: "IN" }, "LA Clippers": { stadium: "Intuit Dome", city: "Inglewood", region: "CA" }, "Los Angeles Lakers": { stadium: "Crypto.com Arena", city: "Los Angeles", region: "CA" }, "Memphis Grizzlies": { stadium: "FedExForum", city: "Memphis", region: "TN" }, "Miami Heat": { stadium: "Kaseya Center", city: "Miami", region: "FL" }, "Milwaukee Bucks": { stadium: "Fiserv Forum", city: "Milwaukee", region: "WI" }, "Minnesota Timberwolves": { stadium: "Target Center", city: "Minneapolis", region: "MN" }, "New Orleans Pelicans": { stadium: "Smoothie King Center", city: "New Orleans", region: "LA" }, "New York Knicks": { stadium: "Madison Square Garden", city: "New York", region: "NY" }, "Oklahoma City Thunder": { stadium: "Paycom Center", city: "Oklahoma City", region: "OK" }, "Orlando Magic": { stadium: "Kia Center", city: "Orlando", region: "FL" }, "Philadelphia 76ers": { stadium: "Wells Fargo Center", city: "Philadelphia", region: "PA" }, "Phoenix Suns": { stadium: "Footprint Center", city: "Phoenix", region: "AZ" }, "Portland Trail Blazers": { stadium: "Moda Center", city: "Portland", region: "OR" }, "Sacramento Kings": { stadium: "Golden 1 Center", city: "Sacramento", region: "CA" }, "San Antonio Spurs": { stadium: "Frost Bank Center", city: "San Antonio", region: "TX" }, "Toronto Raptors": { stadium: "Scotiabank Arena", city: "Toronto", region: "ON" }, "Utah Jazz": { stadium: "Delta Center", city: "Salt Lake City", region: "UT" }, "Washington Wizards": { stadium: "Capital One Arena", city: "Washington", region: "DC" } },
@@ -293,602 +299,135 @@
         "NHL": { "Anaheim Ducks": { stadium: "Honda Center", city: "Anaheim", region: "CA" }, "Boston Bruins": { stadium: "TD Garden", city: "Boston", region: "MA" }, "Buffalo Sabres": { stadium: "KeyBank Center", city: "Buffalo", region: "NY" }, "Calgary Flames": { stadium: "Scotiabank Saddledome", city: "Calgary", region: "AB" }, "Carolina Hurricanes": { stadium: "Lenovo Center", city: "Raleigh", region: "NC" }, "Chicago Blackhawks": { stadium: "United Center", city: "Chicago", region: "IL" }, "Colorado Avalanche": { stadium: "Ball Arena", city: "Denver", region: "CO" }, "Columbus Blue Jackets": { stadium: "Nationwide Arena", city: "Columbus", region: "OH" }, "Dallas Stars": { stadium: "American Airlines Center", city: "Dallas", region: "TX" }, "Detroit Red Wings": { stadium: "Little Caesars Arena", city: "Detroit", region: "MI" }, "Edmonton Oilers": { stadium: "Rogers Place", city: "Edmonton", region: "AB" }, "Florida Panthers": { stadium: "Amerant Bank Arena", city: "Sunrise", region: "FL" }, "Los Angeles Kings": { stadium: "Crypto.com Arena", city: "Los Angeles", region: "CA" }, "Minnesota Wild": { stadium: "Xcel Energy Center", city: "Saint Paul", region: "MN" }, "Montreal Canadiens": { stadium: "Bell Centre", city: "Montreal", region: "QC" }, "Nashville Predators": { stadium: "Bridgestone Arena", city: "Nashville", region: "TN" }, "New Jersey Devils": { stadium: "Prudential Center", city: "Newark", region: "NJ" }, "New York Islanders": { stadium: "UBS Arena", city: "Elmont", region: "NY" }, "New York Rangers": { stadium: "Madison Square Garden", city: "New York", region: "NY" }, "Ottawa Senators": { stadium: "Canadian Tire Centre", city: "Ottawa", region: "ON" }, "Philadelphia Flyers": { stadium: "Wells Fargo Center", city: "Philadelphia", region: "PA" }, "Pittsburgh Penguins": { stadium: "PPG Paints Arena", city: "Pittsburgh", region: "PA" }, "San Jose Sharks": { stadium: "SAP Center", city: "San Jose", region: "CA" }, "Seattle Kraken": { stadium: "Climate Pledge Arena", city: "Seattle", region: "WA" }, "St. Louis Blues": { stadium: "Enterprise Center", city: "St. Louis", region: "MO" }, "Tampa Bay Lightning": { stadium: "Amalie Arena", city: "Tampa", region: "FL" }, "Toronto Maple Leafs": { stadium: "Scotiabank Arena", city: "Toronto", region: "ON" }, "Utah Hockey Club": { stadium: "Delta Center", city: "Salt Lake City", region: "UT" }, "Vancouver Canucks": { stadium: "Rogers Arena", city: "Vancouver", region: "BC" }, "Vegas Golden Knights": { stadium: "T-Mobile Arena", city: "Las Vegas", region: "NV" }, "Washington Capitals": { stadium: "Capital One Arena", city: "Washington", region: "DC" }, "Winnipeg Jets": { stadium: "Canada Life Centre", city: "Winnipeg", region: "MB" } }
     };
 
-    function formatToDateTimeLocal(date) {
-        const offset = date.getTimezoneOffset() * 60000;
-        return (new Date(date - offset)).toISOString().slice(0, 16);
-    }
-
-    function setupSmartDates() {
-        const datePairs = [
-            { start: 'seStartDate', end: 'seEndDate' },
-            { start: 'pPick1Start', end: 'pPick1End' } // Solo para el primero, el resto manual
-        ];
-        datePairs.forEach(pair => {
-            const s = document.getElementsByName(pair.start)[0];
-            const e = document.getElementsByName(pair.end)[0];
-            if (s && e) {
-                s.addEventListener('change', function() {
-                    if (this.value) {
-                        let d = new Date(this.value);
-                        d.setHours(d.getHours() + 3);
-                        e.value = formatToDateTimeLocal(d);
-                    }
-                });
-            }
-        });
-    }
-
+    // 2. FUNCIONES DE INTERFAZ (Pestañas y Equipos)
     function switchSchema() {
-        const typeSelect = document.getElementById('schemaTypeSelect');
-        const hiddenType = document.getElementById('hiddenType');
-        if (!typeSelect) return;
-        
-        const type = typeSelect.value;
-        if (hiddenType) hiddenType.value = type;
-
+        const type = document.getElementById('schemaTypeSelect').value;
+        document.getElementById('hiddenType').value = type;
         const schemas = ["SportsEvent", "FAQPage", "BlogPosting", "Review", "Parlay", "WidgetSingle", "WidgetMulti", "Takeaways"];
-        
         schemas.forEach(s => {
             const div = document.getElementById(`fields_${s}`);
-            if (div) {
-                if (s === type) {
-                    div.classList.remove('hidden');
-                    div.style.display = 'block';
-                } else {
-                    div.classList.add('hidden');
-                    div.style.display = 'none';
-                }
-            }
+            if (div) div.classList.toggle('hidden', s !== type);
         });
-
-        const previewSection = document.getElementById('previewSection');
-        if (previewSection) previewSection.classList.add('hidden');
-
         if (type === 'SportsEvent') loadTeams();
     }
 
-   function loadTeams() {
-    const league = document.getElementById('seSport').value;
-    const isOther = (league === 'Other');
-    
-    // Contenedores
-    const customL = document.getElementById('customL');
-    const teamASelect = document.getElementById('seTeamA');
-    const teamBSelect = document.getElementById('seTeamB');
-    const teamACustom = document.getElementById('seTeamACustom');
-    const teamBCustom = document.getElementById('seTeamBCustom');
+    function loadTeams() {
+        const league = document.getElementById('seSport').value;
+        const isOther = (league === 'Other');
+        document.getElementById('customL').classList.toggle('hidden', !isOther);
+        const sA = document.getElementById('seTeamA'); const sB = document.getElementById('seTeamB');
+        const cA = document.getElementById('seTeamACustom'); const cB = document.getElementById('seTeamBCustom');
+        
+        sA.classList.toggle('hidden', isOther); sB.classList.toggle('hidden', isOther);
+        cA.classList.toggle('hidden', !isOther); cB.classList.toggle('hidden', !isOther);
 
-    // Mostrar/Ocultar campos de Liga Personalizada
-    if (customL) customL.classList.toggle('hidden', !isOther);
-    
-    if (isOther) {
-        // Si es OTRO: Ocultamos desplegables y mostramos cuadros de texto
-        teamASelect.classList.add('hidden');
-        teamBSelect.classList.add('hidden');
-        teamACustom.classList.remove('hidden');
-        teamBCustom.classList.remove('hidden');
-    } else {
-        // Si es una liga conocida: Mostramos desplegables y ocultamos cuadros de texto
-        teamASelect.classList.remove('hidden');
-        teamBSelect.classList.remove('hidden');
-        teamACustom.classList.add('hidden');
-        teamBCustom.classList.add('hidden');
-
-        // Cargar los equipos de la liga seleccionada
-        if (teamData[league]) {
-            const names = Object.keys(teamData[league]);
-            const options = names.map(t => `<option value="${t}">${t}</option>`).join('');
-            teamASelect.innerHTML = options;
-            teamBSelect.innerHTML = options;
+        if (!isOther && teamData[league]) {
+            const opts = Object.keys(teamData[league]).map(t => `<option value="${t}">${t}</option>`).join('');
+            sA.innerHTML = opts; sB.innerHTML = opts;
         }
+        autoFillVenue();
     }
-    autoFillVenue();
-}
 
     function autoFillVenue() {
-        const type = document.getElementById('schemaTypeSelect').value;
-        if (type !== 'SportsEvent') return;
         const league = document.getElementById('seSport').value;
-        const homeTeam = document.getElementById('seTeamA').value;
-        if (league !== 'Other' && teamData[league] && teamData[league][homeTeam]) {
-            const info = teamData[league][homeTeam];
+        const home = document.getElementById('seTeamA').value;
+        if (league !== 'Other' && teamData[league] && teamData[league][home]) {
+            const info = teamData[league][home];
             document.getElementById('seStadium').value = info.stadium;
             document.getElementById('seCity').value = info.city;
             document.getElementById('seRegion').value = info.region;
-            const caRegs = ["ON", "QC", "AB", "BC", "MB"];
-            document.getElementById('seCountry').value = caRegs.includes(info.region) ? "CA" : "US";
         }
         updName();
     }
 
-   function updName() {
-    const league = document.getElementById('seSport').value;
-    const isOther = (league === 'Other');
-    
-    let a = isOther ? document.getElementById('seTeamACustom').value : document.getElementById('seTeamA').value;
-    let b = isOther ? document.getElementById('seTeamBCustom').value : document.getElementById('seTeamB').value;
-    
-    const nameField = document.getElementById('seName');
-    if (nameField) {
-        nameField.value = (a && b) ? `${a} vs ${b}` : (a || b || "");
-    }
-}
-    let parlayPickCount = 0;
-    function addParlayLeg() {
-        parlayPickCount++;
-        const container = document.getElementById('parlayLegsContainer');
-        const legHtml = `
-            <div class="section parlay-leg" id="leg_container_${parlayPickCount}" style="border-left: 4px solid #ff9800; background: #fffcf9; margin-bottom: 20px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <strong class="leg-number">Pick #${parlayPickCount}</strong>
-                    <button type="button" onclick="removeLeg(this)" style="width: auto; padding: 5px 10px; background: #dc3545; color: white; border: none; cursor: pointer;">Remove</button>
-                </div>
-                <div class="grid">
-                    <input type="text" name="pPick${parlayPickCount}Event" placeholder="Event Name">
-                    <input type="text" name="pPick${parlayPickCount}Name" placeholder="Pick Name">
-                    <input type="text" name="pPick${parlayPickCount}Price" placeholder="Odds" oninput="calculateParlayAutoOdds()">
-                </div>
-                <div class="grid" style="margin-top: 10px;">
-                    <input type="text" name="pPick${parlayPickCount}Stadium" placeholder="Stadium">
-                    <input type="text" name="pPick${parlayPickCount}City" placeholder="City">
-                    <input type="text" name="pPick${parlayPickCount}Region" placeholder="Region">
-                </div>
-                <div class="grid" style="margin-top: 10px;">
-                    <div><label>Start Date:</label><input type="datetime-local" name="pPick${parlayPickCount}Start"></div>
-                    <div><label>End Date:</label><input type="datetime-local" name="pPick${parlayPickCount}End"></div>
-                </div>
-            </div>`;
-        container.insertAdjacentHTML('beforeend', legHtml);
+    function updName() {
+        const isOther = document.getElementById('seSport').value === 'Other';
+        const a = isOther ? document.getElementById('seTeamACustom').value : document.getElementById('seTeamA').value;
+        const b = isOther ? document.getElementById('seTeamBCustom').value : document.getElementById('seTeamB').value;
+        document.getElementById('seName').value = (a && b) ? `${a} vs ${b}` : "";
     }
 
-    function removeLeg(button) {
-        button.closest('.parlay-leg').remove();
-        reindexParlayLegs();
-        calculateParlayAutoOdds();
+    // 3. FUNCIONES DINÁMICAS (Picks, FAQ, Takeaways)
+    function addFAQ() {
+        faqCount++;
+        const html = `<div class="faq-item" style="border-bottom:1px solid #ddd; padding:10px 0;"><strong>Q#${faqCount}</strong><button type="button" onclick="this.parentElement.remove()" style="float:right; background:#dc3545; color:white; border:none; padding:2px 8px; border-radius:4px;">✕</button><input type="text" name="faqQ${faqCount}" placeholder="Question"><textarea name="faqA${faqCount}" placeholder="Answer"></textarea></div>`;
+        document.getElementById('faqContainer').insertAdjacentHTML('beforeend', html);
     }
 
-    function reindexParlayLegs() {
-        const legs = document.querySelectorAll('.parlay-leg');
-        legs.forEach((leg, index) => {
-            const newIndex = index + 1;
-            leg.querySelector('.leg-number').innerText = `Pick #${newIndex}`;
-            leg.querySelectorAll('input').forEach(input => {
-                input.name = input.name.replace(/pPick\d+/, `pPick${newIndex}`);
-                 if (input.name.includes('Price')) {
-        input.setAttribute('oninput', 'calculateParlayAutoOdds()');
+    function addTakeaway() {
+        if (tkCount >= 6) return alert("Max 6 reached");
+        tkCount++;
+        const html = `<div class="tk-item" style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:15px; margin-bottom:15px;"><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><strong>Key Point #${tkCount}</strong><button type="button" onclick="this.closest('.tk-item').remove()" style="background:#fee2e2; color:#dc2626; border:none; padding:4px 10px; border-radius:6px; cursor:pointer;">Remove</button></div><textarea name="tkPoint${tkCount}" style="height:80px; width:100%;" placeholder="Point details..."></textarea></div>`;
+        document.getElementById('tkContainer').insertAdjacentHTML('beforeend', html);
     }
-            });
+
+    function addSportsPick() {
+        if (sportsPickCount >= 7) return alert("Max 7 reached");
+        sportsPickCount++;
+        const html = `<div class="pick-grid sports-pick-row" style="margin-bottom:10px; padding:10px; border-left:4px solid #34a853; background:#f8f9fa;"><input type="text" class="sp-name" name="pick${sportsPickCount}Name" placeholder="Pick Name"><input type="text" class="sp-price" name="pick${sportsPickCount}Price" placeholder="Odds"><div style="display:flex; gap:8px;"><input type="url" class="sp-url" name="pick${sportsPickCount}Url" placeholder="URL" style="flex:1;"><button type="button" onclick="removeSportsPick(this)" style="background:#dc3545; color:white; border:none; padding:0 12px; border-radius:4px;">✕</button></div></div>`;
+        document.getElementById('sportsPicksContainer').insertAdjacentHTML('beforeend', html);
+        reindexSportsPicks();
+    }
+
+    function removeSportsPick(btn) { btn.closest('.sports-pick-row').remove(); reindexSportsPicks(); }
+
+    function reindexSportsPicks() {
+        document.querySelectorAll('.sports-pick-row').forEach((row, i) => {
+            const n = i + 1;
+            row.querySelector('.sp-name').name = `pick${n}Name`;
+            row.querySelector('.sp-price').name = `pick${n}Price`;
+            row.querySelector('.sp-url').name = `pick${n}Url`;
         });
-        parlayPickCount = legs.length;
+        sportsPickCount = document.querySelectorAll('.sports-pick-row').length;
     }
 
-function addWidgetRow(containerId, type) {
-    const container = document.getElementById(containerId);
-    const rowId = Date.now();
-    const rowClass = type === 'single' ? 'widget-row-single' : 'widget-row-multi';
-    
-    // Ponemos la clase 'rowClass' directamente en el div que envuelve los inputs
-    let html = `
-        <div class="section ${rowClass}" id="row_${rowId}" style="border-left: 4px solid #ff9800; background: #fffcf9; margin-bottom: 20px; padding: 15px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <strong class="widget-number" style="color: #ff9800;">${type === 'single' ? 'Pick' : 'Matchup'} #</strong>
-                <button type="button" onclick="this.closest('.section').remove(); reindexWidgets('${containerId}', '${type}')" style="width: auto; padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">Remove</button>
-            </div>
-            <div class="grid">
-                ${type === 'single' ? `
-                    <input type="text" class="ws_market" placeholder="Market (e.g. Spread)">
-                    <input type="text" class="ws_pick" placeholder="Pick & Odds (e.g. Lakers -6)">
-                    <input type="url" class="ws_url" placeholder="Deep Link">
-                ` : `
-                    <input type="text" class="wm_match" placeholder="Matchup (e.g. LAA vs NYY)">
-                    <input type="text" class="wm_pick" placeholder="Expert Pick (e.g. Over 8.5)">
-                    <input type="url" class="wm_url" placeholder="Link">
-                `}
-            </div>
-        </div>`;
-        
-    container.insertAdjacentHTML('beforeend', html);
-    reindexWidgets(containerId, type);
-}
-
-function removeWidgetRow(button, containerId, type) {
-    // Eliminamos la fila
-    button.closest('.section').remove();
-    // Re-indexamos las que quedan
-    reindexWidgets(containerId, type);
-}
-
-function reindexWidgets(containerId, type) {
-    const container = document.getElementById(containerId);
-    const rowClass = type === 'single' ? '.widget-row-single' : '.widget-row-multi';
-    const label = type === 'single' ? 'Pick' : 'Matchup';
-    
-    const rows = container.querySelectorAll(rowClass);
-    rows.forEach((row, index) => {
-        const num = index + 1;
-        row.querySelector('.widget-number').innerText = `${label} #${num}`;
-    });
-}
-    function buildSingleWidgetHTML() {
-    const title = document.getElementById('ws_promoTitle').value || "Welcome Bonus";
-    const text = document.getElementById('ws_promoText').value || "Offer";
-    const pUrl = document.getElementById('ws_promoUrl').value || "#";
-    const bUrl = document.getElementById('ws_bookieUrl').value || "#";
-
-    let rowsHtml = '';
-    // Buscamos los inputs directamente para no fallar
-    const markets = document.querySelectorAll('.ws_market');
-    const picks = document.querySelectorAll('.ws_pick');
-    const urls = document.querySelectorAll('.ws_url');
-
-    markets.forEach((m, index) => {
-        const marketVal = m.value;
-        const pickVal = picks[index].value;
-        const urlVal = urls[index].value;
-
-        if (marketVal || pickVal) {
-            rowsHtml += `
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px dashed #e2e8f0;">
-                <span style="color: #64748b; font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">${marketVal}</span>
-                <a href="${urlVal}" style="color: #1e293b; text-decoration: none; font-size: 14px; font-weight: 700;">
-                    ${pickVal} <span style="color: #3b82f6; margin-left: 4px;">→</span>
-                </a>
-            </div>`;
-        }
-    });
-
-    return `
-<div style="font-family: 'Segoe UI', Arial, sans-serif; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; background-color: #ffffff; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); max-width: 600px; margin: 20px auto;">
-    <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 20px; background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-bottom: 1px solid #fde68a; gap: 15px;">
-        <div style="flex: 1 1 200px;">
-            <div style="display: flex; align-items: center; margin-bottom: 4px;"><span style="font-size: 20px; margin-right: 8px;">🎁</span><span style="font-size: 10px; color: #b45309; font-weight: 800; text-transform: uppercase;">${title}</span></div>
-            <div style="font-size: 16px; color: #92400e; font-weight: 800;">${text}</div>
-        </div><a href="${pUrl}" style="background-color: #d4af37; color: #1a1a1a; padding: 10px 25px; border-radius: 8px; font-size: 12px; font-weight: 800; text-decoration: none; text-transform: uppercase;">Claim Now</a>
-    </div><div style="padding: 20px;"><div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; margin-bottom: 10px; text-align: center;">Expert Predictions</div>
-    ${rowsHtml}
-    <div style="padding-top: 20px; text-align: center;"><a href="${bUrl}" style="display: block; background-color: #1e293b; color: #ffffff; padding: 14px; border-radius: 10px; font-size: 14px; font-weight: 700; text-decoration: none; text-transform: uppercase;">Join the Action</a></div></div></div>`;
-}
-
-function buildMultiWidgetHTML() {
-    const title = document.getElementById('wm_promoTitle').value || "Bonus";
-    const text = document.getElementById('wm_promoText').value || "Offer";
-    const pUrl = document.getElementById('wm_promoUrl').value || "#";
-
-    let rowsHtml = '';
-    const matches = document.querySelectorAll('.wm_match');
-    const picks = document.querySelectorAll('.wm_pick');
-    const urls = document.querySelectorAll('.wm_url');
-
-    matches.forEach((m, index) => {
-        const matchVal = m.value;
-        const pickVal = picks[index].value;
-        const urlVal = urls[index].value;
-
-        if (matchVal || pickVal) {
-            rowsHtml += `
-            <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #f1f5f9; gap: 12px; background-color: #ffffff;">
-                <div style="flex: 1 1 250px; text-align: left;">
-                    <div style="font-size: 10px; color: #94a3b8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px;">${matchVal}</div>
-                    <div style="font-size: 15px; color: #1e293b; font-weight: 500;">Bet on: <strong style="color: #0f172a; font-weight: 800;">${pickVal}</strong></div>
-                </div>
-                <div style="flex: 0 0 auto;"><a href="${urlVal}" style="display: inline-block; background-color: #1e293b; color: #ffffff; padding: 10px 24px; border-radius: 8px; font-size: 12px; font-weight: 700; text-decoration: none; text-transform: uppercase;">Bet Now</a></div>
-            </div>`;
-        }
-    });
-
-    return `<div style="font-family: 'Segoe UI', Roboto, Arial, sans-serif; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; background-color: #ffffff; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); max-width: 1000px; margin: 20px auto;">
-    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-bottom: 1px solid #fde68a; text-align: center;">
-        <div style="display: flex; align-items: center; margin-bottom: 6px;"><span style="font-size: 20px; margin-right: 8px;">🎁</span><span style="font-size: 11px; color: #b45309; font-weight: 800; text-transform: uppercase;">${title}</span></div>
-        <div style="font-size: 18px; color: #92400e; font-weight: 800; margin-bottom: 12px;">${text}</div>
-        <a href="${pUrl}" style="background-color: #d4af37; color: #1a1a1a; padding: 10px 40px; border-radius: 10px; font-size: 13px; font-weight: 800; text-decoration: none; text-transform: uppercase;">Claim Bonus</a>
-    </div>
-    <div style="background-color: #f8fafc; padding: 10px; text-align: center; border-bottom: 1px solid #f1f5f9;"><span style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;">🔥 Today's Top Expert Picks</span></div>
-    ${rowsHtml}
-    <div style="background-color: #f8fafc; padding: 12px; text-align: center;"><p style="font-size: 10px; color: #94a3b8; margin: 0;"><strong>18+ Only.</strong> Please Gamble Responsibly.</p></div></div>`;
-}
-
-    window.onload = function() {
-        switchSchema();
-        setupSmartDates();
-        addParlayLeg();
-        addWidgetRow('ws_rowsContainer', 'single');
-        addWidgetRow('wm_rowsContainer', 'multi');
-
-        document.getElementById('mainForm').onsubmit = async (e) => {
-    e.preventDefault();
-    const type = document.getElementById('schemaTypeSelect').value;
-    
-    // Referencias a los nuevos elementos UI
-    const visualBox = document.getElementById('visual-result-box');
-    const schemaBox = document.getElementById('schema-result-box');
-    const visualOutput = document.getElementById('visualOutput');
-    const jsonOutput = document.getElementById('jsonOutput');
-    const previewSection = document.getElementById('previewSection');
-    const livePreview = document.getElementById('livePreview');
-
-    try {
-        if (type.includes('Widget')) {
-            // CASO: WIDGETS (Single/Multi) -> Solo Widget
-            const html = (type === 'WidgetSingle') ? buildSingleWidgetHTML() : buildMultiWidgetHTML();
-            visualOutput.value = html;
-            visualBox.classList.remove('hidden');
-            schemaBox.classList.add('hidden');
-            livePreview.innerHTML = html;
-            previewSection.classList.remove('hidden');
-        } 
-        else if (type === 'Takeaways') {
-            // CASO: TAKEAWAYS -> Widget Y Schema
-            const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
-            const data = await res.json();
-            visualOutput.value = data.visual;
-            jsonOutput.value = `<script type="application/ld+json">\n${JSON.stringify(data.schema, null, 2)}\n<\/script>`;
-            visualBox.classList.remove('hidden');
-            schemaBox.classList.remove('hidden');
-            livePreview.innerHTML = data.visual;
-            previewSection.classList.remove('hidden');
-        } 
-        else {
-            // CASO: SCHEMAS NORMALES -> Solo Schema
-            const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
-            const json = await res.json();
-            jsonOutput.value = `<script type="application/ld+json">\n${JSON.stringify(json, null, 2)}\n<\/script>`;
-            visualBox.classList.add('hidden');
-            schemaBox.classList.remove('hidden');
-            previewSection.classList.add('hidden');
-        }
-    } catch (err) {
-        alert("Error: " + err.message);
-    }
-};
-         };
-         function calculateParlayAutoOdds() {
-    // Buscamos todos los campos de cuotas que terminen en "Price" dentro del parlay
-    const oddsInputs = document.querySelectorAll('input[name^="pPick"][name$="Price"]');
-    let totalDecimal = 1;
-    let hasValues = false;
-
-    oddsInputs.forEach(input => {
-        const val = parseFloat(input.value);
-        if (!isNaN(val) && val !== 0) {
-            // Usamos las funciones de conversión que ya tienes (amToDec)
-            totalDecimal *= amToDec(val);
-            hasValues = true;
-        }
-    });
-
-    // Buscamos el campo donde se muestra el total
-    const totalField = document.getElementsByName('parlayTotalOdds')[0];
-    if (totalField) {
-        // Ponemos el resultado convertido de vuelta a Americano (decToAm)
-        totalField.value = hasValues ? decToAm(totalDecimal) : "";
-    }
-}
-
-// Función única para copiar (Botón azul y botón verde)
-    function copyResult(targetId) {
-        const el = document.getElementById(targetId);
-        if (!el || !el.value) {
-            alert("Nothing to copy!");
-            return;
-        }
-        el.select();
-        document.execCommand('copy');
-        alert("Copied to clipboard! ✅");
-    }
-
-    // El listener del botón Generate (Asegúrate de que esté dentro del script)
+    // 4. ENVÍO Y RESULTADOS
     document.addEventListener('submit', async (e) => {
         if (e.target.id !== 'mainForm') return;
         e.preventDefault();
-        
         const type = document.getElementById('schemaTypeSelect').value;
-        const visualBox = document.getElementById('visual-result-box');
-        const schemaBox = document.getElementById('schema-result-box');
-        const visualOutput = document.getElementById('visualOutput');
-        const jsonOutput = document.getElementById('jsonOutput');
-        const previewSection = document.getElementById('previewSection');
-        const livePreview = document.getElementById('livePreview');
-
         try {
             if (type.includes('Widget')) {
                 const html = (type === 'WidgetSingle') ? buildSingleWidgetHTML() : buildMultiWidgetHTML();
-                visualOutput.value = html;
-                visualBox.classList.remove('hidden');
-                schemaBox.classList.add('hidden');
-                livePreview.innerHTML = html;
-                previewSection.classList.remove('hidden');
-            } 
-            else if (type === 'Takeaways') {
+                document.getElementById('visualOutput').value = html;
+                document.getElementById('visual-result-box').classList.remove('hidden');
+                document.getElementById('schema-result-box').classList.add('hidden');
+                document.getElementById('livePreview').innerHTML = html;
+                document.getElementById('previewSection').classList.remove('hidden');
+            } else {
                 const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
                 const data = await res.json();
-                visualOutput.value = data.visual;
-                jsonOutput.value = `<script type="application/ld+json">\n${JSON.stringify(data.schema, null, 2)}\n<\/script>`;
-                visualBox.classList.remove('hidden');
-                schemaBox.classList.remove('hidden');
-                livePreview.innerHTML = data.visual;
-                previewSection.classList.remove('hidden');
-            } 
-            else {
-                const res = await fetch('/generate_schema', { method: 'POST', body: new FormData(e.target) });
-                const json = await res.json();
-                jsonOutput.value = `<script type="application/ld+json">\n${JSON.stringify(json, null, 2)}\n<\/script>`;
-                visualBox.classList.add('hidden');
-                schemaBox.classList.remove('hidden');
-                previewSection.classList.add('hidden');
+                if (type === 'Takeaways') {
+                    document.getElementById('visualOutput').value = data.visual;
+                    document.getElementById('jsonOutput').value = `<script type="application/ld+json">\n${JSON.stringify(data.schema, null, 2)}\n<\/script>`;
+                    document.getElementById('visual-result-box').classList.remove('hidden');
+                    document.getElementById('livePreview').innerHTML = data.visual;
+                    document.getElementById('previewSection').classList.remove('hidden');
+                } else {
+                    document.getElementById('jsonOutput').value = `<script type="application/ld+json">\n${JSON.stringify(data, null, 2)}\n<\/script>`;
+                    document.getElementById('visual-result-box').classList.add('hidden');
+                    document.getElementById('previewSection').classList.add('hidden');
+                }
+                document.getElementById('schema-result-box').classList.remove('hidden');
             }
-        } catch (err) {
-            alert("Error: " + err.message);
-        }
+        } catch (err) { alert("Error: " + err.message); }
     });
 
-    function clearForm() {
-        if (confirm("Are you sure you want to clear everything?")) {
-            const form = document.getElementById('mainForm');
-            if (form) form.reset();
-            
-            document.getElementById('jsonOutput').value = "";
-            const preview = document.getElementById('previewSection');
-            if (preview) preview.classList.add('hidden');
-
-            document.getElementById('parlayLegsContainer').innerHTML = "";
-            document.getElementById('ws_rowsContainer').innerHTML = "";
-            document.getElementById('wm_rowsContainer').innerHTML = "";
-            document.getElementById('visual-result-box').classList.add('hidden');
-            document.getElementById('schema-result-box').classList.remove('hidden');
-document.getElementById('tkContainer').innerHTML = "";
-tkCount = 0;
-addTakeaway();
-            parlayPickCount = 0;
-            addParlayLeg();
-            addWidgetRow('ws_rowsContainer', 'single');
-            addWidgetRow('wm_rowsContainer', 'multi');
-            
-            switchSchema();
-document.getElementById('sportsPicksContainer').innerHTML = "";
-sportsPickCount = 0;
-addSportsPick();
-        }
-    }
-// Convierte Americanas a Decimales
-function amToDec(val) {
-    val = parseFloat(val);
-    if (isNaN(val)) return 1;
-    if (val >= 100) return (val / 100) + 1;
-    if (val <= -100) return (100 / Math.abs(val)) + 1;
-    return 1;
-}
-
-// Convierte Decimales a Americanas
-function decToAm(dec) {
-    if (dec <= 1.001) return "+0";
-    if (dec >= 2.0) return "+" + Math.round((dec - 1) * 100);
-    return Math.round(-100 / (dec - 1));
-}
-
-// FUNCIÓN QUE CALCULA EL TOTAL
-function calculateParlayAutoOdds() {
-    // Buscamos todos los inputs de cuotas de las "patas" del parlay
-    const oddsInputs = document.querySelectorAll('input[name^="pPick"][name$="Price"]');
-    let totalDecimal = 1;
-    let hasValues = false;
-
-    oddsInputs.forEach(input => {
-        const val = parseFloat(input.value);
-        if (!isNaN(val) && val !== 0 && val !== -1 && val !== 1) {
-            totalDecimal *= amToDec(val);
-            hasValues = true;
-        }
-    });
-
-    const totalField = document.getElementsByName('parlayTotalOdds')[0];
-    if (totalField) {
-        // Solo actualizamos si hay al menos un pick con cuota
-        totalField.value = hasValues ? decToAm(totalDecimal) : "";
-    }
-}
-    // --- FUNCIONES DINÁMICAS (CORREGIDAS) ---
-    let faqCount = 0;
-    let tkCount = 0;
-
-    function addFAQ() {
-        faqCount++;
-        const container = document.getElementById('faqContainer');
-        if (!container) return;
-        const html = `
-            <div class="faq-item" style="border-bottom: 1px solid #ddd; padding: 15px 0; margin-bottom: 10px; position: relative;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <strong style="color: #555;">Question #${faqCount}</strong>
-                    <button type="button" onclick="this.parentElement.parentElement.remove()" style="background: #dc3545; color: white; border: none; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;">Remove</button>
-                </div>
-                <label>Question:</label>
-                <input type="text" name="faqQ${faqCount}" placeholder="e.g. What is a parlay bet?" style="margin-bottom: 10px;">
-                <label>Answer:</label>
-                <textarea name="faqA${faqCount}" placeholder="Provide a detailed answer..." style="height: 80px;"></textarea>
-            </div>`;
-        container.insertAdjacentHTML('beforeend', html);
+    // 5. UTILIDADES
+    function copyResult(id) { const el = document.getElementById(id); el.select(); document.execCommand('copy'); alert("Copied! ✅"); }
+    
+    function clearForm() { 
+        if (confirm("Clear all?")) location.reload(); // Forma más segura de limpiar todo
     }
 
- function addTakeaway() {
-        if (tkCount >= 6) { alert("Maximum 6 takeaways allowed"); return; }
-        tkCount++;
-        const container = document.getElementById('tkContainer');
-        if (!container) return;
-
-        const html = `
-            <div class="tk-item" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); position: relative;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <strong style="color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Key Point #${tkCount}</strong>
-                    <button type="button" onclick="this.closest('.tk-item').remove()" style="background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; text-transform: uppercase; transition: 0.2s;">
-                        Remove
-                    </button>
-                </div>
-                <textarea name="tkPoint${tkCount}" placeholder="Point ${tkCount}: Describe the main idea..." style="height: 80px; width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-family: inherit; font-size: 14px; resize: vertical; outline: none;"></textarea>
-            </div>`;
-            
-        container.insertAdjacentHTML('beforeend', html);
-    }
-
-    // --- INICIALIZACIÓN AL CARGAR ---
-    window.addEventListener('load', () => {
+    // INICIALIZACIÓN ÚNICA
+    window.onload = () => {
+        switchSchema();
         if (faqCount === 0) addFAQ();
         if (tkCount === 0) addTakeaway();
-    });
-let sportsPickCount = 0;
-
-function addSportsPick() {
-    // Limitamos a 7 picks que es lo que procesa tu app.py actual
-    if (sportsPickCount >= 7) {
-        alert("Maximum 7 additional picks allowed");
-        return;
-    }
-    
-    sportsPickCount++;
-    const container = document.getElementById('sportsPicksContainer');
-    
-    const html = `
-        <div class="pick-grid sports-pick-row" style="margin-bottom: 10px; background: #f8f9fa; padding: 10px; border-radius: 6px; border-left: 4px solid #34a853;">
-            <input type="text" class="sp-name" name="pick${sportsPickCount}Name" placeholder="Pick #${sportsPickCount} Name">
-            <input type="text" class="sp-price" name="pick${sportsPickCount}Price" placeholder="Odds">
-            <div style="display: flex; gap: 8px;">
-                <input type="url" class="sp-url" name="pick${sportsPickCount}Url" placeholder="URL" style="flex: 1;">
-                <button type="button" onclick="removeSportsPick(this)" style="background: #dc3545; color: white; border: none; padding: 0 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">✕</button>
-            </div>
-        </div>`;
-        
-    container.insertAdjacentHTML('beforeend', html);
-    reindexSportsPicks(); // Ajustamos números al agregar
-}
-
-function removeSportsPick(button) {
-    button.closest('.sports-pick-row').remove();
-    reindexSportsPicks(); // Re-ajustamos números al borrar
-}
-
-function reindexSportsPicks() {
-    const rows = document.querySelectorAll('.sports-pick-row');
-    rows.forEach((row, index) => {
-        const newNum = index + 1;
-        
-        // Buscamos los inputs por sus clases para renombrarlos correctamente
-        const nameInp = row.querySelector('.sp-name');
-        const priceInp = row.querySelector('.sp-price');
-        const urlInp = row.querySelector('.sp-url');
-
-        nameInp.name = `pick${newNum}Name`;
-        nameInp.placeholder = `Pick #${newNum} Name`;
-        
-        priceInp.name = `pick${newNum}Price`;
-        urlInp.name = `pick${newNum}Url`;
-    });
-    sportsPickCount = rows.length;
-}
-
-// Para que inicie con un pick adicional vacío
-window.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('sportsPicksContainer')) {
-        addSportsPick();
-    }
-});
+        if (sportsPickCount === 0) addSportsPick();
+        addParlayLeg(); // Si tienes esta función
+    };
 </script>
 </body>
 </html>
