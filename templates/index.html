@@ -744,6 +744,9 @@ addTakeaway();
             addWidgetRow('wm_rowsContainer', 'multi');
             
             switchSchema();
+document.getElementById('sportsPicksContainer').innerHTML = "";
+sportsPickCount = 0;
+addSportsPick();
         }
     }
 // Convierte Americanas a Decimales
@@ -829,6 +832,63 @@ function calculateParlayAutoOdds() {
     window.addEventListener('load', () => {
         if (faqCount === 0) addFAQ();
         if (tkCount === 0) addTakeaway();
-    });</script>
+    });
+let sportsPickCount = 0;
+
+function addSportsPick() {
+    // Limitamos a 7 picks que es lo que procesa tu app.py actual
+    if (sportsPickCount >= 7) {
+        alert("Maximum 7 additional picks allowed");
+        return;
+    }
+    
+    sportsPickCount++;
+    const container = document.getElementById('sportsPicksContainer');
+    
+    const html = `
+        <div class="pick-grid sports-pick-row" style="margin-bottom: 10px; background: #f8f9fa; padding: 10px; border-radius: 6px; border-left: 4px solid #34a853;">
+            <input type="text" class="sp-name" name="pick${sportsPickCount}Name" placeholder="Pick #${sportsPickCount} Name">
+            <input type="text" class="sp-price" name="pick${sportsPickCount}Price" placeholder="Odds">
+            <div style="display: flex; gap: 8px;">
+                <input type="url" class="sp-url" name="pick${sportsPickCount}Url" placeholder="URL" style="flex: 1;">
+                <button type="button" onclick="removeSportsPick(this)" style="background: #dc3545; color: white; border: none; padding: 0 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">✕</button>
+            </div>
+        </div>`;
+        
+    container.insertAdjacentHTML('beforeend', html);
+    reindexSportsPicks(); // Ajustamos números al agregar
+}
+
+function removeSportsPick(button) {
+    button.closest('.sports-pick-row').remove();
+    reindexSportsPicks(); // Re-ajustamos números al borrar
+}
+
+function reindexSportsPicks() {
+    const rows = document.querySelectorAll('.sports-pick-row');
+    rows.forEach((row, index) => {
+        const newNum = index + 1;
+        
+        // Buscamos los inputs por sus clases para renombrarlos correctamente
+        const nameInp = row.querySelector('.sp-name');
+        const priceInp = row.querySelector('.sp-price');
+        const urlInp = row.querySelector('.sp-url');
+
+        nameInp.name = `pick${newNum}Name`;
+        nameInp.placeholder = `Pick #${newNum} Name`;
+        
+        priceInp.name = `pick${newNum}Price`;
+        urlInp.name = `pick${newNum}Url`;
+    });
+    sportsPickCount = rows.length;
+}
+
+// Para que inicie con un pick adicional vacío
+window.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('sportsPicksContainer')) {
+        addSportsPick();
+    }
+});
+</script>
 </body>
 </html>
