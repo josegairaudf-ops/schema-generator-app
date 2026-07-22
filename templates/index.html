@@ -446,7 +446,19 @@
 
     function addParlayLeg() {
         parlayPickCount++;
-        const html = `<div class="p-leg section" style="border-left:4px solid #ff9800; background:#fffcf9; margin-bottom:15px; padding:10px;"><div style="display:flex; justify-content:space-between; margin-bottom:5px;"><strong>Leg #${parlayPickCount}</strong><button type="button" onclick="this.closest('.p-leg').remove(); reindexPL();" class="remove-btn">✕</button></div><div class="grid"><input type="text" class="pl-e" name="pPick${parlayPickCount}Event" placeholder="Event"><input type="text" class="pl-n" name="pPick${parlayPickCount}Name" placeholder="Pick"><input type="text" class="pl-p" name="pPick${parlayPickCount}Price" placeholder="Odds"></div></div>`;
+        const html = `
+            <div class="p-leg section" style="border-left:4px solid #ff9800; background:#fffcf9; margin-bottom:15px; padding:10px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <strong>Leg #${parlayPickCount}</strong>
+                    <button type="button" onclick="this.closest('.p-leg').remove(); reindexPL();" class="remove-btn">✕</button>
+                </div>
+                <div class="grid">
+                    <input type="text" class="pl-e" name="pPick${parlayPickCount}Event" placeholder="Event">
+                    <input type="text" class="pl-n" name="pPick${parlayPickCount}Name" placeholder="Pick">
+                    <!-- CLASE pl-p Y ONINPUT AGREGADOS -->
+                    <input type="text" class="pl-p" name="pPick${parlayPickCount}Price" placeholder="Odds" oninput="calculateParlayAutoOdds()">
+                </div>
+            </div>`;
         document.getElementById('parlayLegsContainer').insertAdjacentHTML('beforeend', html);
     }
     function reindexPL() {
@@ -525,6 +537,38 @@
         addFAQ(); addTakeaway(); addSportsPick(); addParlayLeg();
         addWidgetRow('ws_rowsContainer', 'single'); addWidgetRow('wm_rowsContainer', 'multi');
     };
+  // Convierte Americanas (+150, -200) a Decimales (2.50, 1.50)
+    function amToDec(val) {
+        val = parseFloat(val);
+        if (isNaN(val) || val === 0) return 1;
+        return val >= 100 ? (val / 100) + 1 : (100 / Math.abs(val)) + 1;
+    }
+
+    // Convierte Decimales (3.75) de vuelta a Americanas (+275)
+    function decToAm(dec) {
+        if (dec <= 1.001) return "+0";
+        if (dec >= 2.0) return "+" + Math.round((dec - 1) * 100);
+        return Math.round(-100 / (dec - 1));
+    };
+    function calculateParlayAutoOdds() {
+        const oddsInputs = document.querySelectorAll('.pl-p');
+        let totalDecimal = 1;
+        let hasValues = false;
+
+        oddsInputs.forEach(input => {
+            const val = parseFloat(input.value);
+            if (!isNaN(val) && val !== 0 && val !== 1 && val !== -1) {
+                totalDecimal *= amToDec(val);
+                hasValues = true;
+            }
+        });
+
+        const totalField = document.getElementsByName('parlayTotalOdds')[0];
+        if (totalField) {
+            // Actualiza el campo superior de "Total Odds" automáticamente
+            totalField.value = hasValues ? decToAm(totalDecimal) : "";
+        }
+    }
 </script>
 </body>
 </html>
