@@ -38,6 +38,7 @@
             <option value="Takeaways">Key Takeaways (Widget + Schema)</option>
             <option value="WidgetSingle">Widget: Single Matchup</option>
             <option value="WidgetMulti">Widget: Multi-Matchup</option>
+            <option value="PromoBanner">Widget: Promo Banner (Code)</option>
         </select>
     </div>
 
@@ -188,7 +189,35 @@
         <!-- BLOG & REVIEW REMAINING (Simplified for length) -->
         <div id="fields_BlogPosting" class="hidden"><div class="section"><h2>Blog Posting</h2><input type="text" name="blogHeadline" placeholder="Headline"><textarea name="blogDesc" placeholder="Description"></textarea><input type="text" name="blogAuthor" placeholder="Author"><input type="url" name="blogUrl" placeholder="URL"><input type="url" name="blogImage" placeholder="Image URL"></div></div>
         <div id="fields_Review" class="hidden"><div class="section"><h2>Review</h2><input type="text" name="revItem" placeholder="Item"><input type="number" name="revValue" value="5"><textarea name="revBody" placeholder="Review Text"></textarea></div></div>
-
+<div id="fields_PromoBanner" class="hidden">
+    <div class="section" style="background: #f0fdf4; border: 1px solid #166534;">
+        <h2>Widget: Promo Banner Details</h2>
+        <div class="grid">
+            <div>
+                <label>Logo URL (BetUS Logo):</label>
+                <input type="url" id="pb_logoUrl" placeholder="https://...">
+            </div>
+            <div>
+                <label>Promo Title:</label>
+                <input type="text" id="pb_title" placeholder="e.g. 200% Welcome Bonus">
+            </div>
+        </div>
+        <div class="grid" style="margin-top:10px;">
+            <div>
+                <label>Subtitle:</label>
+                <input type="text" id="pb_subtitle" placeholder="e.g. Up to $1,000">
+            </div>
+            <div>
+                <label>Promo Code:</label>
+                <input type="text" id="pb_code" placeholder="e.g. NEW200">
+            </div>
+        </div>
+        <label style="margin-top:10px;">Legal Footer Text:</label>
+        <textarea id="pb_legal" placeholder="21+ only..."></textarea>
+        <label style="margin-top:10px;">Verification Date:</label>
+        <input type="text" id="pb_date" placeholder="e.g. June 01, 2026">
+    </div>
+</div>
         <button type="submit" id="submitBtn" class="btn-widget">Generate Schema / Widget</button>
     </form>
 
