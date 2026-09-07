@@ -384,7 +384,7 @@
     function switchSchema() {
         const type = document.getElementById('schemaTypeSelect').value;
         document.getElementById('hiddenType').value = type;
-        const schemas = ["SportsEvent", "FAQPage", "BlogPosting", "Review", "Parlay", "WidgetSingle", "WidgetMulti", "Takeaways"];
+        const schemas = ["SportsEvent", "FAQPage", "BlogPosting", "Review", "Parlay", "WidgetSingle", "WidgetMulti", "Takeaways", "PromoBanner"];
         schemas.forEach(s => {
             const div = document.getElementById(`fields_${s}`);
             if (div) div.classList.toggle('hidden', s !== type);
@@ -525,6 +525,16 @@
         });
         return `<div style="font-family:'Segoe UI',Arial,sans-serif; border:1px solid #e5e7eb; border-radius:16px; overflow:hidden; margin:20px 0; box-shadow:0 10px 25px -5px rgba(0,0,0,0.05); width:100%; box-sizing:border-box; background-color:#fff;"><div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; background:linear-gradient(135deg,#fffbeb 0%,#fef3c7 100%); border-bottom:1px solid #fde68a; text-align:center;"><div style="display:flex; align-items:center; margin-bottom:6px;"><span style="font-size:20px; margin-right:8px;">🎁</span><span style="font-size:10px; color:#b45309; font-weight:800; text-transform:uppercase;">${title}</span></div><div style="font-size:18px; color:#92400e; font-weight:800; margin-bottom:12px;">${text}</div><a href="${pUrl}" style="background-color:#d4af37; color:#1a1a1a; padding:10px 40px; border-radius:10px; font-size:13px; font-weight:800; text-decoration:none; text-transform:uppercase;">Claim Bonus</a></div><div style="background-color:#f8fafc; padding:10px; text-align:center; border-bottom:1px solid #f1f5f9;"><span style="font-size:11px; color:#64748b; font-weight:700; text-transform:uppercase; letter-spacing:1.5px;">🔥 Today's Top Expert Picks</span></div><div style="padding:0 20px;">${rows}</div><div style="background-color:#f8fafc; padding:12px; text-align:center;"><p style="font-size:10px; color:#94a3b8; margin:0; line-height:1.4;">18+ Only. Review T&Cs. <strong>Play Responsibly.</strong></p></div></div>`;
     }
+    function buildPromoBannerHTML() {
+        const logo = document.getElementById('pb_logoUrl').value || "https://www.betus.com.pa/wp-content/themes/betus/assets/images/logo.png";
+        const title = document.getElementById('pb_title').value || "200% Welcome Bonus";
+        const subtitle = document.getElementById('pb_subtitle').value || "Up to $1,000";
+        const code = document.getElementById('pb_code').value || "NEW200";
+        const legal = document.getElementById('pb_legal').value || "21+ only. Minimum deposit and wagering requirements apply. Bonus eligibility and restrictions may apply. See full terms.";
+        const date = document.getElementById('pb_date').value || "June 01, 2026";
+
+        return `<div style="width:100%;max-width:720px;margin:16px auto;border:1px solid #e1e4e8;border-radius:8px;overflow:hidden;background:#fff;box-sizing:border-box;"><div style="display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:12px 16px;box-sizing:border-box;"><div style="flex:0 0 auto;"><img src="${logo}" alt="BetUS" width="147" height="40" style="display:block;width:110px;max-width:100%;height:auto;margin:0;"></div><div style="flex:1 1 180px;min-width:150px;"><div style="font-size:16px;line-height:1.2;font-weight:700;color:#1a1a1a;">${title}</div><div style="font-size:12px;line-height:1.3;color:#5f6368;margin-top:2px;">${subtitle}</div></div><div style="flex:0 0 auto;border:1px solid #d9dde3;border-radius:6px;padding:6px 12px;box-sizing:border-box;"><div style="font-size:9px;line-height:1.2;font-weight:700;color:#777;text-transform:uppercase;letter-spacing:.8px;">Promo Code</div><div style="font-size:17px;line-height:1.2;font-weight:700;color:#1a1a1a;">${code}</div></div></div><div style="border-top:1px solid #eee;background:#fafafa;padding:5px 12px;box-sizing:border-box;font-size:9px;line-height:1.35;color:#70757a;text-align:center;"><em>${legal} Last verified: ${date}.</em></div></div>`;
+    }
 
     // 5. SUBMIT HANDLER
     document.getElementById('mainForm').onsubmit = async (e) => {
@@ -534,10 +544,15 @@
         const vOut = document.getElementById('visualOutput'), sOut = document.getElementById('jsonOutput');
 
         try {
-            if (type.includes('Widget')) {
-                const html = (type === 'WidgetSingle') ? buildSingleWidgetHTML() : buildMultiWidgetHTML();
-                vOut.value = html;
-                vBox.classList.remove('hidden'); sBox.classList.add('hidden');
+            if (type.includes('Widget') || type === 'PromoBanner') {
+                let html = "";
+                if (type === 'WidgetSingle') html = buildSingleWidgetHTML();
+                else if (type === 'WidgetMulti') html = buildMultiWidgetHTML();
+                else if (type === 'PromoBanner') html = buildPromoBannerHTML(); // AGREGAR ESTA LÍNEA
+                
+                document.getElementById('visualOutput').value = html;
+                document.getElementById('visual-result-box').classList.remove('hidden');
+                document.getElementById('schema-result-box').classList.add('hidden');
                 document.getElementById('livePreview').innerHTML = html;
                 document.getElementById('previewSection').classList.remove('hidden');
             } else {
