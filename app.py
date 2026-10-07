@@ -162,8 +162,8 @@ def gen_parlay(data):
         stadium = data.get(f"pPick{i}Stadium")
         city = data.get(f"pPick{i}City")
         region = data.get(f"pPick{i}Region")
-        start = data.get(f"pPick{i}Start")
-        end = data.get(f"pPick{i}End")
+        start = data.get(f"pPick{i}Start") or datetime.now().isoformat()
+end = data.get(f"pPick{i}End")
 
         if event and pick_name:
             legs.append({
