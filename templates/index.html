@@ -476,26 +476,35 @@
     function addParlayLeg() {
         parlayPickCount++;
         const html = `
-            <div class="p-leg section" style="border-left:4px solid #ff9800; background:#fffcf9; margin-bottom:15px; padding:10px;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                    <strong>Leg #${parlayPickCount}</strong>
+            <div class="p-leg section" style="border-left:4px solid #ff9800; background:#fffcf9; margin-bottom:15px; padding:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <strong class="leg-num">Leg #${parlayPickCount}</strong>
                     <button type="button" onclick="this.closest('.p-leg').remove(); reindexPL();" class="remove-btn">✕</button>
                 </div>
                 <div class="grid">
-                    <input type="text" class="pl-e" name="pPick${parlayPickCount}Event" placeholder="Event">
-                    <input type="text" class="pl-n" name="pPick${parlayPickCount}Name" placeholder="Pick">
-                    <!-- CLASE pl-p Y ONINPUT AGREGADOS -->
-                    <input type="text" class="pl-p" name="pPick${parlayPickCount}Price" placeholder="Odds" oninput="calculateParlayAutoOdds()">
+                    <input type="text" class="pl-e" name="pPick${parlayPickCount}Event" placeholder="Event Name (e.g. Lakers vs Celtics)">
+                    <input type="text" class="pl-n" name="pPick${parlayPickCount}Name" placeholder="Pick (e.g. Lakers ML)">
+                    <input type="text" class="pl-p" name="pPick${parlayPickCount}Price" placeholder="Odds (e.g. -110)" oninput="calculateParlayAutoOdds()">
+                </div>
+                <div style="margin-top:8px;">
+                    <label style="font-size:11px; margin-bottom:2px;">Event Start Date & Time:</label>
+                    <input type="datetime-local" class="pl-s" name="pPick${parlayPickCount}Start">
                 </div>
             </div>`;
         document.getElementById('parlayLegsContainer').insertAdjacentHTML('beforeend', html);
     }
     function reindexPL() {
         document.querySelectorAll('.p-leg').forEach((leg, i) => {
-            const n = i+1; leg.querySelector('strong').innerText = `Leg #${n}`;
-            leg.querySelector('.pl-e').name = `pPick${n}Event`; leg.querySelector('.pl-n').name = `pPick${n}Name`; leg.querySelector('.pl-p').name = `pPick${n}Price`;
+            const n = i + 1;
+            leg.querySelector('.leg-num').innerText = `Leg #${n}`;
+            leg.querySelector('.pl-e').name = `pPick${n}Event`;
+            leg.querySelector('.pl-n').name = `pPick${n}Name`;
+            leg.querySelector('.pl-p').name = `pPick${n}Price`;
+            const sInput = leg.querySelector('.pl-s');
+            if (sInput) sInput.name = `pPick${n}Start`;
         });
         parlayPickCount = document.querySelectorAll('.p-leg').length;
+        calculateParlayAutoOdds();
     }
 
     function addWidgetRow(containerId, type) {
