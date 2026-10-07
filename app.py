@@ -163,7 +163,7 @@ def gen_parlay(data):
         city = data.get(f"pPick{i}City")
         region = data.get(f"pPick{i}Region")
         start = data.get(f"pPick{i}Start") or datetime.now().isoformat()
-end = data.get(f"pPick{i}End")
+        end = data.get(f"pPick{i}End")
 
         if event and pick_name:
             legs.append({
@@ -218,7 +218,7 @@ end = data.get(f"pPick{i}End")
             "itemListElement": legs
         }
     }
-def gen_takeaways(data):
+    def gen_takeaways(data):
     theme = data.get("tkTheme", "General")
     icon = data.get("tkIcon", "💡")
     points = []
