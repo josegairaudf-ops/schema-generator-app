@@ -136,7 +136,7 @@
             <div class="section" style="background: #f9f9f9;">
                 <h2>FAQ Page Details</h2>
                 <div id="faqContainer"></div>
-                <button type="button" onclick="addFAQ()" style="background:#ff9800; width:auto;">+ Add Question</button>
+                <button type="button" onclick="addreindexFAQ()" style="background:#ff9800; width:auto;">+ Add Question</button>
             </div>
         </div>
 
@@ -654,12 +654,12 @@
                 } else {
                     vBox.classList.add('hidden'); previewSection.classList.add('hidden');
                 }
-                sOut.value = `<script type="application/ld+json">\n${JSON.stringify(schemaFinal, null, 2)}\n<\/script>`;
-                sBox.classList.remove('hidden');
+const tagOpen = '<scr' + 'ipt type="application/ld+json">\n';
+const tagClose = '\n</scr' + 'ipt>';
+sOut.value = tagOpen + JSON.stringify(finalJson, null, 2) + tagClose;                sBox.classList.remove('hidden');
             }
         } catch (err) { alert("Error: " + err.message); }
     };
-
     function copyResult(id) { const el = document.getElementById(id); el.select(); document.execCommand('copy'); alert("Copied! ✅"); }
     function clearForm() { if (confirm("Clear all?")) location.reload(); }
 
