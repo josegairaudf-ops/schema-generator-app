@@ -513,10 +513,6 @@
         const html = `<div class="section ${rowClass}" style="border-left:4px solid #6366f1; background:#f5f6ff; margin-bottom:15px; padding:10px;"><div style="display:flex; justify-content:space-between; margin-bottom:5px;"><strong>#</strong><button type="button" onclick="this.closest('.section').remove();" class="remove-btn">✕</button></div><div class="grid">${type === 'single' ? `<input type="text" class="ws_market" placeholder="Market"><input type="text" class="ws_pick" placeholder="Odds"><input type="url" class="ws_url" placeholder="Link">` : `<input type="text" class="wm_match" placeholder="Matchup"><input type="text" class="wm_pick" placeholder="Pick"><input type="url" class="wm_url" placeholder="Link">`}</div></div>`;
         container.insertAdjacentHTML('beforeend', html);
     }
-
-    // 4. WIDGET CONSTRUCTORS
-    <div style="font-family: 'Segoe UI', Arial, sans-serif; border: 1px solid #e5e7eb; border-radius: 14px; overflow: hidden; margin: 16px auto; box-shadow: 0 6px 18px rgba(15,23,42,0.08); width: 100%; max-width: 680px; box-sizing: border-box; background-color: #fff;">
-
   <!-- PROMO HEADER (UNCHANGED) -->
   <div style="padding: 14px 18px; background: linear-gradient(180deg, #fff8db 0%, #fffdf4 100%); border-bottom: 1px solid #f3e8a7; text-align: center;">
     <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 6px;">
